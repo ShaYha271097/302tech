@@ -1,15 +1,4 @@
-// import Header from "@/components/Header/Header";
-// interface Props {
-//     params: { id: string };
-// }
 
-//  <td
-//                                     className="p-2 font-medium cursor-pointer hover:text-blue-600"
-
-//                                     onClick={() => toggleExpand(p._id)}>
-//                                       {expandedId === p._id ? "▼" : "▶"}
-//                                        {p.name}
-//                                   </td>
 "use client";
 import { useState } from "react";
 import Link from "next/link";
@@ -37,6 +26,7 @@ type Product = {
 }
 
 export default function ProductDetail() {
+  const [openUser, setOpenUser] = useState(false);
   const [open, setOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [products, setProducts] = useState<Product[]>([])
@@ -64,74 +54,58 @@ export default function ProductDetail() {
   }
 
 
-  console.log("products",products)
+  console.log("products", products)
 
   return (
     <>
-      <section className="containerKV">
-        <div className="kv-header-top">
-          <div className="kv-header-logo">
-            <a
-              href="javascript:;"
-              className="mobileMenu kv-btn kv-btn-icon-only kv-btn-text-primary"
-            >
-              <span />
-            </a>
-            {/* ngIf: $root.usecustomlogo */}
-            {/* ngIf: !$root.usecustomlogo && !$root.retailerInfo.Setting.HideKVInfo && $root.appBranding.IsOriginal */}
-            <a
-              ng-if="!$root.usecustomlogo && !$root.retailerInfo.Setting.HideKVInfo && $root.appBranding.IsOriginal"
-              href="https://www.kiotviet.vn/"
-              className="kv-logo-wrapper ng-scope"
-              tabIndex={-1}
-              rel="noopener"
-              target="_blank"
-            >
+      {/* ================= HEADER TOP ================= */}
+      <section className="border-b bg-white">
+        <div className=" mx-auto px-4 py-2 flex items-center justify-between">
+
+          {/* LEFT */}
+          <div className="flex items-center gap-3">
+
+            {/* MENU MOBILE (sau này dùng) */}
+            <button className="lg:hidden text-xl">
+              ☰
+            </button>
+
+            {/* LOGO */}
+            <a href="/" target="_blank">
               <img
-                ng-src="https://logo.kiotviet.vn/KiotViet-Logo-Horizontal.svg"
-                alt="Phần mềm quản lý bán hàng"
-                className="kv-logo"
-                title="Phần mềm quản lý bán hàng"
                 src="https://logo.kiotviet.vn/KiotViet-Logo-Horizontal.svg"
+                className="h-8 object-contain"
+                alt="logo"
               />
             </a>
-            {/* end ngIf: !$root.usecustomlogo && !$root.retailerInfo.Setting.HideKVInfo && $root.appBranding.IsOriginal */}
-            {/* Logo Keivi version */}
-            {/* ngIf: !$root.usecustomlogo && !$root.retailerInfo.Setting.HideKVInfo && !$root.appBranding.IsOriginal */}
           </div>
-          <div className="kv-navbar kv-navbar-top">
-            <ul className="kv-navbar-list">
-              <li
-                ng-if="$root.kvManAppV2Toggle"
-                uib-dropdown=""
-                className="kv-navbar-item kv-navbar-user ng-scope dropdown"
-                ng-mouseover="loadAccountMain()"
-              >
-                <a
-                  href="javascript:void(0)"
-                  uib-dropdown-toggle=""
-                  className="kv-btn kv-btn-icon-only kv-btn-light-primary dropdown-toggle"
-                  title="qua"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  <i className="fas fa-user icon-btn" />
-                </a>
-                <div
-                  className="dropdown-content show-left dropdown-menu"
-                  uib-dropdown-menu=""
-                  ng-show="showUserMenu"
-                  id="account-main"
-                />
-              </li>
-              {/* end ngIf: $root.kvManAppV2Toggle */}
-              {/* ngIf: !$root.kvManAppV2Toggle */}
-            </ul>
+
+          {/* RIGHT */}
+          <div className="relative">
+
+            <button
+              onClick={() => setOpenUser(!openUser)}
+              className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"
+            >
+              <i className="fas fa-user" />
+            </button>
+
+            {/* DROPDOWN */}
+            {openUser && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-50">
+                <div className="p-2 hover:bg-gray-100 cursor-pointer">
+                  Tài khoản
+                </div>
+                <div className="p-2 hover:bg-gray-100 cursor-pointer">
+                  Đăng xuất
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-
       </section>
+
+      {/* ================= NAVBAR ================= */}
       <nav className="kv-navbar kv-navbar-main">
         <section className="containerKV kv-navbar-container">
 
@@ -147,52 +121,11 @@ export default function ProductDetail() {
             {/* Hàng hóa */}
             <li className="kv-navbar-item kv-dropdown">
               <span className="kv-nav-link">Hàng hóa</span>
-
-              {/* <ul className="kv-dropdown-list">
-              <li>
-                <Link href="/products" className="kv-dropdown-link">
-                  Danh sách hàng hóa
-                </Link>
-              </li>
-              <li>
-                <Link href="/transfers" className="kv-dropdown-link">
-                  Chuyển hàng
-                </Link>
-              </li>
-              <li>
-                <Link href="/purchase" className="kv-dropdown-link">
-                  Nhập hàng
-                </Link>
-              </li>
-            </ul> */}
             </li>
 
             {/* Đơn hàng */}
             <li className="kv-navbar-item kv-dropdown">
               <span className="kv-nav-link">Đơn hàng</span>
-
-              {/* <ul className="kv-dropdown-list">
-              <li>
-                <Link href="/orders" className="kv-dropdown-link">
-                  Đặt hàng
-                </Link>
-              </li>
-              <li>
-                <Link href="/invoices" className="kv-dropdown-link">
-                  Hóa đơn
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="kv-dropdown-link">
-                  Trả hàng
-                </Link>
-              </li>
-              <li>
-                <Link href="/delivery" className="kv-dropdown-link">
-                  Vận đơn
-                </Link>
-              </li>
-            </ul> */}
             </li>
 
             {/* Khách hàng */}
@@ -215,26 +148,11 @@ export default function ProductDetail() {
               <a
                 className="kv-nav-link"
                 onClick={() => setOpen(true)}
-              // href="https://giahuystore1.kiotviet.vn/sale/"
               >
                 <span className="ng-binding">Thêm hàng</span>
               </a>
             </li>
           </ul>
-
-          {/* Right side */}
-          {/* <ul className="kv-navbar-list">
-          <li className="kv-navbar-item kv-navbar-item-light">
-            <a
-              href="https://giahuystore1.kiotviet.vn/sale/"
-              target="_blank"
-              className="kv-nav-link"
-            >
-              Bán hàng
-            </a>
-          </li>
-        </ul> */}
-
         </section>
       </nav>
       <section className="containerKV main_wrapper ng-scope kma-wrapper">
@@ -251,88 +169,10 @@ export default function ProductDetail() {
                   className="form-control input-focus"
                   id="inputQuickSearch"
                 />
-
-                {/* <div
-                  id="divSuggestProductForQuickSearchProduct"
-                  style={{ flex: "1 1 auto", paddingLeft: "2.9rem" }}
-                >
-                  <div className="form-control">
-                    Theo mã, tên hàng
-                  </div>
-                </div> */}
-
-                {/* <div className="input-group-append dropdown">
-                  <button
-                    type="button"
-                    id="idDropdownBtnSearch"
-                    className="btn-icon dropdown-toggle"
-                  >
-                    <i className="ikr ik-sliders-simple" />
-                  </button>
-
-                  <div
-                    id="idDropdownMenuSearch"
-                    className="dropdown-content dropdown-menu"
-                  >
-                    <div className="input-search-list">
-
-                      <div className="form-group">
-                        <input
-                          className="kv-form-control"
-                          type="text"
-                          placeholder="Theo mã, tên hàng"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          className="kv-form-control"
-                          type="text"
-                          placeholder="Theo Serial/IMEI"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          className="kv-form-control"
-                          type="text"
-                          placeholder="Theo lô, hạn sử dụng"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          className="kv-form-control"
-                          type="text"
-                          placeholder="Theo ghi chú, mô tả đặt hàng"
-                        />
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          className="kv-form-control"
-                          type="text"
-                          placeholder="Theo hãng sản xuất"
-                        />
-                      </div>
-
-                    </div>
-
-                    <div className="kv-window-footer">
-                      <button
-                        type="button"
-                        className="kv-btn kv-btn-primary"
-                      >
-                        <span className="text-btn">Tìm kiếm</span>
-                      </button>
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
           </article>
         </div>
-
       </section>
       <div className="main main-content ng-scope">
         <section className="mainLeft kv-sidebar kv-sidebar-filter" kv-side-bar="">

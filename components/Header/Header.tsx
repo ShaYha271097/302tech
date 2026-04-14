@@ -1,10 +1,11 @@
 
-
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 
 
 export default function BannerSlider() {
-
+    const [openMenu, setOpenMenu] = useState(false);
     const brands = [
         {
             name: "HP",
@@ -139,16 +140,19 @@ export default function BannerSlider() {
                     <div className="flex items-center justify-between px-3 py-2 border-b">
 
                         {/* MENU ICON */}
-                        <button className="text-2xl font-semibold tracking-wide">
+                        <button
+                            onClick={() => setOpenMenu(true)}
+                            className="text-2xl font-semibold tracking-wide"
+                        >
                             ☰
                         </button>
 
                         {/* LOGO */}
                         <img
-                             width={90}
-                                    height={90}
+                            width={90}
+                            height={90}
                             src="https://laptopgaming.com.vn/upload/product/logo_teo_em.png"
-                            // className="h-8 object-contain"
+                        // className="h-8 object-contain"
                         />
 
                         {/* RIGHT */}
@@ -168,28 +172,28 @@ export default function BannerSlider() {
                             </div>
 
 
-        
+
 
                         </div>
                     </div>
 
                     {/* ROW 2 - SEARCH */}
                     <div className="px-3 py-2 border-b">
-                            <div className="frm_timkiem timkiem_header_mobile  timkiem_header_des">
-                                <input
-                                    type="text"
-                                    className="input"
-                                    id="keyword2"
-                                    placeholder="Nhập từ khóa cần tìm..."
-                                />
-                                <button
-                                    type="submit"
-                                    // value=""
-                                    className="nut_tim"
-                                >
-                                    <i className="fas fa-search" />
-                                </button>
-                            </div>
+                        <div className="frm_timkiem timkiem_header_mobile  timkiem_header_des">
+                            <input
+                                type="text"
+                                className="input"
+                                id="keyword2"
+                                placeholder="Nhập từ khóa cần tìm..."
+                            />
+                            <button
+                                type="submit"
+                                // value=""
+                                className="nut_tim focus:outline-none focus:ring-0"
+                            >
+                                <i className="fas fa-search" />
+                            </button>
+                        </div>
 
 
                     </div>
@@ -227,6 +231,55 @@ export default function BannerSlider() {
                     </div>
                 </div>
             </div>
+
+            {/* OVERLAY */}
+            <div
+                className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${openMenu ? "opacity-100 visible" : "opacity-0 invisible"
+                    }`}
+                onClick={() => setOpenMenu(false)}
+            />
+
+            {/* SIDEBAR */}
+            <div
+                className={`fixed top-0 left-0 h-full w-[260px] bg-white z-50 shadow-lg transform transition-transform duration-300 ${openMenu ? "translate-x-0" : "-translate-x-full"
+                    }`}
+            >
+
+                {/* HEADER */}
+                <div className="flex items-center justify-between p-3 border-b">
+                    <span className="font-semibold">Danh mục</span>
+
+                    <button
+                        onClick={() => setOpenMenu(false)}
+                        className="text-xl"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                {/* MENU LIST */}
+                <div className="p-3 space-y-3">
+                    {brands.map((brand) => (
+                        <Link
+                            key={brand.slug}
+                            href={{
+                                pathname: "/product",
+                                query: { brand: brand.slug },
+                            }}
+                            onClick={() => setOpenMenu(false)}
+                            className="flex items-center gap-3 py-2 border-b"
+                        >
+                            <img
+                                src={brand.img}
+                                className="w-6 h-6 object-contain"
+                            />
+                            <span>{brand.name}</span>
+                        </Link>
+                    ))}
+                </div>
+
+            </div>
+
         </>
     )
 
