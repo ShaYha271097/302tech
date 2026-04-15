@@ -5,6 +5,7 @@ import Link from "next/link";
 import AddProductDialog from "./AddProductDialog";
 import { Pencil, Trash2 } from "lucide-react"
 import { useEffect } from "react"
+import Sidebar from "../components/Sidebar";
 type Variant = {
   id: string
   cpu: string
@@ -176,6 +177,7 @@ export default function ProductDetail() {
       </section>
       <div className="main main-content ng-scope">
         <section className="mainLeft kv-sidebar kv-sidebar-filter" kv-side-bar="">
+            <Sidebar/>
         </section>
         <section className="mainRight kv-view-detail">
           <section className="mainWrap">

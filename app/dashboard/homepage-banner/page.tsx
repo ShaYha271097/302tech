@@ -9,6 +9,7 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import Sidebar from "../components/Sidebar";
 type Variant = {
     id: string
     cpu: string
@@ -274,318 +275,306 @@ export default function HomePageBanner() {
                     </ul>
                 </section>
             </nav>
-            <section className="containerKV main_wrapper ng-scope kma-wrapper">
-                <div className="kv-header-actions ng-scope">
-                    <h1 className="kv-heading-page">
-                        <span className="ng-binding">Hàng hóa</span>
-                    </h1>
-                    <article className="kv-header-filter header-filter header-filter-product headerContent columnViewTwo">
-                        <div className="kv-header-filter-search header-filter-search">
-                            <div className="input-group focus">
-                                <input
-                                    type="text"
-                                    placeholder="Theo mã, tên hàng"
-                                    className="form-control input-focus"
-                                    id="inputQuickSearch"
-                                />
-                            </div>
-                        </div>
-                    </article>
-                </div>
 
-            </section>
-            <div className="main main-content ng-scope">
-                <section className="mainLeft kv-sidebar kv-sidebar-filter" kv-side-bar="">
+            <div className="flex min-h-screen bg-gray-50">
+
+                {/* SIDEBAR */}
+                <section className="w-[240px] bg-white border-r">
+                    <Sidebar />
                 </section>
-                <section className="mainRight kv-view-detail">
-                    <section className="mainWrap">
-                        <article className="k-gridNone productList k-grid-Scroll k-scroll">
-                            <div id="products" className="kv-table kv-table-main k-grid k-widget multicheck-added" >
-                                <div className="k-grid-header" style={{ paddingRight: "8px" }}>
-                                    <div className="k-grid-header-wrap k-auto-scrollable" data-role="resizable" >
-                                        {/* <div className="border rounded-lg overflow-hidden"> */}
+                {/* CONTENT */}
+                <section className="flex-1 p-4 overflow-y-auto">
 
-                                        <div className="p-6 bg-gray-100 min-h-screen">
-                                            {/* HEADER */}
-                                            <div className="mb-6">
-                                                <h1 className="text-2xl font-semibold">Homepage Banner</h1>
-                                                <p className="text-gray-500 text-sm">
-                                                    Manage the homepage banners and sliders.
-                                                </p>
+
+                    {/* HEADER */}
+                    <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+
+                        {/* LEFT */}
+                        <div>
+                            <h1 className="text-2xl font-semibold">
+                                Homepage Banner
+                            </h1>
+                            <p className="text-gray-500 text-sm">
+                                Manage the homepage banners and sliders.
+                            </p>
+                        </div>
+
+                        {/* RIGHT (SEARCH / ACTION) */}
+                        <div className="w-full lg:w-[300px]">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+
+                        {/* LEFT */}
+                        <div className="col-span-1 space-y-5">
+
+                            {/* SLIDER */}
+                            <div className="bg-white rounded-xl border p-3">
+                                {/* HEADER */}
+                                <div className="flex justify-between items-center mb-5">
+                                    <h4 className="font-medium text-sm text-gray-700">
+                                        Slider Banners
+                                    </h4>
+
+                                    <button
+                                        onClick={() =>
+                                            setSlider([...slider, { image: "", link: "" }])
+                                        }
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-xs"
+                                    >
+                                        + Thêm
+                                    </button>
+                                </div>
+
+                                {/* LIST */}
+                                <div className="space-y-2">
+                                    {slider.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center justify-between border rounded-lg px-3 py-2 hover:bg-gray-50 transition"
+                                        >
+                                            {/* LEFT */}
+                                            <div className="flex items-center gap-3 flex-1">
+
+                                                {/* INDEX */}
+                                                <span className="text-xs text-gray-400 w-5 text-center">
+                                                    {index + 1}
+                                                </span>
+
+                                                {/* IMAGE */}
+                                                {item.image ? (
+                                                    <img
+                                                        src={getImageSrc(item.image)}
+                                                        className="w-28 h-16 object-cover rounded-md border cursor-pointer"
+                                                        onClick={() =>
+                                                            document.getElementById(`file-${index}`)?.click()
+                                                        }
+                                                    />
+                                                ) : (
+                                                    <label
+                                                        htmlFor={`file-${index}`}
+                                                        className="w-28 h-16 bg-gray-100 !flex flex-col items-center justify-center rounded-md cursor-pointer text-xs text-gray-500 border hover:bg-gray-200 leading-none gap-1"
+                                                    >
+                                                        <span className="text-sm">📤</span>
+                                                        Upload
+                                                    </label>
+                                                )}
+
+                                                {/* FILE */}
+                                                <input
+                                                    id={`file-${index}`}
+                                                    type="file"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+
+                                                        const newSlider = [...slider];
+
+                                                        newSlider[index].image = file; // 👈 giữ File luôn
+
+                                                        setSlider(newSlider);
+                                                    }}
+                                                />
                                             </div>
 
-                                            <div className="grid grid-cols-3 gap-2">
-
-                                                {/* LEFT */}
-                                                <div className="col-span-1 space-y-5">
-
-                                                    {/* SLIDER */}
-                                                    <div className="bg-white rounded-xl border p-3">
-                                                        {/* HEADER */}
-                                                        <div className="flex justify-between items-center mb-5">
-                                                            <h4 className="font-medium text-sm text-gray-700">
-                                                                Slider Banners
-                                                            </h4>
-
-                                                            <button
-                                                                onClick={() =>
-                                                                    setSlider([...slider, { image: "", link: "" }])
-                                                                }
-                                                                className="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-xs"
-                                                            >
-                                                                + Thêm
-                                                            </button>
-                                                        </div>
-
-                                                        {/* LIST */}
-                                                        <div className="space-y-2">
-                                                            {slider.map((item, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex items-center justify-between border rounded-lg px-3 py-2 hover:bg-gray-50 transition"
-                                                                >
-                                                                    {/* LEFT */}
-                                                                    <div className="flex items-center gap-3 flex-1">
-
-                                                                        {/* INDEX */}
-                                                                        <span className="text-xs text-gray-400 w-5 text-center">
-                                                                            {index + 1}
-                                                                        </span>
-
-                                                                        {/* IMAGE */}
-                                                                        {item.image ? (
-                                                                            <img
-                                                                                src={getImageSrc(item.image)}
-                                                                                className="w-28 h-16 object-cover rounded-md border cursor-pointer"
-                                                                                onClick={() =>
-                                                                                    document.getElementById(`file-${index}`)?.click()
-                                                                                }
-                                                                            />
-                                                                        ) : (
-                                                                            <label
-                                                                                htmlFor={`file-${index}`}
-                                                                                className="w-28 h-16 bg-gray-100 !flex flex-col items-center justify-center rounded-md cursor-pointer text-xs text-gray-500 border hover:bg-gray-200 leading-none gap-1"
-                                                                            >
-                                                                                <span className="text-sm">📤</span>
-                                                                                Upload
-                                                                            </label>
-                                                                        )}
-
-                                                                        {/* FILE */}
-                                                                        <input
-                                                                            id={`file-${index}`}
-                                                                            type="file"
-                                                                            className="hidden"
-                                                                            onChange={(e) => {
-                                                                                const file = e.target.files?.[0];
-                                                                                if (!file) return;
-
-                                                                                const newSlider = [...slider];
-
-                                                                                newSlider[index].image = file; // 👈 giữ File luôn
-
-                                                                                setSlider(newSlider);
-                                                                            }}
-                                                                        />
-                                                                    </div>
-
-                                                                    {/* DELETE */}
-                                                                    <button
-                                                                        onClick={() =>
-                                                                            setSlider(slider.filter((_, i) => i !== index))
-                                                                        }
-                                                                        className="ml-3 text-gray-400 hover:text-red-500 text-xs transition"
-                                                                    >
-                                                                        Xoá
-                                                                    </button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* SIDE BANNERS */}
-                                                    <div className="bg-white rounded-xl border p-3">
-                                                        <h4 className="font-semibold mb-4">Side Banners</h4>
-
-                                                        {/* TOP */}
-                                                        <div className="flex items-center gap-3 mb-4">
-                                                            <span className="w-36 text-sm text-gray-500">
-                                                                Top Banner
-                                                            </span>
-
-                                                            {banners.top.image ? (
-                                                                <div className="w-28 h-16 overflow-hidden rounded border">
-                                                                    <img
-                                                                        src={getImageSrc(banners.top.image)}
-                                                                        className="w-full h-full object-cover cursor-pointer"
-                                                                        onClick={() =>
-                                                                            document.getElementById("top-upload")?.click()
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                            ) : (
-                                                                <label
-                                                                    htmlFor="top-upload"
-                                                                    className="w-28 h-16 bg-gray-100 !flex items-center justify-center rounded cursor-pointer text-xs text-gray-500 border hover:bg-gray-200"
-                                                                >
-                                                                    <span className="text-sm">📤</span>
-                                                                    Upload
-                                                                </label>
-                                                            )}
-
-                                                            <input
-                                                                id="top-upload"
-                                                                type="file"
-                                                                className="hidden"
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (!file) return;
-
-                                                                    setBanners((prev) => ({
-                                                                        ...prev,
-                                                                        top: {
-                                                                            ...prev.top,
-                                                                            image: file, // 👈 giữ File
-                                                                        },
-                                                                    }));
-                                                                }}
-                                                            />
-
-
-                                                        </div>
-
-                                                        {/* BOTTOM */}
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="w-36 text-sm text-gray-500">
-                                                                Bottom Banner
-                                                            </span>
-
-                                                            {banners.bottom.image ? (
-                                                                <div className="w-28 h-16 overflow-hidden rounded border">
-                                                                    <img
-                                                                        src={getImageSrc(banners.bottom.image)}
-                                                                        className="w-full h-full object-cover cursor-pointer"
-                                                                        onClick={() =>
-                                                                            document.getElementById("bottom-upload")?.click()
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                            ) : (
-                                                                <label
-                                                                    htmlFor="bottom-upload"
-                                                                    className="w-28 h-16 bg-gray-100  !flex items-center justify-center rounded cursor-pointer text-xs text-gray-500 border hover:bg-gray-200"
-                                                                >
-                                                                    <span className="text-sm">📤</span>
-                                                                    Upload
-                                                                </label>
-                                                            )}
-
-
-
-
-                                                            <input
-                                                                id="bottom-upload"
-                                                                type="file"
-                                                                className="hidden"
-                                                                onChange={(e) => {
-                                                                    const file = e.target.files?.[0];
-                                                                    if (!file) return;
-
-                                                                    setBanners((prev) => ({
-                                                                        ...prev,
-                                                                        bottom: {
-                                                                            ...prev.bottom,
-                                                                            image: file, // 👈 giữ File
-                                                                        },
-                                                                    }));
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    {/* ACTION */}
-                                                    <div className="flex justify-between items-center pt-2">
-                                                        <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm border" onClick={() => handleReset()}>
-                                                            Reset
-                                                        </button>
-
-                                                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm" onClick={() => handleSave()}>
-                                                            Lưu thay đổi
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                {/* RIGHT PREVIEW (GIỮ NGUYÊN) */}
-                                                <div className="col-span-2 bg-white rounded-xl border p-3 self-start">
-                                                    <h4 className="font-semibold mb-4">Preview</h4>
-
-                                                    <div className="grid grid-cols-3 gap-2">
-
-                                                        {/* SLIDER */}
-                                                        <div className="col-span-2 row-span-2 w-full h-[260px] rounded overflow-hidden border">
-                                                            {slider?.length > 0 ? (
-                                                                <Swiper
-                                                                    modules={[Pagination, Autoplay]}
-                                                                    pagination={{ clickable: true }}
-                                                                    autoplay={{
-                                                                        delay: 2500,
-                                                                        disableOnInteraction: false,
-                                                                    }}
-                                                                    loop
-                                                                    className="w-full h-full"
-                                                                >
-                                                                    {slider.map((item: any, index: number) => (
-                                                                        <SwiperSlide key={index}>
-                                                                            <img
-                                                                                src={getImageSrc(item.image)}
-                                                                                className="w-full h-full object-cover"
-                                                                            />
-                                                                        </SwiperSlide>
-                                                                    ))}
-                                                                </Swiper>
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                                                                    Chưa có ảnh slider
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* TOP */}
-                                                        {banners.top.image ? (
-                                                            <img
-                                                                src={getImageSrc(banners.top.image)}
-                                                                className="w-full h-[124px] object-cover rounded border"
-                                                            />
-                                                        ) : (
-                                                            <div className="w-full h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
-                                                                Chưa có banner trên
-                                                            </div>
-                                                        )}
-
-
-                                                        {/* BOTTOM */}
-                                                        {banners.bottom.image ? (
-                                                            <img
-                                                                src={getImageSrc(banners.bottom.image)}
-                                                                className="w-full h-[124px] object-cover rounded border"
-                                                            />
-                                                        ) : (
-                                                            <div className="w-full h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
-                                                                Chưa có banner dưới
-                                                            </div>
-                                                        )}
-
-                                                    </div>
-                                                </div>
-
-                                            </div>
+                                            {/* DELETE */}
+                                            <button
+                                                onClick={() =>
+                                                    setSlider(slider.filter((_, i) => i !== index))
+                                                }
+                                                className="ml-3 text-gray-400 hover:text-red-500 text-xs transition"
+                                            >
+                                                Xoá
+                                            </button>
                                         </div>
-
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
-                        </article>
-                    </section>
+
+                            {/* SIDE BANNERS */}
+                            <div className="bg-white rounded-xl border p-3">
+                                <h4 className="font-semibold mb-4">Side Banners</h4>
+
+                                {/* TOP */}
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="w-36 text-sm text-gray-500">
+                                        Top Banner
+                                    </span>
+
+                                    {banners.top.image ? (
+                                        <div className="w-28 h-16 overflow-hidden rounded border">
+                                            <img
+                                                src={getImageSrc(banners.top.image)}
+                                                className="w-full h-full object-cover cursor-pointer"
+                                                onClick={() =>
+                                                    document.getElementById("top-upload")?.click()
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <label
+                                            htmlFor="top-upload"
+                                            className="w-28 h-16 bg-gray-100 !flex items-center justify-center rounded cursor-pointer text-xs text-gray-500 border hover:bg-gray-200"
+                                        >
+                                            <span className="text-sm">📤</span>
+                                            Upload
+                                        </label>
+                                    )}
+
+                                    <input
+                                        id="top-upload"
+                                        type="file"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+
+                                            setBanners((prev) => ({
+                                                ...prev,
+                                                top: {
+                                                    ...prev.top,
+                                                    image: file, // 👈 giữ File
+                                                },
+                                            }));
+                                        }}
+                                    />
+
+
+                                </div>
+
+                                {/* BOTTOM */}
+                                <div className="flex items-center gap-3">
+                                    <span className="w-36 text-sm text-gray-500">
+                                        Bottom Banner
+                                    </span>
+
+                                    {banners.bottom.image ? (
+                                        <div className="w-28 h-16 overflow-hidden rounded border">
+                                            <img
+                                                src={getImageSrc(banners.bottom.image)}
+                                                className="w-full h-full object-cover cursor-pointer"
+                                                onClick={() =>
+                                                    document.getElementById("bottom-upload")?.click()
+                                                }
+                                            />
+                                        </div>
+                                    ) : (
+                                        <label
+                                            htmlFor="bottom-upload"
+                                            className="w-28 h-16 bg-gray-100  !flex items-center justify-center rounded cursor-pointer text-xs text-gray-500 border hover:bg-gray-200"
+                                        >
+                                            <span className="text-sm">📤</span>
+                                            Upload
+                                        </label>
+                                    )}
+
+
+
+
+                                    <input
+                                        id="bottom-upload"
+                                        type="file"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+
+                                            setBanners((prev) => ({
+                                                ...prev,
+                                                bottom: {
+                                                    ...prev.bottom,
+                                                    image: file, // 👈 giữ File
+                                                },
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* ACTION */}
+                            <div className="flex justify-between items-center pt-2">
+                                <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm border" onClick={() => handleReset()}>
+                                    Reset
+                                </button>
+
+                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm" onClick={() => handleSave()}>
+                                    Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* RIGHT PREVIEW (GIỮ NGUYÊN) */}
+                        <div className="col-span-2 bg-white rounded-xl border p-3 self-start">
+                            <h4 className="font-semibold mb-4">Preview</h4>
+
+                            <div className="grid grid-cols-3 gap-2">
+
+                                {/* SLIDER */}
+                                <div className="col-span-2 row-span-2 w-full h-[260px] rounded overflow-hidden border">
+                                    {slider?.length > 0 ? (
+                                        <Swiper
+                                            modules={[Pagination, Autoplay]}
+                                            pagination={{ clickable: true }}
+                                            autoplay={{
+                                                delay: 2500,
+                                                disableOnInteraction: false,
+                                            }}
+                                            loop
+                                            className="w-full h-full"
+                                        >
+                                            {slider.map((item: any, index: number) => (
+                                                <SwiperSlide key={index}>
+                                                    <img
+                                                        src={getImageSrc(item.image)}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </SwiperSlide>
+                                            ))}
+                                        </Swiper>
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                                            Chưa có ảnh slider
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* TOP */}
+                                {banners.top.image ? (
+                                    <img
+                                        src={getImageSrc(banners.top.image)}
+                                        className="w-full h-[124px] object-cover rounded border"
+                                    />
+                                ) : (
+                                    <div className="w-full h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
+                                        Chưa có banner trên
+                                    </div>
+                                )}
+
+
+                                {/* BOTTOM */}
+                                {banners.bottom.image ? (
+                                    <img
+                                        src={getImageSrc(banners.bottom.image)}
+                                        className="w-full h-[124px] object-cover rounded border"
+                                    />
+                                ) : (
+                                    <div className="w-full h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
+                                        Chưa có banner dưới
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
+
+                    </div>
                 </section>
 
             </div>
