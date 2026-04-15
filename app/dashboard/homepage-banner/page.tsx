@@ -50,7 +50,7 @@ type Banners = {
     bottom: Banner;
 };
 export default function HomePageBanner() {
-
+  const [open, setOpen] = useState(false);
     const [initialData, setInitialData] = useState({
         slider: [
             {
@@ -166,34 +166,29 @@ export default function HomePageBanner() {
     console.log('slider', slider)
     return (
         <>
-            <section className="containerKV">
-                <div className="kv-header-top">
-                    <div className="kv-header-logo">
-                        <a
-                            href="javascript:;"
-                            className="mobileMenu kv-btn kv-btn-icon-only kv-btn-text-primary"
-                        >
-                            <span />
-                        </a>
-                        <a
-                            ng-if="!$root.usecustomlogo && !$root.retailerInfo.Setting.HideKVInfo && $root.appBranding.IsOriginal"
-                            href="https://www.kiotviet.vn/"
-                            className="kv-logo-wrapper ng-scope"
-                            tabIndex={-1}
-                            rel="noopener"
-                            target="_blank"
-                        >
-                            <img
-                                ng-src="https://logo.kiotviet.vn/KiotViet-Logo-Horizontal.svg"
-                                alt="Phần mềm quản lý bán hàng"
-                                className="kv-logo"
-                                title="Phần mềm quản lý bán hàng"
-                                src="https://logo.kiotviet.vn/KiotViet-Logo-Horizontal.svg"
-                            />
-                        </a>
-                    </div>
-                    <div className="kv-navbar kv-navbar-top">
-                        <ul className="kv-navbar-list">
+            <div className="bg-white border-b px-4 py-2 flex items-center justify-between">
+
+                {/* LEFT - LOGO */}
+                <div className="flex items-center gap-3">
+
+                    {/* mobile menu */}
+                    <button className="lg:hidden text-xl">
+                        ☰
+                    </button>
+
+                    {/* logo */}
+                    <img
+
+                        alt="Phần mềm quản lý bán hàng"
+                        className="h-8 max-w-[120px] object-contain"
+                        title="Phần mềm quản lý bán hàng"
+                        src="https://logo.kiotviet.vn/KiotViet-Logo-Horizontal.svg"
+                    />
+                </div>
+
+                {/* RIGHT */}
+                <div className="flex items-center gap-3">
+                            <ul className="kv-navbar-list">
                             <li
                                 ng-if="$root.kvManAppV2Toggle"
                                 uib-dropdown=""
@@ -217,65 +212,40 @@ export default function HomePageBanner() {
                                     id="account-main"
                                 />
                             </li>
-                            {/* end ngIf: $root.kvManAppV2Toggle */}
-                            {/* ngIf: !$root.kvManAppV2Toggle */}
                         </ul>
-                    </div>
                 </div>
+            </div>
+                    
+                    
+            <div className="bg-blue-600 text-white border-b px-4 py-3 flex items-center justify-between">
 
+                {/* LEFT */}
+                <h4 className="text-lg font-semibold">
+                    Dashboard
+                </h4>
 
-            </section>
-            <nav className="kv-navbar kv-navbar-main">
-                <section className="containerKV kv-navbar-container">
+                {/* RIGHT */}
+                <div className="flex items-center gap-3">
 
-                    <ul className="kv-navbar-list">
+                    {/* SEARCH */}
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm..."
+                        className="bg-white text-black border rounded px-3 py-1 text-sm outline-none"
+                    />
 
-                        {/* Tổng quan */}
-                        <li className="kv-navbar-item">
-                            <Link href="/dashboard" className="kv-nav-link">
-                                <span>Tổng quan</span>
-                            </Link>
-                        </li>
+                    {/* ADD BUTTON */}
+                    <button className="bg-white text-blue-600 px-3 py-1.5 rounded text-sm hover:bg-gray-100">
+                        + Thêm
+                    </button>
 
-                        {/* Hàng hóa */}
-                        <li className="kv-navbar-item kv-dropdown">
-                            <span className="kv-nav-link">Hàng hóa</span>
-                        </li>
+                    {/* USER */}
+                    <div className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center">
+                        👤
+                    </div>
 
-                        {/* Đơn hàng */}
-                        <li className="kv-navbar-item kv-dropdown">
-                            <span className="kv-nav-link">Đơn hàng</span>
-                        </li>
-
-                        {/* Khách hàng */}
-                        <li className="kv-navbar-item">
-                            <Link href="/customers" className="kv-nav-link">
-                                Khách hàng
-                            </Link>
-                        </li>
-
-                        {/* Bán online */}
-                        <li className="kv-navbar-item">
-                            <Link href="/online" className="kv-nav-link">
-                                Bán online
-                            </Link>
-                        </li>
-
-                    </ul>
-                    <ul className="kv-navbar-list">
-                        <li className="kv-navbar-item kv-navbar-item-light ng-scope">
-                            <a
-                                className="kv-nav-link"
-                            // onClick={() => setOpen(true)}
-                            // href="https://giahuystore1.kiotviet.vn/sale/"
-                            >
-                                <span className="ng-binding">Thêm hàng</span>
-                            </a>
-                        </li>
-                    </ul>
-                </section>
-            </nav>
-
+                </div>
+            </div>
             <div className="flex min-h-screen bg-gray-50">
 
                 {/* SIDEBAR */}
@@ -285,30 +255,6 @@ export default function HomePageBanner() {
                 {/* CONTENT */}
                 <section className="flex-1 p-4 overflow-y-auto">
 
-
-                    {/* HEADER */}
-                    <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-
-                        {/* LEFT */}
-                        <div>
-                            <h1 className="text-2xl font-semibold">
-                                Homepage Banner
-                            </h1>
-                            <p className="text-gray-500 text-sm">
-                                Manage the homepage banners and sliders.
-                            </p>
-                        </div>
-
-                        {/* RIGHT (SEARCH / ACTION) */}
-                        <div className="w-full lg:w-[300px]">
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="w-full border rounded px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-
-                    </div>
 
                     <div className="grid grid-cols-3 gap-2">
 

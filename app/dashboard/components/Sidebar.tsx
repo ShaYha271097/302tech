@@ -38,9 +38,9 @@ export default function Sidebar() {
     <aside className="w-[240px] h-screen bg-white border-r flex flex-col">
 
       {/* HEADER */}
-      <div className="p-4 border-b font-semibold text-lg">
+      {/* <div className="p-4 border-b font-semibold text-lg">
         Dashboard
-      </div>
+      </div> */}
 
       {/* MENU */}
       <div className="flex-1 p-2 space-y-1">
