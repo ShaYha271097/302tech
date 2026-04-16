@@ -53,12 +53,13 @@ export async function GET(req: NextRequest) {
     const client = await clientPromise;
     const db = client.db("laptop-shop");
 
-    // 👉 query params
     const { searchParams } = new URL(req.url);
 
+    // 👉 params
     let page = Number(searchParams.get("page")) || 1;
     let limit = Number(searchParams.get("limit")) || 5;
-    const brandParam = searchParams.get("brand"); // vd: "dell" hoặc "dell,hp"
+    const brandParam = searchParams.get("brand") || "";
+    const search = searchParams.get("search") || "";
 
     // 👉 validate
     if (page < 1) page = 1;
@@ -67,12 +68,14 @@ export async function GET(req: NextRequest) {
 
     const skip = (page - 1) * limit;
 
-    // 👉 xử lý multi brand
+    // 👉 parse brand multi
     const brandSlugs = brandParam
       ? brandParam.split(",").map((b) => b.trim())
       : [];
 
-    // 👉 pipeline chung
+    // =========================
+    // PIPELINE BASE
+    // =========================
     const pipeline: any[] = [
       {
         $lookup: {
@@ -90,7 +93,9 @@ export async function GET(req: NextRequest) {
       },
     ];
 
-    // 👉 filter brand nếu có
+    // =========================
+    // FILTER: BRAND
+    // =========================
     if (brandSlugs.length > 0) {
       pipeline.push({
         $match: {
@@ -99,31 +104,149 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // 👉 clone pipeline để count
-    const countPipeline = [
-      ...pipeline,
-      { $count: "total" },
-    ];
+    // =========================
+    // FILTER: SEARCH
+    // =========================
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              name: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              "brand.name": {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        },
+      });
+    }
 
-    // 👉 thêm sort + pagination
+    // =========================
+    // COUNT PIPELINE
+    // =========================
+    const countPipeline = [...pipeline, { $count: "total" }];
+
+    // =========================
+    // PAGINATION + SORT
+    // =========================
     pipeline.push(
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit }
     );
 
-    // 👉 chạy query
+    // =========================
+    // EXECUTE
+    // =========================
     const [products, totalResult] = await Promise.all([
       db.collection("products").aggregate(pipeline).toArray(),
       db.collection("products").aggregate(countPipeline).toArray(),
     ]);
 
     const total = totalResult[0]?.total || 0;
+
     return NextResponse.json({
       products,
       total,
       page,
+      limit,
       totalPages: Math.ceil(total / limit),
+    });
+
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: "Lỗi server",
+        error: String(error),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    console.log("co vo day ko")
+    const client = await clientPromise;
+    const db = client.db("laptop-shop");
+
+    const id = params.id;
+
+    // 👉 validate id
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { message: "ID không hợp lệ" },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json();
+
+    const {
+      name,
+      brandId,
+      mainImage,
+      gallery,
+      variants,
+    } = body;
+
+    // 👉 validate
+    if (!name || name.trim().length < 5) {
+      return NextResponse.json(
+        { message: "Tên không hợp lệ" },
+        { status: 400 }
+      );
+    }
+
+    if (!brandId) {
+      return NextResponse.json(
+        { message: "Thiếu brand" },
+        { status: 400 }
+      );
+    }
+
+    if (!variants || !variants.length) {
+      return NextResponse.json(
+        { message: "Chưa có cấu hình" },
+        { status: 400 }
+      );
+    }
+
+    // 👉 update data
+    const updateData = {
+      name,
+      brandId: new ObjectId(brandId),
+      mainImage,
+      gallery,
+      variants,
+      updatedAt: new Date(),
+    };
+
+    const result = await db.collection("products").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json(
+        { message: "Không tìm thấy sản phẩm" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      message: "Cập nhật thành công",
     });
 
   } catch (error) {
@@ -133,5 +256,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-

@@ -1,6 +1,5 @@
 "use client";
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -21,13 +20,25 @@ type Variant = {
     price: number;
 };
 
+type Props = {
+    open: boolean;
+    setOpen: (v: boolean) => void;
+    mode: "create" | "edit";
+    product?: any; // chỉ dùng khi edit
+    onSuccess?: () => void;
+}
+
 export default function AddProductDialog({
     open,
     setOpen,
-}: {
-    open: boolean;
-    setOpen: (v: boolean) => void;
-}) {
+    mode,
+    product,
+    onSuccess
+}: Props) {
+    console.log("product", product)
+    // const variantsRef = useRef<HTMLDivElement>(null);
+    const bodyRef = useRef<HTMLDivElement>(null);
+
     const [name, setName] = useState("")
     const [errorName, setErrorName] = useState("")
     const [images, setImages] = useState<File[]>([]);
@@ -46,6 +57,35 @@ export default function AddProductDialog({
         },
     ]);
 
+    const resetForm = () => {
+        setName("");
+        setVariants([
+            {
+                id: Date.now().toString(),
+                cpu: "",
+                ram: "8GB",
+                ssd: "256GB",
+                price: 0,
+            },
+        ]);
+        setImages([]);
+        setMainImage(null);
+    };
+    useEffect(() => {
+        if (mode === "edit" && product) {
+            setName(product.name);
+            setBrandId(product.brandId);
+            setVariants(product.variants);
+            setMainImage(product.mainImage); // string URL
+            setImages(product.gallery || []);
+        }
+
+        if (mode === "create") {
+            resetForm();
+        }
+    }, [mode, product]);
+
+
     const addVariant = () => {
         setVariants((prev) => [
             ...prev,
@@ -57,6 +97,13 @@ export default function AddProductDialog({
                 price: 0,
             },
         ]);
+
+        setTimeout(() => {
+            bodyRef.current?.scrollTo({
+                top: bodyRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+        }, 0);
     };
 
     const removeVariant = (id: string) => {
@@ -101,14 +148,25 @@ export default function AddProductDialog({
                 return;
             }
 
-            // 🔥 upload ảnh chính
-            const mainImageUrl = await upload(mainImage);
+            // 👉 MAIN IMAGE
+            let mainImageUrl = "";
 
-            // 🔥 upload gallery
+            if (typeof mainImage === "string") {
+                mainImageUrl = mainImage; // ảnh cũ
+            } else {
+                mainImageUrl = await upload(mainImage); // ảnh mới
+            }
+
+            // 👉 GALLERY
             const galleryUrls = await Promise.all(
                 images
                     .filter((i) => i !== mainImage)
-                    .map((file) => upload(file))
+                    .map(async (img) => {
+                        if (typeof img === "string") {
+                            return img; // giữ ảnh cũ
+                        }
+                        return await upload(img); // upload ảnh mới
+                    })
             );
 
             const payload = {
@@ -121,26 +179,34 @@ export default function AddProductDialog({
 
             console.log("payload", payload);
 
-            const res = await fetch("/api/products", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            // 👉 CREATE vs EDIT
+            const res = await fetch(
+                mode === "create"
+                    ? "/api/products"
+                    : `/api/products/${product._id}`,
+                {
+                    method: mode === "create" ? "POST" : "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+                console.log("res",res)
 
             if (!res.ok) {
-                alert("Lỗi tạo sản phẩm");
+                alert("Lỗi lưu sản phẩm");
                 return;
             }
 
             setOpen(false);
+            onSuccess?.();  
         } catch (err) {
             console.error(err);
             alert("Upload thất bại");
         }
     };
-
     const upload = async (file: File) => {
         const formData = new FormData();
         formData.append("file", file);
@@ -156,19 +222,30 @@ export default function AddProductDialog({
 
 
     const mainImageUrl = useMemo(() => {
-    return mainImage ? URL.createObjectURL(mainImage) : "";
+        if (!mainImage) return "";
+
+        return typeof mainImage === "string"
+            ? mainImage
+            : URL.createObjectURL(mainImage);
     }, [mainImage]);
+
+
+    useEffect(() => {
+        if (bodyRef.current) {
+            bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+        }
+    }, [bodyRef]);
 
 
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-2xl" showCloseButton={false}>
+                <DialogContent className="sm:max-w-2xl flex flex-col max-h-[85vh]" showCloseButton={false}>
 
                     {/* HEADER */}
                     <DialogHeader className="flex flex-row items-center justify-between">
                         <DialogTitle className="text-lg font-semibold">
-                            Thêm Sản Phẩm
+                            {mode === "create" ? "Thêm Sản Phẩm" : "Sửa Sản Phẩm"}
                         </DialogTitle>
 
                         <DialogClose asChild>
@@ -179,11 +256,11 @@ export default function AddProductDialog({
                     </DialogHeader>
 
                     {/* BODY */}
-                    <div className="space-y-4">
+                    <div ref={bodyRef} className="flex-1 overflow-y-auto space-y-4 pr-2">
 
                         {/* Brand */}
                         <div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between ">
                                 <label className="text-sm font-medium">Thương hiệu</label>
 
                                 <button
@@ -243,7 +320,7 @@ export default function AddProductDialog({
                             <div className="mt-2">
                                 {mainImageUrl ? (
                                     <img
-                                         src={mainImageUrl}
+                                        src={mainImageUrl}
                                         className="w-full h-64 object-contain rounded border"
                                     />
                                 ) : (
@@ -256,46 +333,50 @@ export default function AddProductDialog({
                             {/* THUMB LIST */}
                             <div className="flex gap-2 mt-3 flex-wrap">
                                 {images.map((img, index) => {
-                                    console.log("check thử",img === mainImage)
-                                         return (
-                                    <div
-                                        key={index}
-                                        className={`relative cursor-pointer border rounded ${img === mainImage ? "border-blue-500" : ""
-                                            }`}
-                                        onClick={() => setMainImage(img)}
-                                    >
-                                        <img
-                                            src={URL.createObjectURL(img)}
-                                            className="w-20 h-20 object-cover rounded"
-                                        />
-
-                                        {/* LABEL MAIN */}
-                                        {img === mainImage && (
-                                            <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
-                                                Main
-                                            </span>
-                                        )}
-
-                                        {/* DELETE */}
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                const newImgs = images.filter((i) => i !== img)
-                                                setImages(newImgs)
-
-                                                // nếu xóa ảnh chính → set lại ảnh đầu
-                                                if (img === mainImage) {
-                                                    setMainImage(newImgs[0] || "")
-                                                }
-                                            }}
-                                            className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
+                                    console.log("check thử", img === mainImage)
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`relative cursor-pointer border rounded ${img === mainImage ? "border-blue-500" : ""
+                                                }`}
+                                            onClick={() => setMainImage(img)}
                                         >
-                                            Xóa
-                                        </button>
-                                    </div>
-                                )
+                                            <img
+                                                src={
+                                                    typeof img === "string"
+                                                        ? img
+                                                        : URL.createObjectURL(img)
+                                                }
+                                                className="w-20 h-20 object-cover rounded"
+                                            />
+
+                                            {/* LABEL MAIN */}
+                                            {img === mainImage && (
+                                                <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
+                                                    Main
+                                                </span>
+                                            )}
+
+                                            {/* DELETE */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    const newImgs = images.filter((i) => i !== img)
+                                                    setImages(newImgs)
+
+                                                    // nếu xóa ảnh chính → set lại ảnh đầu
+                                                    if (img === mainImage) {
+                                                        setMainImage(newImgs[0] || null);
+                                                    }
+                                                }}
+                                                className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
+                                            >
+                                                Xóa
+                                            </button>
+                                        </div>
+                                    )
                                 }
-                               )}
+                                )}
 
                                 {/* UPLOAD */}
                                 <label className="border rounded-md px-4 py-2 cursor-pointer flex items-center">
@@ -306,11 +387,10 @@ export default function AddProductDialog({
                                         hidden
                                         onChange={(e) => {
                                             const files = Array.from(e.target.files || [])
-                                            const urls = files.map((file) => URL.createObjectURL(file))
 
                                             setImages((prev) => {
                                                 const newList = [...prev, ...files]; // 👈 files là File[]
-                                                console.log("newList=>>>",newList,newList[0])
+                                                console.log("newList=>>>", newList, newList[0])
                                                 if (!mainImage && newList.length > 0) {
                                                     setMainImage(newList[0]);
                                                 }
@@ -327,7 +407,7 @@ export default function AddProductDialog({
                         <div>
                             <label className="text-sm font-medium">Cấu hình</label>
 
-                            <div className="space-y-2 mt-2 max-h-30 overflow-y-auto pr-2">
+                            <div className="space-y-2 mt-2 pr-2   ">
                                 {variants.map((v, index) => (
                                     <div
                                         key={v.id}

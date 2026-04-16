@@ -14,7 +14,7 @@ export default function Sidebar() {
     },
     {
       name: "Banner",
-      href: "/dashboard/home-banner",
+      href: "/dashboard/homepage-banner",
       icon: "fas fa-images",
     },
     {
@@ -24,12 +24,12 @@ export default function Sidebar() {
     },
     {
       name: "Danh mục",
-      href: "/dashboard/category",
+      href: "/dashboard/products",
       icon: "fas fa-list",
     },
     {
       name: "Thuộc tính",
-      href: "/dashboard/attributes",
+      href: "/dashboard/products",
       icon: "fas fa-sliders-h",
     },
   ];
@@ -44,12 +44,12 @@ export default function Sidebar() {
 
       {/* MENU */}
       <div className="flex-1 p-2 space-y-1">
-        {menu.map((item) => {
+        {menu.map((item,index) => {
           const active = pathname === item.href;
 
           return (
             <Link
-              key={item.href}
+              key={index}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition
                 ${active

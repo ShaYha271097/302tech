@@ -10,6 +10,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Sidebar from "../components/Sidebar";
+import DashboardHeader from "../components/DashboardHeader";
+import Topbar from "../components/TopBar";
 type Variant = {
     id: string
     cpu: string
@@ -50,7 +52,7 @@ type Banners = {
     bottom: Banner;
 };
 export default function HomePageBanner() {
-  const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
     const [initialData, setInitialData] = useState({
         slider: [
             {
@@ -166,96 +168,15 @@ export default function HomePageBanner() {
     console.log('slider', slider)
     return (
         <>
-            <div className="bg-white border-b px-4 py-2 flex items-center justify-between">
-
-                {/* LEFT - LOGO */}
-                <div className="flex items-center gap-3">
-
-                    {/* mobile menu */}
-                    <button className="lg:hidden text-xl">
-                        ☰
-                    </button>
-
-                    {/* logo */}
-                    <img
-
-                        alt="Phần mềm quản lý bán hàng"
-                        className="h-8 max-w-[120px] object-contain"
-                        title="Phần mềm quản lý bán hàng"
-                        src="https://logo.kiotviet.vn/KiotViet-Logo-Horizontal.svg"
-                    />
-                </div>
-
-                {/* RIGHT */}
-                <div className="flex items-center gap-3">
-                            <ul className="kv-navbar-list">
-                            <li
-                                ng-if="$root.kvManAppV2Toggle"
-                                uib-dropdown=""
-                                className="kv-navbar-item kv-navbar-user ng-scope dropdown"
-                                ng-mouseover="loadAccountMain()"
-                            >
-                                <a
-                                    href="javascript:void(0)"
-                                    uib-dropdown-toggle=""
-                                    className="kv-btn kv-btn-icon-only kv-btn-light-primary dropdown-toggle"
-                                    title="qua"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                >
-                                    <i className="fas fa-user icon-btn" />
-                                </a>
-                                <div
-                                    className="dropdown-content show-left dropdown-menu"
-                                    uib-dropdown-menu=""
-                                    ng-show="showUserMenu"
-                                    id="account-main"
-                                />
-                            </li>
-                        </ul>
-                </div>
-            </div>
-                    
-                    
-            <div className="bg-blue-600 text-white border-b px-4 py-3 flex items-center justify-between">
-
-                {/* LEFT */}
-                <h4 className="text-lg font-semibold">
-                    Dashboard
-                </h4>
-
-                {/* RIGHT */}
-                <div className="flex items-center gap-3">
-
-                    {/* SEARCH */}
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm..."
-                        className="bg-white text-black border rounded px-3 py-1 text-sm outline-none"
-                    />
-
-                    {/* ADD BUTTON */}
-                    <button className="bg-white text-blue-600 px-3 py-1.5 rounded text-sm hover:bg-gray-100">
-                        + Thêm
-                    </button>
-
-                    {/* USER */}
-                    <div className="w-8 h-8 bg-white text-black rounded-full flex items-center justify-center">
-                        👤
-                    </div>
-
-                </div>
-            </div>
+            <DashboardHeader />
+            <Topbar title="Dashboard" />
             <div className="flex min-h-screen bg-gray-50">
-
                 {/* SIDEBAR */}
                 <section className="w-[240px] bg-white border-r">
                     <Sidebar />
                 </section>
                 {/* CONTENT */}
                 <section className="flex-1 p-4 overflow-y-auto">
-
-
                     <div className="grid grid-cols-3 gap-2">
 
                         {/* LEFT */}
@@ -522,7 +443,6 @@ export default function HomePageBanner() {
 
                     </div>
                 </section>
-
             </div>
 
         </>
