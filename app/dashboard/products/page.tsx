@@ -45,6 +45,7 @@ export default function ProductDetail() {
   const [total, setTotal] = useState(0)
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+   const [openSidebar, setOpenSidebar] = useState(false);
 
 
 
@@ -111,11 +112,11 @@ export default function ProductDetail() {
     setSelectedIds([]);
   };
 
-
+  console.log("openSidebar",openSidebar)
   return (
     <>
       {/* ================= HEADER TOP ================= */}
-      <DashboardHeader />
+     <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
       {/* ================= TOPBAR ================= */}
       <Topbar title="Sản phẩm" showSearch showAdd onAdd={() => setOpen(true)} onSearch={(value) => {
         setSearch(value);
@@ -124,9 +125,36 @@ export default function ProductDetail() {
         onDelete={handleBulkDelete} />
 
       <div className="flex min-h-screen bg-gray-50">
-        <section className="w-[240px] bg-white border-r">
-          <Sidebar />
-        </section>
+          <section className="w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
+                   <Sidebar />
+                   </section>
+
+       {/* MOBILE SIDEBAR */}
+  <div
+    className={`
+      fixed inset-0 z-50 md:hidden
+      ${openSidebar ? "block" : "hidden"}
+    `}
+  >
+    {/* overlay */}
+    <div
+      className="absolute inset-0 bg-black/50"
+      onClick={() => setOpenSidebar(false)}
+    />
+
+    {/* sidebar */}
+    <div
+      className={`
+        relative h-full w-[240px] bg-white
+        transform transition-transform duration-300
+        ${openSidebar ? "translate-x-0" : "-translate-x-full"}
+      `}
+    >
+      <Sidebar />
+    </div>
+  </div>
+
+
         <section className="flex-1 p-4 overflow-y-auto">
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full text-sm">

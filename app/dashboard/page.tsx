@@ -21,9 +21,9 @@ export default function HomePageBanner() {
       <Topbar title="Dashboard" />
       <div className="flex min-h-screen bg-gray-50">
         {/* SIDEBAR */}
-        <section className="w-[240px] bg-white border-r">
+         <section className="w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
           <Sidebar />
-        </section>
+          </section>
         {/* CONTENT */}
         <section className="flex-1 p-4 overflow-y-auto">
           <div className="grid grid-cols-3 gap-4">
