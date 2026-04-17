@@ -12,31 +12,7 @@ import "swiper/css/pagination";
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import Topbar from "../components/TopBar";
-type Variant = {
-    id: string
-    cpu: string
-    ram: string
-    ssd: string
-    price: number
-}
-
-type Product = {
-    _id: string
-    name: string
-    mainImage: string
-    gallery: string[]
-    createdAt: string
-    variants: Variant[]
-    brand?: {
-        name: string
-    }
-}
-
-type Slide = {
-    image: string | File;
-    link: string;
-};
-
+import MobileSidebar from "../components/MobileSidebar";
 
 type SliderItem = {
     image: string | File;
@@ -75,6 +51,8 @@ export default function HomePageBanner() {
     const [slider, setSlider] = useState<SliderItem[]>(initialData.slider);
 
     const [banners, setBanners] = useState<Banners>(initialData.banners);
+    const [openSidebar, setOpenSidebar] = useState(false);
+    const [loadingSave, setLoadingSave] = useState(false);
 
     useEffect(() => {
         fetch("/api/homepage-banner")
@@ -114,42 +92,50 @@ export default function HomePageBanner() {
         return value instanceof File;
     };
     const handleSave = async () => {
-        const sliderUploaded = await Promise.all(
-            slider.map(async (item) => {
-                console.log("isFile(item.image)", isFile(item.image), item.image)
-                if (isFile(item.image)) {
+        try {
+            
+            setLoadingSave(true);
+            // const sliderUploaded = await Promise.all(
+            //     slider.map(async (item) => {
+            //         console.log("isFile(item.image)", isFile(item.image), item.image)
+            //         if (isFile(item.image)) {
 
-                    const url = await upload(item.image);
-                    return { ...item, image: url };
-                }
+            //             const url = await upload(item.image);
+            //             return { ...item, image: url };
+            //         }
 
-                return item;
-            })
-        );
-        let topImage = banners.top.image;
-        let bottomImage = banners.bottom.image;
+            //         return item;
+            //     })
+            // );
+            // let topImage = banners.top.image;
+            // let bottomImage = banners.bottom.image;
 
-        if (isFile(topImage)) {
-            topImage = await upload(topImage);
+            // if (isFile(topImage)) {
+            //     topImage = await upload(topImage);
+            // }
+
+            // if (isFile(bottomImage)) {
+            //     bottomImage = await upload(bottomImage);
+            // }
+
+            // const payload = {
+            //     slider: sliderUploaded,
+            //     banners: {
+            //         top: { ...banners.top, image: topImage },
+            //         bottom: { ...banners.bottom, image: bottomImage },
+            //     },
+            // };
+            // console.log("payload", payload)
+            // await fetch("/api/homepage-banner", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(payload),
+            // });
+
+        } finally {
+            // setLoadingSave(false);
         }
 
-        if (isFile(bottomImage)) {
-            bottomImage = await upload(bottomImage);
-        }
-
-        const payload = {
-            slider: sliderUploaded,
-            banners: {
-                top: { ...banners.top, image: topImage },
-                bottom: { ...banners.bottom, image: bottomImage },
-            },
-        };
-        console.log("payload", payload)
-        await fetch("/api/homepage-banner", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
     };
 
     const handleReset = () => {
@@ -168,16 +154,19 @@ export default function HomePageBanner() {
     console.log('slider', slider)
     return (
         <>
-            <DashboardHeader />
+            {/* ================= HEADER TOP ================= */}
+            <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
             <Topbar title="Dashboard" />
             <div className="flex min-h-screen bg-gray-50">
                 {/* SIDEBAR */}
-                 <section className="w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
-                          <Sidebar />
-                          </section>
+                <section className="w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
+                    <Sidebar />
+                </section>
+                {/* MOBILE SIDEBAR */}
+                <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
                 {/* CONTENT */}
                 <section className="flex-1 p-4 overflow-y-auto">
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
 
                         {/* LEFT */}
                         <div className="col-span-1 space-y-5">
@@ -208,7 +197,7 @@ export default function HomePageBanner() {
                                             className="flex items-center justify-between border rounded-lg px-3 py-2 hover:bg-gray-50 transition"
                                         >
                                             {/* LEFT */}
-                                            <div className="flex items-center gap-3 flex-1">
+                                            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 flex-1">
 
                                                 {/* INDEX */}
                                                 <span className="text-xs text-gray-400 w-5 text-center">
@@ -367,25 +356,33 @@ export default function HomePageBanner() {
                             </div>
 
                             {/* ACTION */}
-                            <div className="flex justify-between items-center pt-2">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between items-center pt-2">
                                 <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-sm border" onClick={() => handleReset()}>
                                     Reset
                                 </button>
 
-                                <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm" onClick={() => handleSave()}>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={loadingSave}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+                                >
+                                    {loadingSave && (
+                                        <i className="fas fa-spinner fa-spin text-xs" />
+                                    )}
+
                                     Lưu thay đổi
                                 </button>
                             </div>
                         </div>
 
                         {/* RIGHT PREVIEW (GIỮ NGUYÊN) */}
-                        <div className="col-span-2 bg-white rounded-xl border p-3 self-start">
+                        <div className="col-span-1 lg:col-span-2 bg-white rounded-xl border p-3 self-start">
                             <h4 className="font-semibold mb-4">Preview</h4>
 
                             <div className="grid grid-cols-3 gap-2">
 
                                 {/* SLIDER */}
-                                <div className="col-span-2 row-span-2 w-full h-[260px] rounded overflow-hidden border">
+                                <div className="col-span-2 row-span-2 w-full h-[180px] sm:h-[220px] lg:h-[260px] rounded overflow-hidden border">
                                     {slider?.length > 0 ? (
                                         <Swiper
                                             modules={[Pagination, Autoplay]}
@@ -417,10 +414,10 @@ export default function HomePageBanner() {
                                 {banners.top.image ? (
                                     <img
                                         src={getImageSrc(banners.top.image)}
-                                        className="w-full h-[124px] object-cover rounded border"
+                                        className="w-full h-[100px] sm:h-[120px] lg:h-[124px] object-cover rounded border"
                                     />
                                 ) : (
-                                    <div className="w-full h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
+                                    <div className="w-full h-[100px] sm:h-[120px] lg:h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
                                         Chưa có banner trên
                                     </div>
                                 )}
@@ -430,10 +427,10 @@ export default function HomePageBanner() {
                                 {banners.bottom.image ? (
                                     <img
                                         src={getImageSrc(banners.bottom.image)}
-                                        className="w-full h-[124px] object-cover rounded border"
+                                        className="w-full h-[100px] sm:h-[120px] lg:h-[124px] object-cover rounded border"
                                     />
                                 ) : (
-                                    <div className="w-full h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
+                                    <div className="w-full h-[100px] sm:h-[120px] lg:h-[124px] flex items-center justify-center text-gray-400 text-sm border rounded">
                                         Chưa có banner dưới
                                     </div>
                                 )}
