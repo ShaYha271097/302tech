@@ -69,7 +69,7 @@ export default function BannerSlider() {
                     <div className="all_menu_top">
                         <div className="fixwidth menu_top d-flex justify-content-between flex-wrap align-items-center">
 
-                            <a className="header_logo" href="">
+                           <Link href="/" className="header_logo">
                                 <img
                                     loading="lazy"
                                     width={2239}
@@ -78,7 +78,7 @@ export default function BannerSlider() {
                                     alt="Laptop Tèo Em - Cần Thơ "
                                     decoding="async"
                                 />
-                            </a>
+                            </Link>
                             <div className="frm_timkiem timkiem_header timkiem_header_des">
                                 <input
                                     type="text"
@@ -115,8 +115,8 @@ export default function BannerSlider() {
                                         </div>
                                         <div className="icon-box-text last-reset">
                                             <p>Hotline Bảo hành 24/7</p>
-                                            <a href="tel:05696565650383225889" target="_blank" title="">
-                                                056 965 6565 - 0383 225 889{" "}
+                                            <a href="tel:0946932067" target="_blank" title="">
+                                                094 693 2067 - 096 996 8785{" "}
                                             </a>
                                         </div>
                                     </div>

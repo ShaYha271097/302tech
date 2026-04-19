@@ -95,45 +95,45 @@ export default function HomePageBanner() {
         try {
             
             setLoadingSave(true);
-            // const sliderUploaded = await Promise.all(
-            //     slider.map(async (item) => {
-            //         console.log("isFile(item.image)", isFile(item.image), item.image)
-            //         if (isFile(item.image)) {
+            const sliderUploaded = await Promise.all(
+                slider.map(async (item) => {
+                    console.log("isFile(item.image)", isFile(item.image), item.image)
+                    if (isFile(item.image)) {
 
-            //             const url = await upload(item.image);
-            //             return { ...item, image: url };
-            //         }
+                        const url = await upload(item.image);
+                        return { ...item, image: url };
+                    }
 
-            //         return item;
-            //     })
-            // );
-            // let topImage = banners.top.image;
-            // let bottomImage = banners.bottom.image;
+                    return item;
+                })
+            );
+            let topImage = banners.top.image;
+            let bottomImage = banners.bottom.image;
 
-            // if (isFile(topImage)) {
-            //     topImage = await upload(topImage);
-            // }
+            if (isFile(topImage)) {
+                topImage = await upload(topImage);
+            }
 
-            // if (isFile(bottomImage)) {
-            //     bottomImage = await upload(bottomImage);
-            // }
+            if (isFile(bottomImage)) {
+                bottomImage = await upload(bottomImage);
+            }
 
-            // const payload = {
-            //     slider: sliderUploaded,
-            //     banners: {
-            //         top: { ...banners.top, image: topImage },
-            //         bottom: { ...banners.bottom, image: bottomImage },
-            //     },
-            // };
-            // console.log("payload", payload)
-            // await fetch("/api/homepage-banner", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify(payload),
-            // });
+            const payload = {
+                slider: sliderUploaded,
+                banners: {
+                    top: { ...banners.top, image: topImage },
+                    bottom: { ...banners.bottom, image: bottomImage },
+                },
+            };
+            console.log("payload", payload)
+            await fetch("/api/homepage-banner", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
         } finally {
-            // setLoadingSave(false);
+            setLoadingSave(false);
         }
 
     };
@@ -156,7 +156,7 @@ export default function HomePageBanner() {
         <>
             {/* ================= HEADER TOP ================= */}
             <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
-            <Topbar title="Dashboard" />
+            <Topbar title="homepage-banner" />
             <div className="flex min-h-screen bg-gray-50">
                 {/* SIDEBAR */}
                 <section className="w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">

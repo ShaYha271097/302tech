@@ -1,5 +1,5 @@
 
-
+import Link from "next/link";
 
 
 
@@ -25,19 +25,19 @@ export default function ProductSection({ title, slug, products }: any) {
         return price?.toLocaleString("vi-VN") + "đ";
     };
 
-
+   
     return (
         <div className="wrap_bottom wrap_list">
             <div className="fixwidth">
                 <div className="title_sp_bc">
-                    <a href={slug}>
+                    <Link href={`/product?brand=${slug}`}>
                         <div className="title_sp">{title}</div>
-                    </a>
+                    </Link>
 
                     <div className="all_xemtatca">
-                        <a href={slug}>
+                        <Link href={`/product?brand=${slug}`}>
                             Xem tất cả <i className="fas fa-angle-double-right" />
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
@@ -45,13 +45,13 @@ export default function ProductSection({ title, slug, products }: any) {
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                         {products?.map((p: any) => {
                             const cheapest = getCheapestVariant(p.variants);
-
+                              console.log("ssss=>>>",p)      
                             return (
                                 <div key={p._id} className="border rounded-lg p-2 sm:p-3 hover:shadow transition bg-white">
 
                                     {/* IMAGE */}
                                     <div className="img_sp_bc">
-                                        <a href={p.slug}>
+                                        <Link href={`/product/${p.slug}-${p._id}`}>
                                             <div>
                                                 <img
                                                     loading="lazy"
@@ -69,7 +69,7 @@ export default function ProductSection({ title, slug, products }: any) {
                                             />
                                             </div>
                                         )} */}
-                                        </a>
+                                        </Link>
                                     </div>
 
                                     {/* CONTENT */}
