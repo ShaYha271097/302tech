@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { X, Trash } from "lucide-react";
 import { useEffect } from "react"
+import ImageCropDialog from "../components/ImageCropDialog";
 
 type Variant = {
     id: string;
@@ -18,6 +19,7 @@ type Variant = {
     ram: string;
     ssd: string;
     price: number;
+    priceInput?: string;
 };
 
 type Props = {
@@ -56,7 +58,12 @@ export default function AddProductDialog({
             price: 0,
         },
     ]);
-
+    const [cropOpen, setCropOpen] = useState(false);
+    const [cropImage, setCropImage] = useState<string>("");
+    const [cropIndex, setCropIndex] = useState<number | null>(null);
+    const formatPrice = (num: number) => {
+        return num.toLocaleString("vi-VN");
+    };
     const resetForm = () => {
         setName("");
         setVariants([
@@ -72,18 +79,19 @@ export default function AddProductDialog({
         setMainImage(null);
     };
     useEffect(() => {
-        if (mode === "edit" && product) {
-            setName(product.name);
-            setBrandId(product.brandId);
-            setVariants(product.variants);
-            setMainImage(product.mainImage); // string URL
-            setImages(product.gallery || []);
-        }
+        if (!open) return; // 🔥 chỉ chạy khi dialog mở
 
-        if (mode === "create") {
+        if (mode === "edit" && product) {
+            setName(product.name || "");
+            setBrandId(product.brandId || "");
+            setVariants(product.variants || []);
+            setMainImage(product.mainImage || null);
+            setImages(product.gallery || []);
+        } else {
+            // create
             resetForm();
         }
-    }, [mode, product]);
+    }, [open, mode, product]);
 
 
     const addVariant = () => {
@@ -129,22 +137,15 @@ export default function AddProductDialog({
     }, [brands])
 
     const handleSubmit = async () => {
-        if (!brandId) return alert("Chưa chọn thương hiệu");
-        if (!variants.length) return alert("Chưa có cấu hình");
-
-        if (!name.trim()) {
-            setErrorName("Không được để trống");
+        const err = validateForm();
+        if (err) {
+            alert(err);
             return;
         }
 
-        if (name.length < 5) {
-            setErrorName("Tên phải ít nhất 5 ký tự");
-            return;
-        }
-
+        console.log("=>>>>>>")
         try {
             if (!mainImage) {
-                alert("Chưa chọn ảnh chính");
                 return;
             }
 
@@ -177,7 +178,7 @@ export default function AddProductDialog({
                 variants,
             };
 
-            console.log("payload", payload);
+            console.log("payload", mode, payload);
 
             // 👉 CREATE vs EDIT
             const res = await fetch(
@@ -193,18 +194,20 @@ export default function AddProductDialog({
                 }
             );
 
-                console.log("res",res)
+
 
             if (!res.ok) {
-                alert("Lỗi lưu sản phẩm");
+                const err = await res.json(); // 🔥 lấy error từ backend
+                console.log("res", err)
+                alert(err.error || "Lỗi lưu sản phẩm");
                 return;
             }
 
             setOpen(false);
-            onSuccess?.();  
+            onSuccess?.();
         } catch (err) {
             console.error(err);
-            alert("Upload thất bại");
+            alert("Upload thất bại xx");
         }
     };
     const upload = async (file: File) => {
@@ -236,7 +239,66 @@ export default function AddProductDialog({
         }
     }, [bodyRef]);
 
+    const handleCropDone = (file: File) => {
+        if (cropIndex === null) return;
 
+        setImages((prev) => {
+            const newList = [...prev];
+            newList[cropIndex] = file;
+            return newList;
+        });
+
+        setMainImage(file); // set luôn làm ảnh chính
+    };
+
+
+    useEffect(() => {
+        return () => {
+            if (typeof mainImage !== "string") {
+                URL.revokeObjectURL(mainImageUrl);
+            }
+        };
+    }, [mainImageUrl]);
+
+
+    const validateForm = () => {
+        if (!name.trim() || name.trim().length < 5) {
+            return "Tên sản phẩm tối thiểu 5 ký tự";
+        }
+
+        if (!brandId) {
+            return "Chưa chọn thương hiệu";
+        }
+
+        if (!mainImage) {
+            return "Chưa chọn ảnh chính";
+        }
+
+        // 🔥 TÁCH GALLERY
+        const gallery = images.filter(i => i !== mainImage);
+
+        if (gallery.length < 2) {
+            return "Cần ít nhất 2 ảnh phụ";
+        }
+
+        if (gallery.length > 6) {
+            return "Tối đa 6 ảnh phụ";
+        }
+
+        // 🔥 VARIANTS
+        if (!variants.length) {
+            return "Phải có ít nhất 1 cấu hình";
+        }
+
+        for (const v of variants) {
+            if (!v.cpu.trim()) return "CPU không được để trống";
+            if (!v.price || v.price <= 0) return "Giá phải > 0";
+        }
+
+        return null;
+    };
+    const count = images.filter(i => i !== mainImage).length;
+const isInvalid = count < 2 || count > 6;
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -339,7 +401,12 @@ export default function AddProductDialog({
                                             key={index}
                                             className={`relative cursor-pointer border rounded ${img === mainImage ? "border-blue-500" : ""
                                                 }`}
-                                            onClick={() => setMainImage(img)}
+                                            onClick={() => {
+                                                const url = typeof img === "string" ? img : URL.createObjectURL(img);
+                                                setCropImage(url);
+                                                setCropIndex(index);
+                                                setCropOpen(true);
+                                            }}
                                         >
                                             <img
                                                 src={
@@ -386,11 +453,26 @@ export default function AddProductDialog({
                                         multiple
                                         hidden
                                         onChange={(e) => {
-                                            const files = Array.from(e.target.files || [])
+                                            const files = Array.from(e.target.files || []);
+
+                                            // 🔥 ĐẶT Ở ĐÂY
+                                            if (images.length + files.length > 6) {
+                                                alert("Tối đa 6 ảnh");
+                                                return;
+                                            }
+
+                                            const validFiles: File[] = [];
+
+                                            for (const file of files) {
+                                                if (!file.type.startsWith("image/")) continue;
+                                                if (file.size > 5 * 1024 * 1024) continue;
+
+                                                validFiles.push(file);
+                                            }
 
                                             setImages((prev) => {
-                                                const newList = [...prev, ...files]; // 👈 files là File[]
-                                                console.log("newList=>>>", newList, newList[0])
+                                                const newList = [...prev, ...validFiles];
+
                                                 if (!mainImage && newList.length > 0) {
                                                     setMainImage(newList[0]);
                                                 }
@@ -401,6 +483,14 @@ export default function AddProductDialog({
                                     />
                                 </label>
                             </div>
+                           <p
+    className={`text-sm mt-2 flex items-center gap-1 ${
+        isInvalid ? "text-red-500" : "text-gray-500"
+    }`}
+>
+    {isInvalid && <span>⚠️</span>}
+    Ảnh phụ: {count}/6 (tối thiểu 2)
+</p>
                         </div>
 
                         {/* VARIANTS */}
@@ -462,15 +552,27 @@ export default function AddProductDialog({
                                             type="number"
                                             className="border rounded p-2"
                                             placeholder="Giá"
-                                            value={v.price}
+                                            value={v.priceInput ?? formatPrice(v.price)}
                                             onChange={(e) => {
+                                                let value = e.target.value;
+
+                                                // 🔥 chỉ cho số
+                                                value = value.replace(/\D/g, "");
+
+                                                // 🔥 bỏ số 0 đầu
+                                                value = value.replace(/^0+/, "");
+                                                if (Number(value) < 0) value = "0";
                                                 setVariants(prev =>
                                                     prev.map(item =>
                                                         item.id === v.id
-                                                            ? { ...item, price: Number(e.target.value) }
+                                                            ? {
+                                                                ...item,
+                                                                priceInput: value,
+                                                                price: Number(value || 0),
+                                                            }
                                                             : item
                                                     )
-                                                )
+                                                );
                                             }}
                                         />
                                         {variants.length > 1 && index > 0 && (
@@ -501,6 +603,11 @@ export default function AddProductDialog({
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+
+
+
+
             <Dialog open={openBrand} onOpenChange={setOpenBrand}>
                 <DialogContent className="sm:max-w-sm">
                     <DialogHeader>
@@ -539,6 +646,14 @@ export default function AddProductDialog({
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+
+            <ImageCropDialog
+                open={cropOpen}
+                setOpen={setCropOpen}
+                image={cropImage}
+                onDone={handleCropDone}
+            />
         </>
     );
 }

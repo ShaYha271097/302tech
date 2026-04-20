@@ -1,51 +1,78 @@
 // ddrduongqua1027_db_user
 // jl4DFbBmPmRRzEuZ
 import clientPromise from "@/lib/mongodb" // chỉnh đúng path của bạn
-import { NextResponse ,NextRequest} from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 
 import { ObjectId } from "mongodb"
 
 type Variant = {
-    cpu: string
-    ram: string
-    ssd: string
-    price: number
+  cpu: string
+  ram: string
+  ssd: string
+  price: number
 }
 type Product = {
-    brandId: ObjectId
-    name: string
-    slug: string // 👈 thêm cái này
-    mainImage: string
-    gallery: string[]
-    variants: Variant[]
-    createdAt: Date
+  brandId: ObjectId
+  name: string
+  slug: string // 👈 thêm cái này
+  mainImage: string
+  gallery: string[]
+  variants: Variant[]
+  createdAt: Date
 }
 export async function POST(req: Request) {
-    const body = await req.json()
-    if (!body.variants || body.variants.length === 0) {
-        return Response.json({ error: "Phải có ít nhất 1 cấu hình" }, { status: 400 })
-    }
-    if (!body.mainImage) {
-    return Response.json({ error: "Thiếu ảnh chính" }, { status: 400 })
+  const body = await req.json();
+
+  if (!body.name || body.name.trim().length < 5) {
+    return Response.json({ error: "Tên không hợp lệ" }, { status: 400 });
+  }
+
+  if (!body.brandId) {
+    return Response.json({ error: "Thiếu thương hiệu" }, { status: 400 });
+  }
+
+  if (!body.mainImage) {
+    return Response.json({ error: "Thiếu ảnh chính" }, { status: 400 });
+  }
+
+  if (!Array.isArray(body.gallery)) {
+    return Response.json({ error: "Gallery không hợp lệ" }, { status: 400 });
+  }
+
+  // 🔥 GALLERY
+  if (body.gallery.length < 2) {
+    return Response.json({ error: "Cần ít nhất 2 ảnh phụ" }, { status: 400 });
+  }
+
+  if (body.gallery.length > 6) {
+    return Response.json({ error: "Tối đa 6 ảnh phụ" }, { status: 400 });
+  }
+
+  // 🔥 VARIANTS
+  if (!Array.isArray(body.variants) || body.variants.length === 0) {
+    return Response.json({ error: "Phải có ít nhất 1 cấu hình" }, { status: 400 });
+  }
+
+  if (body.variants.some((v: any) => !v.cpu || v.price <= 0)) {
+    return Response.json({ error: "Cấu hình không hợp lệ" }, { status: 400 });
+  }
+  const product: Product = {
+    brandId: new ObjectId(body.brandId),
+    name: body.name.trim(),
+    slug: body.slug || body.name.toLowerCase().replace(/\s+/g, "-"),
+    mainImage: body.mainImage,
+    gallery: body.gallery || [],
+    variants: body.variants,
+    createdAt: new Date(),
+  };
+
+  const client = await clientPromise;
+  const db = client.db("laptop-shop");
+
+  const result = await db.collection<Product>("products").insertOne(product);
+
+  return Response.json(result);
 }
-    const product: Product = {
-        brandId: new ObjectId(body.brandId), // convert
-        name: body.name,
-         slug: body.slug, 
-        mainImage: body.mainImage,   // 👈 thêm
-        gallery: body.gallery,       // 👈 thêm
-        variants: body.variants,
-        createdAt: new Date(),
-    }
-
-    const client = await clientPromise
-    const db = client.db("laptop-shop")
-
-    const result = await db.collection<Product>("products").insertOne(product)
-
-    return Response.json(result)
-}
-
 
 
 export async function GET(req: NextRequest) {
