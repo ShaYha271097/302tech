@@ -12,7 +12,7 @@ import {
 import { X, Trash } from "lucide-react";
 import { useEffect } from "react"
 import ImageCropDialog from "../components/ImageCropDialog";
-
+import { Loader2 } from "lucide-react";
 type Variant = {
     id: string;
     cpu: string;
@@ -20,6 +20,8 @@ type Variant = {
     ssd: string;
     price: number;
     priceInput?: string;
+      screenSize: string;   // 🔥 thêm
+    resolution: string;   // 🔥 thêm
 };
 
 type Props = {
@@ -56,11 +58,16 @@ export default function AddProductDialog({
             ram: "8GB",
             ssd: "256GB",
             price: 0,
+              screenSize: "",   // 🔥 thêm
+            resolution: "",   // 🔥 thêm
         },
     ]);
     const [cropOpen, setCropOpen] = useState(false);
     const [cropImage, setCropImage] = useState<string>("");
     const [cropIndex, setCropIndex] = useState<number | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
+
     const formatPrice = (num: number) => {
         return num.toLocaleString("vi-VN");
     };
@@ -73,6 +80,8 @@ export default function AddProductDialog({
                 ram: "8GB",
                 ssd: "256GB",
                 price: 0,
+                  screenSize: "",   // 🔥 thêm
+            resolution: "",   // 🔥 thêm
             },
         ]);
         setImages([]);
@@ -103,6 +112,8 @@ export default function AddProductDialog({
                 ram: "",
                 ssd: "",
                 price: 0,
+                  screenSize: "",   // 🔥 thêm
+            resolution: "",   // 🔥 thêm
             },
         ]);
 
@@ -139,16 +150,16 @@ export default function AddProductDialog({
     const handleSubmit = async () => {
         const err = validateForm();
         if (err) {
+            setLoading(false);
             alert(err);
             return;
         }
-
-        console.log("=>>>>>>")
         try {
             if (!mainImage) {
+                setLoading(false);
                 return;
             }
-
+            setLoading(true);
             // 👉 MAIN IMAGE
             let mainImageUrl = "";
 
@@ -208,19 +219,25 @@ export default function AddProductDialog({
         } catch (err) {
             console.error(err);
             alert("Upload thất bại xx");
+        } finally {
+            setLoading(false);
         }
     };
     const upload = async (file: File) => {
+        setUploading(true);
         const formData = new FormData();
         formData.append("file", file);
+        try {
+            const res = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
 
-        const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-        });
-
-        const data = await res.json();
-        return data.url;
+            const data = await res.json();
+            return data.url;
+        } finally {
+            setUploading(false);
+        }
     };
 
 
@@ -298,7 +315,7 @@ export default function AddProductDialog({
         return null;
     };
     const count = images.filter(i => i !== mainImage).length;
-const isInvalid = count < 2 || count > 6;
+    const isInvalid = count < 2 || count > 6;
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
@@ -318,7 +335,11 @@ const isInvalid = count < 2 || count > 6;
                     </DialogHeader>
 
                     {/* BODY */}
-                    <div ref={bodyRef} className="flex-1 overflow-y-auto space-y-4 pr-2">
+                    <div
+                        ref={bodyRef}
+                        className={`flex-1 overflow-y-auto space-y-4 pr-2 ${loading ? "pointer-events-none opacity-60" : ""
+                            }`}
+                    >
 
                         {/* Brand */}
                         <div>
@@ -376,121 +397,140 @@ const isInvalid = count < 2 || count > 6;
 
                         {/* Images */}
                         <div>
-                            <label className="text-sm font-medium">Ảnh</label>
 
                             {/* MAIN IMAGE */}
-                            <div className="mt-2">
-                                {mainImageUrl ? (
-                                    <img
-                                        src={mainImageUrl}
-                                        className="w-full h-64 object-contain rounded border"
-                                    />
-                                ) : (
-                                    <div className="w-full h-64 border rounded flex items-center justify-center text-gray-400">
-                                        Chưa có ảnh
-                                    </div>
-                                )}
-                            </div>
+   <div className="mt-2">
+  {/* Thẻ container, quy định kích thước cố định */}
+  <div className="relative w-full h-48 rounded border overflow-hidden bg-gray-100">
+    {mainImageUrl ? (
+      <img
+        src={mainImageUrl}
+        alt="Main product visual"
+        className="h-full w-full object-cover 
+                   hover:object-contain hover:bg-black/80 
+                   transition-all duration-500 ease-in-out 
+                   cursor-zoom-in"
+      />
+    ) : (
+      /* Trạng thái không có ảnh */
+      <div className="flex items-center justify-center h-full text-gray-400">
+        Chưa có ảnh
+      </div>
+    )}
+  </div>
+</div>
+                            {uploading && (
+                                <p className="text-sm text-blue-500 mt-2 flex items-center gap-2">
+                                    <span className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
+                                    Đang upload ảnh...
+                                </p>
+                            )}
 
                             {/* THUMB LIST */}
-                            <div className="flex gap-2 mt-3 flex-wrap">
-                                {images.map((img, index) => {
-                                    console.log("check thử", img === mainImage)
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={`relative cursor-pointer border rounded ${img === mainImage ? "border-blue-500" : ""
-                                                }`}
-                                            onClick={() => {
-                                                const url = typeof img === "string" ? img : URL.createObjectURL(img);
-                                                setCropImage(url);
-                                                setCropIndex(index);
-                                                setCropOpen(true);
-                                            }}
-                                        >
-                                            <img
-                                                src={
-                                                    typeof img === "string"
-                                                        ? img
-                                                        : URL.createObjectURL(img)
-                                                }
-                                                className="w-20 h-20 object-cover rounded"
-                                            />
+                           <div className="flex gap-2 mt-3 flex-wrap">
+    {images.map((img, index) => {
+        const url =
+            typeof img === "string"
+                ? img
+                : URL.createObjectURL(img);
 
-                                            {/* LABEL MAIN */}
-                                            {img === mainImage && (
-                                                <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
-                                                    Main
-                                                </span>
-                                            )}
+        return (
+            <div
+                key={index}
+                className={`relative cursor-pointer border rounded overflow-hidden ${
+                    img === mainImage ? "border-blue-500" : ""
+                }`}
+                onClick={() => {
+                    setCropImage(url);
+                    setCropIndex(index);
+                    setCropOpen(true);
+                }}
+            >
+                <img
+                    src={url}
+                    className="w-20 h-20 object-contain bg-white rounded"
+                />
 
-                                            {/* DELETE */}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    const newImgs = images.filter((i) => i !== img)
-                                                    setImages(newImgs)
+                {/* MAIN LABEL */}
+                {img === mainImage && (
+                    <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
+                        Main
+                    </span>
+                )}
 
-                                                    // nếu xóa ảnh chính → set lại ảnh đầu
-                                                    if (img === mainImage) {
-                                                        setMainImage(newImgs[0] || null);
-                                                    }
-                                                }}
-                                                className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
-                                            >
-                                                Xóa
-                                            </button>
-                                        </div>
-                                    )
-                                }
-                                )}
+                {/* DELETE */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
 
-                                {/* UPLOAD */}
-                                <label className="border rounded-md px-4 py-2 cursor-pointer flex items-center">
-                                    + Tải ảnh
-                                    <input
-                                        type="file"
-                                        multiple
-                                        hidden
-                                        onChange={(e) => {
-                                            const files = Array.from(e.target.files || []);
+                        const newImgs = images.filter((i) => i !== img);
+                        setImages(newImgs);
 
-                                            // 🔥 ĐẶT Ở ĐÂY
-                                            if (images.length + files.length > 6) {
-                                                alert("Tối đa 6 ảnh");
-                                                return;
-                                            }
+                        if (img === mainImage) {
+                            setMainImage(newImgs[0] || null);
+                        }
+                    }}
+                    className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
+                >
+                    Xóa
+                </button>
+            </div>
+        );
+    })}
 
-                                            const validFiles: File[] = [];
+    {/* UPLOAD */}
+    <label className="border rounded-md px-4 py-2 cursor-pointer flex items-center">
+        + Tải ảnh
+        <input
+            type="file"
+            multiple
+            hidden
+            onChange={(e) => {
+                const files = Array.from(e.target.files || []);
 
-                                            for (const file of files) {
-                                                if (!file.type.startsWith("image/")) continue;
-                                                if (file.size > 5 * 1024 * 1024) continue;
+                const validFiles: File[] = [];
 
-                                                validFiles.push(file);
-                                            }
+                for (const file of files) {
+                    if (!file.type.startsWith("image/")) {
+                        alert("Chỉ được upload ảnh");
+                        continue;
+                    }
 
-                                            setImages((prev) => {
-                                                const newList = [...prev, ...validFiles];
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert("Ảnh tối đa 5MB");
+                        continue;
+                    }
 
-                                                if (!mainImage && newList.length > 0) {
-                                                    setMainImage(newList[0]);
-                                                }
+                    validFiles.push(file);
+                }
 
-                                                return newList;
-                                            });
-                                        }}
-                                    />
-                                </label>
-                            </div>
-                           <p
-    className={`text-sm mt-2 flex items-center gap-1 ${
-        isInvalid ? "text-red-500" : "text-gray-500"
-    }`}
->
-    {isInvalid && <span>⚠️</span>}
-    Ảnh phụ: {count}/6 (tối thiểu 2)
-</p>
+                if (!validFiles.length) {
+                    e.target.value = "";
+                    return;
+                }
+
+                setImages((prev) => {
+                    const newList = [...prev, ...validFiles];
+
+                    if (!mainImage && newList.length > 0) {
+                        setMainImage(newList[0]);
+                    }
+
+                    return newList;
+                });
+
+                e.target.value = "";
+            }}
+        />
+    </label>
+</div>
+                            <p
+                                className={`text-sm mt-2 flex items-center gap-1 ${isInvalid ? "text-red-500" : "text-gray-500"
+                                    }`}
+                            >
+                                {isInvalid && <span>⚠️</span>}
+                                Ảnh phụ: {count}/6 (tối thiểu 2)
+                            </p>
                         </div>
 
                         {/* VARIANTS */}
@@ -547,7 +587,42 @@ const isInvalid = count < 2 || count > 6;
                                             <option value="512GB">512GB</option>
                                             <option value="1TB">1TB</option>
                                         </select>
+                                           {/* SIZE */}
+<select
+    className="border rounded p-2"
+    value={v.screenSize}
+    onChange={(e) =>
+        setVariants(prev =>
+            prev.map(item =>
+                item.id === v.id ? { ...item, screenSize: e.target.value } : item
+            )
+        )
+    }
+>
+    <option value="">Size</option>
+    <option value='13.3"'>13.3"</option>
+    <option value='14"'>14"</option>
+    <option value='15.6"'>15.6"</option>
+    <option value="custom">Khác...</option>
+</select>
 
+{/* RESOLUTION */}
+<select
+    className="border rounded p-2"
+    value={v.resolution}
+    onChange={(e) =>
+        setVariants(prev =>
+            prev.map(item =>
+                item.id === v.id ? { ...item, resolution: e.target.value } : item
+            )
+        )
+    }
+>
+    <option value="">Res</option>
+    <option value="FHD">FHD</option>
+    <option value="2K">2K</option>
+    <option value="4K">4K</option>
+</select>     
                                         <input
                                             type="number"
                                             className="border rounded p-2"
@@ -599,8 +674,22 @@ const isInvalid = count < 2 || count > 6;
                             <Button variant="outline">Huỷ</Button>
                         </DialogClose>
 
-                        <Button onClick={handleSubmit}>Lưu</Button>
+                        <Button onClick={handleSubmit} disabled={loading}>
+                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                            {loading ? "Đang lưu..." : "Lưu"}
+                        </Button>
                     </DialogFooter>
+
+                    {loading && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-50 rounded-lg">
+                            <div className="bg-white px-6 py-4 rounded-xl flex items-center gap-3 shadow-lg">
+                                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-sm font-medium">Đang lưu sản phẩm...</span>
+                            </div>
+                        </div>
+                    )}
+
+
                 </DialogContent>
             </Dialog>
 
