@@ -7,39 +7,45 @@ cloudinary.config({
 });
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const file = formData.get("file") as File;
+  try {
+    const formData = await req.formData();
+    const file = formData.get("file");
 
-  if (!file) {
-    return Response.json({ error: "Không có file" }, { status: 400 });
+    if (!(file instanceof File)) {
+      return Response.json({ error: "Không có file" }, { status: 400 });
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const result: any = await new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: "products",
+            transformation: [
+              {
+                width: 800,
+                height: 800,
+                crop: "fill",
+              },
+            ],
+          },
+          (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+          }
+        )
+        .end(buffer);
+    });
+
+    return Response.json({ url: result.secure_url });
+
+  } catch (err: any) {
+    console.error(err);
+    return Response.json(
+      { error: "Upload failed", detail: err.message },
+      { status: 500 }
+    );
   }
-
-  // 🔥 CHECK TYPE
-  if (!file.type.startsWith("image/")) {
-    return Response.json({ error: "File không phải ảnh" }, { status: 400 });
-  }
-
-  // 🔥 CHECK SIZE (5MB)
-  if (file.size > 5 * 1024 * 1024) {
-    return Response.json({ error: "Ảnh vượt quá 5MB" }, { status: 400 });
-  }
-
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const result: any = await new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          folder: "products", // 👈 nên thêm
-        },
-        (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
-        }
-      )
-      .end(buffer);
-  });
-
-  return Response.json({ url: result.secure_url });
 }

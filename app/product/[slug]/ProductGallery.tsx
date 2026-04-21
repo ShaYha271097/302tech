@@ -64,21 +64,21 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
       {/* Ảnh lớn */}
       <div
         ref={containerRef}
-        className="relative border rounded-lg overflow-hidden cursor-zoom-in"
+        className="w-full aspect-square bg-white border rounded-lg overflow-hidden"
         onClick={handleClick}
         onMouseMove={handleMove}
         onMouseLeave={() => setIsZoomActive(false)}
       >
         <img
           src={currentImage}
-          className="w-full h-[400px] object-contain"
+          className="w-full h-full object-contain"
           draggable={false}
         />
 
         {/* Lens */}
         {isZoomActive && (
           <div
-            className="absolute border border-white shadow-lg rounded-full"
+            className="absolute border border-white shadow-lg rounded-full transition-all duration-100"
             style={{
               width: LENS_SIZE,
               height: LENS_SIZE,
@@ -90,14 +90,14 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
               backgroundPosition: `${(pos.x / width) * 100}% ${(pos.y / height) * 100}%`,
               pointerEvents: "none",
               borderRadius: "50%",
-              boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
             }}
           />
         )}
 
         {!isZoomActive && (
-          <div className="absolute inset-0 flex items-end justify-center pointer-events-none">
-            <span className="text-white text-sm font-medium bg-black/40 px-3 py-1 rounded">
+          <div className="absolute inset-0 flex items-end justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition">
+            <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded mb-3">
               Click to zoom
             </span>
           </div>
@@ -105,21 +105,27 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
       </div>
 
       {/* Thumbnail */}
-      <div className="grid grid-cols-4 gap-2 mt-3">
-        {images.slice(0, 4).map((img, index) => (
-          <img
-            key={index}
-            src={img}
-            onClick={() => setCurrentImage(img)}
-            className={`w-full h-24 object-cover cursor-pointer border rounded 
-              ${
-                currentImage === img
-                  ? "border-red-500 ring-2 ring-red-300"
-                  : "border-gray-200"
-              }`}
-          />
-        ))}
-      </div>
+     <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
+  {images.map((img, index) => (
+    <button
+      key={index}
+      onClick={() => setCurrentImage(img)}
+      className={`
+        relative aspect-square overflow-hidden rounded border
+        transition
+        ${currentImage === img
+          ? "border-red-500 ring-2 ring-red-300"
+          : "border-gray-200 hover:border-gray-400"
+        }
+      `}
+    >
+      <img
+        src={img}
+        className="w-full h-full object-cover transition-transform duration-200 hover:scale-110"
+      />
+    </button>
+  ))}
+</div>
     </div>
   );
 }

@@ -10,6 +10,9 @@ type Variant = {
   ram: string
   ssd: string
   price: number
+  screenSize: string;
+  resolution: string;
+  refreshRate: string;
 }
 type Product = {
   brandId: ObjectId

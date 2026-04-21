@@ -20,8 +20,9 @@ type Variant = {
     ssd: string;
     price: number;
     priceInput?: string;
-      screenSize: string;   // 🔥 thêm
-    resolution: string;   // 🔥 thêm
+    screenSize: string;
+    resolution: string;
+    refreshRate: string;
 };
 
 type Props = {
@@ -58,8 +59,9 @@ export default function AddProductDialog({
             ram: "8GB",
             ssd: "256GB",
             price: 0,
-              screenSize: "",   // 🔥 thêm
-            resolution: "",   // 🔥 thêm
+            screenSize: "",
+            resolution: "",
+            refreshRate: "",
         },
     ]);
     const [cropOpen, setCropOpen] = useState(false);
@@ -80,8 +82,9 @@ export default function AddProductDialog({
                 ram: "8GB",
                 ssd: "256GB",
                 price: 0,
-                  screenSize: "",   // 🔥 thêm
-            resolution: "",   // 🔥 thêm
+                screenSize: "",
+                resolution: "",
+                refreshRate: "",
             },
         ]);
         setImages([]);
@@ -112,8 +115,9 @@ export default function AddProductDialog({
                 ram: "",
                 ssd: "",
                 price: 0,
-                  screenSize: "",   // 🔥 thêm
-            resolution: "",   // 🔥 thêm
+                screenSize: "",
+                resolution: "",
+                refreshRate: "",
             },
         ]);
 
@@ -147,82 +151,74 @@ export default function AddProductDialog({
         }
     }, [brands])
 
-    const handleSubmit = async () => {
-        const err = validateForm();
-        if (err) {
-            setLoading(false);
-            alert(err);
+   const handleSubmit = async () => {
+    const err = validateForm();
+    if (err) {
+        alert(err);
+        return;
+    }
+
+    if (!mainImage) return;
+
+    setLoading(true);
+
+    try {
+        // 👉 MAIN IMAGE
+        const mainImageUrl =
+            typeof mainImage === "string"
+                ? mainImage
+                : await upload(mainImage);
+
+        // 👉 GALLERY (upload song song nhưng ổn định hơn)
+        const galleryUrls = await Promise.all(
+            images
+                .filter((i) => i !== mainImage)
+                .map(async (img) => {
+                    if (typeof img === "string") return img;
+                    return await upload(img);
+                })
+        );
+
+        const payload = {
+            name,
+            brandId,
+            mainImage: mainImageUrl,
+            gallery: galleryUrls,
+            variants,
+        };
+
+        console.log("payload", mode, payload);
+
+        const res = await fetch(
+            mode === "create"
+                ? "/api/products"
+                : `/api/products/${product._id}`,
+            {
+                method: mode === "create" ? "POST" : "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        if (!res.ok) {
+            const data = await res.json();
+            console.log("ERROR:", data);
+            alert(data.error || "Lỗi lưu sản phẩm");
             return;
         }
-        try {
-            if (!mainImage) {
-                setLoading(false);
-                return;
-            }
-            setLoading(true);
-            // 👉 MAIN IMAGE
-            let mainImageUrl = "";
 
-            if (typeof mainImage === "string") {
-                mainImageUrl = mainImage; // ảnh cũ
-            } else {
-                mainImageUrl = await upload(mainImage); // ảnh mới
-            }
+        setOpen(false);
+        onSuccess?.();
 
-            // 👉 GALLERY
-            const galleryUrls = await Promise.all(
-                images
-                    .filter((i) => i !== mainImage)
-                    .map(async (img) => {
-                        if (typeof img === "string") {
-                            return img; // giữ ảnh cũ
-                        }
-                        return await upload(img); // upload ảnh mới
-                    })
-            );
-
-            const payload = {
-                name,
-                brandId,
-                mainImage: mainImageUrl,
-                gallery: galleryUrls,
-                variants,
-            };
-
-            console.log("payload", mode, payload);
-
-            // 👉 CREATE vs EDIT
-            const res = await fetch(
-                mode === "create"
-                    ? "/api/products"
-                    : `/api/products/${product._id}`,
-                {
-                    method: mode === "create" ? "POST" : "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
-
-
-
-            if (!res.ok) {
-                const err = await res.json(); // 🔥 lấy error từ backend
-                console.log("res", err)
-                alert(err.error || "Lỗi lưu sản phẩm");
-                return;
-            }
-
-            setOpen(false);
-            onSuccess?.();
-        } catch (err) {
-            console.error(err);
-            alert("Upload thất bại xx");
-        } finally {
-            setLoading(false);
-        }
-    };
+    } catch (err) {
+        console.error("UPLOAD ERROR:", err);
+        alert("Upload thất bại");
+    } finally {
+        setLoading(false);
+    }
+};
     const upload = async (file: File) => {
         setUploading(true);
         const formData = new FormData();
@@ -319,7 +315,7 @@ export default function AddProductDialog({
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-2xl flex flex-col max-h-[85vh]" showCloseButton={false}>
+                <DialogContent className="sm:max-w-4xl flex flex-col max-h-[85vh]" showCloseButton={false}>
 
                     {/* HEADER */}
                     <DialogHeader className="flex flex-row items-center justify-between">
@@ -399,26 +395,26 @@ export default function AddProductDialog({
                         <div>
 
                             {/* MAIN IMAGE */}
-   <div className="mt-2">
-  {/* Thẻ container, quy định kích thước cố định */}
-  <div className="relative w-full h-48 rounded border overflow-hidden bg-gray-100">
-    {mainImageUrl ? (
-      <img
-        src={mainImageUrl}
-        alt="Main product visual"
-        className="h-full w-full object-cover 
+                            <div className="mt-2">
+                                {/* Thẻ container, quy định kích thước cố định */}
+                                <div className="relative w-full h-48 rounded border overflow-hidden bg-gray-100">
+                                    {mainImageUrl ? (
+                                        <img
+                                            src={mainImageUrl}
+                                            alt="Main product visual"
+                                            className="h-full w-full object-cover 
                    hover:object-contain hover:bg-black/80 
                    transition-all duration-500 ease-in-out 
                    cursor-zoom-in"
-      />
-    ) : (
-      /* Trạng thái không có ảnh */
-      <div className="flex items-center justify-center h-full text-gray-400">
-        Chưa có ảnh
-      </div>
-    )}
-  </div>
-</div>
+                                        />
+                                    ) : (
+                                        /* Trạng thái không có ảnh */
+                                        <div className="flex items-center justify-center h-full text-gray-400">
+                                            Chưa có ảnh
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                             {uploading && (
                                 <p className="text-sm text-blue-500 mt-2 flex items-center gap-2">
                                     <span className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
@@ -427,103 +423,102 @@ export default function AddProductDialog({
                             )}
 
                             {/* THUMB LIST */}
-                           <div className="flex gap-2 mt-3 flex-wrap">
-    {images.map((img, index) => {
-        const url =
-            typeof img === "string"
-                ? img
-                : URL.createObjectURL(img);
+                            <div className="flex gap-2 mt-3 flex-wrap">
+                                {images.map((img, index) => {
+                                    const url =
+                                        typeof img === "string"
+                                            ? img
+                                            : URL.createObjectURL(img);
 
-        return (
-            <div
-                key={index}
-                className={`relative cursor-pointer border rounded overflow-hidden ${
-                    img === mainImage ? "border-blue-500" : ""
-                }`}
-                onClick={() => {
-                    setCropImage(url);
-                    setCropIndex(index);
-                    setCropOpen(true);
-                }}
-            >
-                <img
-                    src={url}
-                    className="w-20 h-20 object-contain bg-white rounded"
-                />
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`relative cursor-pointer border rounded overflow-hidden ${img === mainImage ? "border-blue-500" : ""
+                                                }`}
+                                            onClick={() => {
+                                                setCropImage(url);
+                                                setCropIndex(index);
+                                                setCropOpen(true);
+                                            }}
+                                        >
+                                            <img
+                                                src={url}
+                                                className="w-20 h-20 object-contain bg-white rounded"
+                                            />
 
-                {/* MAIN LABEL */}
-                {img === mainImage && (
-                    <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
-                        Main
-                    </span>
-                )}
+                                            {/* MAIN LABEL */}
+                                            {img === mainImage && (
+                                                <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
+                                                    Main
+                                                </span>
+                                            )}
 
-                {/* DELETE */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
+                                            {/* DELETE */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
 
-                        const newImgs = images.filter((i) => i !== img);
-                        setImages(newImgs);
+                                                    const newImgs = images.filter((i) => i !== img);
+                                                    setImages(newImgs);
 
-                        if (img === mainImage) {
-                            setMainImage(newImgs[0] || null);
-                        }
-                    }}
-                    className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
-                >
-                    Xóa
-                </button>
-            </div>
-        );
-    })}
+                                                    if (img === mainImage) {
+                                                        setMainImage(newImgs[0] || null);
+                                                    }
+                                                }}
+                                                className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
+                                            >
+                                                Xóa
+                                            </button>
+                                        </div>
+                                    );
+                                })}
 
-    {/* UPLOAD */}
-    <label className="border rounded-md px-4 py-2 cursor-pointer flex items-center">
-        + Tải ảnh
-        <input
-            type="file"
-            multiple
-            hidden
-            onChange={(e) => {
-                const files = Array.from(e.target.files || []);
+                                {/* UPLOAD */}
+                                <label className="border rounded-md px-4 py-2 cursor-pointer flex items-center">
+                                    + Tải ảnh
+                                    <input
+                                        type="file"
+                                        multiple
+                                        hidden
+                                        onChange={(e) => {
+                                            const files = Array.from(e.target.files || []);
 
-                const validFiles: File[] = [];
+                                            const validFiles: File[] = [];
 
-                for (const file of files) {
-                    if (!file.type.startsWith("image/")) {
-                        alert("Chỉ được upload ảnh");
-                        continue;
-                    }
+                                            for (const file of files) {
+                                                if (!file.type.startsWith("image/")) {
+                                                    alert("Chỉ được upload ảnh");
+                                                    continue;
+                                                }
 
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert("Ảnh tối đa 5MB");
-                        continue;
-                    }
+                                                if (file.size > 5 * 1024 * 1024) {
+                                                    alert("Ảnh tối đa 5MB");
+                                                    continue;
+                                                }
 
-                    validFiles.push(file);
-                }
+                                                validFiles.push(file);
+                                            }
 
-                if (!validFiles.length) {
-                    e.target.value = "";
-                    return;
-                }
+                                            if (!validFiles.length) {
+                                                e.target.value = "";
+                                                return;
+                                            }
 
-                setImages((prev) => {
-                    const newList = [...prev, ...validFiles];
+                                            setImages((prev) => {
+                                                const newList = [...prev, ...validFiles];
 
-                    if (!mainImage && newList.length > 0) {
-                        setMainImage(newList[0]);
-                    }
+                                                if (!mainImage && newList.length > 0) {
+                                                    setMainImage(newList[0]);
+                                                }
 
-                    return newList;
-                });
+                                                return newList;
+                                            });
 
-                e.target.value = "";
-            }}
-        />
-    </label>
-</div>
+                                            e.target.value = "";
+                                        }}
+                                    />
+                                </label>
+                            </div>
                             <p
                                 className={`text-sm mt-2 flex items-center gap-1 ${isInvalid ? "text-red-500" : "text-gray-500"
                                     }`}
@@ -537,25 +532,38 @@ export default function AddProductDialog({
                         <div>
                             <label className="text-sm font-medium">Cấu hình</label>
 
-                            <div className="space-y-2 mt-2 pr-2   ">
+                            <div className="border rounded-md overflow-hidden">
+                                {/* HEADER */}
+                                <div className="grid grid-cols-8 bg-gray-100 text-xs font-semibold px-2 py-2 text-gray-600">
+                                    <div>CPU</div>
+                                    <div>RAM</div>
+                                    <div>SSD</div>
+                                    <div>Size</div>
+                                    <div>Res</div>
+                                    <div>Ref</div>
+                                    <div>Giá</div>
+                                    <div></div>
+                                </div>
+
+                                {/* BODY */}
                                 {variants.map((v, index) => (
                                     <div
                                         key={v.id}
-                                        className="grid grid-cols-5 gap-2 items-center"
+                                        className="grid grid-cols-8 gap-2 items-center px-2 py-2 border-t hover:bg-gray-50"
                                     >
                                         <input
-                                            className="border rounded p-2"
+                                            className="border rounded px-2 py-1 text-sm"
                                             placeholder="CPU"
                                             value={v.cpu}
                                             onChange={(e) => {
-                                                const newVariants = [...variants]
-                                                newVariants[index].cpu = e.target.value
-                                                setVariants(newVariants)
+                                                const newVariants = [...variants];
+                                                newVariants[index].cpu = e.target.value;
+                                                setVariants(newVariants);
                                             }}
                                         />
 
                                         <select
-                                            className="border rounded p-2"
+                                            className="border rounded px-2 py-1 text-sm"
                                             value={v.ram}
                                             onChange={(e) =>
                                                 setVariants(prev =>
@@ -570,9 +578,8 @@ export default function AddProductDialog({
                                             <option value="32GB">32GB</option>
                                             <option value="64GB">64GB</option>
                                         </select>
-
                                         <select
-                                            className="border rounded p-2"
+                                            className="border rounded px-2 py-1 text-sm"
                                             value={v.ssd}
                                             onChange={(e) =>
                                                 setVariants(prev =>
@@ -587,56 +594,59 @@ export default function AddProductDialog({
                                             <option value="512GB">512GB</option>
                                             <option value="1TB">1TB</option>
                                         </select>
-                                           {/* SIZE */}
-<select
-    className="border rounded p-2"
-    value={v.screenSize}
-    onChange={(e) =>
-        setVariants(prev =>
-            prev.map(item =>
-                item.id === v.id ? { ...item, screenSize: e.target.value } : item
-            )
-        )
-    }
->
-    <option value="">Size</option>
-    <option value='13.3"'>13.3"</option>
-    <option value='14"'>14"</option>
-    <option value='15.6"'>15.6"</option>
-    <option value="custom">Khác...</option>
-</select>
 
-{/* RESOLUTION */}
-<select
-    className="border rounded p-2"
-    value={v.resolution}
-    onChange={(e) =>
-        setVariants(prev =>
-            prev.map(item =>
-                item.id === v.id ? { ...item, resolution: e.target.value } : item
-            )
-        )
-    }
->
-    <option value="">Res</option>
-    <option value="FHD">FHD</option>
-    <option value="2K">2K</option>
-    <option value="4K">4K</option>
-</select>     
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={v.screenSize}
+                                            onChange={(e) =>
+                                                setVariants(prev =>
+                                                    prev.map(item =>
+                                                        item.id === v.id ? { ...item, screenSize: e.target.value } : item
+                                                    )
+                                                )
+                                            }
+                                        >
+                                            <option value="13.3">13.3"</option>
+                                            <option value="14">14"</option>
+                                            <option value="15.6">15.6"</option>
+                                        </select>
+
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={v.resolution}
+                                            onChange={(e) =>
+                                                setVariants(prev =>
+                                                    prev.map(item =>
+                                                        item.id === v.id ? { ...item, resolution: e.target.value } : item
+                                                    )
+                                                )
+                                            }
+                                        >
+                                            <option value="FHD">FHD</option>
+                                            <option value="2K">2K</option>
+                                            <option value="4K">4K</option>
+                                        </select>
+                                        <select
+                                            className="border rounded px-2 py-1 text-sm"
+                                            value={v.refreshRate}
+                                            onChange={(e) =>
+                                                setVariants(prev =>
+                                                    prev.map(item =>
+                                                        item.id === v.id ? { ...item, refreshRate: e.target.value } : item
+                                                    )
+                                                )
+                                            }
+                                        >
+                                            <option value="60">60Hz</option>
+                                            <option value="90">90Hz</option>
+                                            <option value="120">120Hz</option>
+                                            <option value="144">144Hz</option>
+                                        </select>
                                         <input
-                                            type="number"
-                                            className="border rounded p-2"
-                                            placeholder="Giá"
+                                            className="border rounded px-2 py-1 text-sm"
                                             value={v.priceInput ?? formatPrice(v.price)}
                                             onChange={(e) => {
-                                                let value = e.target.value;
-
-                                                // 🔥 chỉ cho số
-                                                value = value.replace(/\D/g, "");
-
-                                                // 🔥 bỏ số 0 đầu
-                                                value = value.replace(/^0+/, "");
-                                                if (Number(value) < 0) value = "0";
+                                                let value = e.target.value.replace(/\D/g, "").replace(/^0+/, "");
                                                 setVariants(prev =>
                                                     prev.map(item =>
                                                         item.id === v.id
@@ -650,11 +660,14 @@ export default function AddProductDialog({
                                                 );
                                             }}
                                         />
-                                        {variants.length > 1 && index > 0 && (
-                                            <button onClick={() => removeVariant(v.id)}>
-                                                <Trash className="w-4 h-4 text-red-500" />
-                                            </button>
-                                        )}
+
+                                        <div className="flex justify-center">
+                                            {variants.length > 1 && index > 0 && (
+                                                <button onClick={() => removeVariant(v.id)}>
+                                                    <Trash className="w-4 h-4 text-red-500 hover:scale-110 transition" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
