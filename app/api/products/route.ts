@@ -22,6 +22,8 @@ type Product = {
   gallery: string[]
   variants: Variant[]
   createdAt: Date
+  isHot: boolean;
+  isNew: boolean;
 }
 export async function POST(req: Request) {
   const body = await req.json();
@@ -67,6 +69,8 @@ export async function POST(req: Request) {
     gallery: body.gallery || [],
     variants: body.variants,
     createdAt: new Date(),
+    isHot: body.isHot ?? false,
+    isNew: body.isNew ?? true,
   };
 
   const client = await clientPromise;

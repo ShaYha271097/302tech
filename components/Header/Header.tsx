@@ -8,6 +8,11 @@ export default function BannerSlider() {
     const [openMenu, setOpenMenu] = useState(false);
     const brands = [
         {
+            name: "LAPTOP",
+            slug: "laptop",
+            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
+        },
+        {
             name: "HP",
             slug: "hp",
             img: "https://laptopgaming.com.vn/upload/product/download-4.png",
@@ -69,7 +74,7 @@ export default function BannerSlider() {
                     <div className="all_menu_top">
                         <div className="fixwidth menu_top d-flex justify-content-between flex-wrap align-items-center">
 
-                           <Link href="/" className="header_logo">
+                            <Link href="/" className="header_logo">
                                 <img
                                     loading="lazy"
                                     width={2239}
@@ -205,15 +210,18 @@ export default function BannerSlider() {
                     <div className="clearfix fixwidth">
                         <div className="menu">
                             <ul className="menu_cap_cha d-flex justify-content-between">
-                                {brands.map((brand) => (
+                                {brands.map((brand) => {
+                                         const isLaptopMenu = brand.slug === "laptop";   
+                                    return (
                                     <li key={brand.slug} className="menulicha">
                                         <Link
-                                            href={{
-                                                pathname: "/products",
-                                                query: { brand: brand.slug },
-                                            }}
-                                            title={brand.name}
-                                        >
+  href={{
+    pathname: "/products",
+    query: isLaptopMenu
+      ? { category: "laptop" }
+      : { category: "laptop", brand: brand.slug },
+  }}
+>
                                             <img
                                                 loading="lazy"
                                                 width={32}
@@ -225,7 +233,7 @@ export default function BannerSlider() {
                                             {brand.name}
                                         </Link>
                                     </li>
-                                ))}
+                                )})}
                             </ul>
                         </div>
                     </div>

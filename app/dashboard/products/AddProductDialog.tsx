@@ -23,8 +23,8 @@ type Variant = {
     screenSize: string;
     resolution: string;
     refreshRate: string;
-   isHot: boolean;
-    isNew: boolean; 
+    isHot: boolean;
+    isNew: boolean;
 };
 
 type Props = {
@@ -73,8 +73,8 @@ export default function AddProductDialog({
     const [cropIndex, setCropIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-const [isHot, setIsHot] = useState(false);
-const [isNew, setIsNew] = useState(true);
+    const [isHot, setIsHot] = useState(false);
+    const [isNew, setIsNew] = useState(true);
     const formatPrice = (num: number) => {
         return num.toLocaleString("vi-VN");
     };
@@ -125,7 +125,7 @@ const [isNew, setIsNew] = useState(true);
                 screenSize: "",
                 resolution: "",
                 refreshRate: "",
-                  isHot: false,
+                isHot: false,
                 isNew: false,
             },
         ]);
@@ -401,37 +401,37 @@ const [isNew, setIsNew] = useState(true);
                                 <p className="text-red-500 text-sm mt-1">{errorName}</p>
                             )}
                         </div>
-                         {/* STATUS */}
-<div className="border rounded-md p-3 space-y-2">
+                        {/* STATUS */}
+                        <div >
 
-  <label className="text-sm font-medium">Trạng thái sản phẩm</label>
+                            <label className="text-sm font-medium">Trạng thái sản phẩm</label>
 
-  <div className="flex gap-6">
+                            <div className="flex items-center gap-6 border rounded-md p-2 ">
 
-    {/* HOT */}
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input
-        type="checkbox"
-        checked={isHot}
-        onChange={(e) => setIsHot(e.target.checked)}
-        className="accent-yellow-500"
-      />
-      <span className="text-sm">🔥 Hot</span>
-    </label>
+                                {/* HOT */}
+                                <label className="!flex items-center gap-2 cursor-pointer m-0">
+                                    <input
+                                        type="checkbox"
+                                        checked={isHot}
+                                        onChange={(e) => setIsHot(e.target.checked)}
+                                        className="accent-yellow-500"
+                                    />
+                                    <span className="text-sm">🔥 Hot</span>
+                                </label>
 
-    {/* NEW */}
-    <label className="flex items-center gap-2 cursor-pointer">
-      <input
-        type="checkbox"
-        checked={isNew}
-        onChange={(e) => setIsNew(e.target.checked)}
-        className="accent-green-500"
-      />
-      <span className="text-sm">🆕 New</span>
-    </label>
+                                {/* NEW */}
+                                <label className="!flex items-center gap-2 cursor-pointer m-0">
+                                    <input
+                                        type="checkbox"
+                                        checked={isNew}
+                                        onChange={(e) => setIsNew(e.target.checked)}
+                                        className="accent-green-500"
+                                    />
+                                    <span className="text-sm">🆕 New</span>
+                                </label>
 
-  </div>
-</div>       
+                            </div>
+                        </div>
                         {/* Images */}
                         <div>
 

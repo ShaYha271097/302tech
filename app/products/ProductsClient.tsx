@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-
+import Pagination from "@/components/Pagination/Pagination";
 
 
 type Filters = {
@@ -19,7 +19,8 @@ export default function ProductsClient() {
     const ramSelected = searchParams.getAll("ram");
     const ssdSelected = searchParams.getAll("ssd");
     const [products, setProducts] = useState([]);
-
+const [page, setPage] = useState(3);
+const [totalPages, setTotalPages] = useState(1);
     // const [filters, setFilters] = useState({
     //     price: [],
     //     brand: [],
@@ -31,6 +32,16 @@ export default function ProductsClient() {
         price: [],
     });
 
+
+    const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+
+        const params = new URLSearchParams(searchParams.toString());
+
+        params.set("page", String(page));
+
+        router.push(`/products?${params.toString()}`);
+    };
     const toggleSSD = (ssd: string) => {
         const params = new URLSearchParams(searchParams.toString());
 
@@ -83,43 +94,40 @@ export default function ProductsClient() {
 
 
 
-    const fetchProducts = async (filters: any) => {
-        console.log("filters=>>>", filters)
-        const params = new URLSearchParams();
+  const fetchProducts = async (filters: any) => {
+  const params = new URLSearchParams();
 
-        if (filters.brand) {
-            params.append("brand", filters.brand);
-        }
+  if (filters.brand) params.append("brand", filters.brand);
 
-        filters.price.forEach((p: string) => {
-            params.append("price", p);
-        });
+  filters.price.forEach((p: string) => params.append("price", p));
+  filters.ram?.forEach((r: string) => params.append("ram", r));
+  filters.ssd?.forEach((s: string) => params.append("ssd", s));
 
-        filters.ram?.forEach((r: string) => {
-            params.append("ram", r);
-        });
-        filters.ssd?.forEach((s: string) => {
-            params.append("ssd", s);
-        });
+  // 👉 ADD PAGE
+  params.append("page", filters.page || 1);
+  params.append("limit", filters.limit || 10);
 
-        console.log("params=>>>", params)
-        const res = await fetch(`/api/products?${params.toString()}`);
-        const data = await res.json();
-        console.log("KET QUAAAAAAAAAAAAAAA")
-        setProducts(data.products);
-    };
-    useEffect(() => {
-        const brand = searchParams.get("brand") || "";
-        const price = searchParams.getAll("price");
-        const ram = searchParams.getAll("ram");
-        const ssd = searchParams.getAll("ssd");
-        fetchProducts({
-            brand,
-            price,
-            ram,
-            ssd,
-        });
-    }, [searchParams.toString()]);
+  const res = await fetch(`/api/products?${params.toString()}`);
+  const data = await res.json();
+
+  setProducts(data.products);
+};
+   useEffect(() => {
+  const brand = searchParams.get("brand") || "";
+  const price = searchParams.getAll("price");
+  const ram = searchParams.getAll("ram");
+  const ssd = searchParams.getAll("ssd");
+  const page = Number(searchParams.get("page") || 1);
+
+  fetchProducts({
+    brand,
+    price,
+    ram,
+    ssd,
+    page,
+    limit: 4,
+  });
+}, [searchParams.toString()]);
 
     const getVariantText = (variant: any) => {
         if (!variant) return "";
@@ -361,10 +369,12 @@ export default function ProductsClient() {
 
                                             )
                                         })}
-
-
-
                                     </div>
+                                    <Pagination
+                                    page={page}
+                                    totalPages={totalPages}
+                                    onChange={handlePageChange}
+                                    />
                                 </div>
                                 <div className="clear" />
                             </div>
