@@ -209,7 +209,7 @@ export default function BannerSlider() {
                                     <li key={brand.slug} className="menulicha">
                                         <Link
                                             href={{
-                                                pathname: "/product",
+                                                pathname: "/products",
                                                 query: { brand: brand.slug },
                                             }}
                                             title={brand.name}
@@ -263,7 +263,7 @@ export default function BannerSlider() {
                         <Link
                             key={brand.slug}
                             href={{
-                                pathname: "/product",
+                                pathname: "/products",
                                 query: { brand: brand.slug },
                             }}
                             onClick={() => setOpenMenu(false)}

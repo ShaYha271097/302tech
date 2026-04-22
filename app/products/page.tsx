@@ -5,13 +5,10 @@ import { useSearchParams } from "next/navigation";
 
 
 export default function ProductsPage() {
-     const searchParams = useSearchParams();
-    const brand :any = searchParams.get("brand");
-    console.log("brand",brand)
   return (
     <>
       <Header />
-      <ProductsClient brand={brand} />
+      <ProductsClient />
     </>
   );
 }

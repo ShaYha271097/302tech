@@ -23,6 +23,8 @@ type Variant = {
     screenSize: string;
     resolution: string;
     refreshRate: string;
+   isHot: boolean;
+    isNew: boolean; 
 };
 
 type Props = {
@@ -62,6 +64,8 @@ export default function AddProductDialog({
             screenSize: "",
             resolution: "",
             refreshRate: "",
+            isHot: false,
+            isNew: false,
         },
     ]);
     const [cropOpen, setCropOpen] = useState(false);
@@ -69,7 +73,8 @@ export default function AddProductDialog({
     const [cropIndex, setCropIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-
+const [isHot, setIsHot] = useState(false);
+const [isNew, setIsNew] = useState(true);
     const formatPrice = (num: number) => {
         return num.toLocaleString("vi-VN");
     };
@@ -85,6 +90,8 @@ export default function AddProductDialog({
                 screenSize: "",
                 resolution: "",
                 refreshRate: "",
+                isHot: false,
+                isNew: false,
             },
         ]);
         setImages([]);
@@ -118,6 +125,8 @@ export default function AddProductDialog({
                 screenSize: "",
                 resolution: "",
                 refreshRate: "",
+                  isHot: false,
+                isNew: false,
             },
         ]);
 
@@ -151,74 +160,76 @@ export default function AddProductDialog({
         }
     }, [brands])
 
-   const handleSubmit = async () => {
-    const err = validateForm();
-    if (err) {
-        alert(err);
-        return;
-    }
-
-    if (!mainImage) return;
-
-    setLoading(true);
-
-    try {
-        // 👉 MAIN IMAGE
-        const mainImageUrl =
-            typeof mainImage === "string"
-                ? mainImage
-                : await upload(mainImage);
-
-        // 👉 GALLERY (upload song song nhưng ổn định hơn)
-        const galleryUrls = await Promise.all(
-            images
-                .filter((i) => i !== mainImage)
-                .map(async (img) => {
-                    if (typeof img === "string") return img;
-                    return await upload(img);
-                })
-        );
-
-        const payload = {
-            name,
-            brandId,
-            mainImage: mainImageUrl,
-            gallery: galleryUrls,
-            variants,
-        };
-
-        console.log("payload", mode, payload);
-
-        const res = await fetch(
-            mode === "create"
-                ? "/api/products"
-                : `/api/products/${product._id}`,
-            {
-                method: mode === "create" ? "POST" : "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            }
-        );
-
-        if (!res.ok) {
-            const data = await res.json();
-            console.log("ERROR:", data);
-            alert(data.error || "Lỗi lưu sản phẩm");
+    const handleSubmit = async () => {
+        const err = validateForm();
+        if (err) {
+            alert(err);
             return;
         }
 
-        setOpen(false);
-        onSuccess?.();
+        if (!mainImage) return;
 
-    } catch (err) {
-        console.error("UPLOAD ERROR:", err);
-        alert("Upload thất bại");
-    } finally {
-        setLoading(false);
-    }
-};
+        setLoading(true);
+
+        try {
+            // 👉 MAIN IMAGE
+            const mainImageUrl =
+                typeof mainImage === "string"
+                    ? mainImage
+                    : await upload(mainImage);
+
+            // 👉 GALLERY (upload song song nhưng ổn định hơn)
+            const galleryUrls = await Promise.all(
+                images
+                    .filter((i) => i !== mainImage)
+                    .map(async (img) => {
+                        if (typeof img === "string") return img;
+                        return await upload(img);
+                    })
+            );
+
+            const payload = {
+                name,
+                brandId,
+                mainImage: mainImageUrl,
+                gallery: galleryUrls,
+                variants,
+                isHot,
+                isNew,
+            };
+
+            console.log("payload", mode, payload);
+
+            const res = await fetch(
+                mode === "create"
+                    ? "/api/products"
+                    : `/api/products/${product._id}`,
+                {
+                    method: mode === "create" ? "POST" : "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                }
+            );
+
+            if (!res.ok) {
+                const data = await res.json();
+                console.log("ERROR:", data);
+                alert(data.error || "Lỗi lưu sản phẩm");
+                return;
+            }
+
+            setOpen(false);
+            onSuccess?.();
+
+        } catch (err) {
+            console.error("UPLOAD ERROR:", err);
+            alert("Upload thất bại");
+        } finally {
+            setLoading(false);
+        }
+    };
     const upload = async (file: File) => {
         setUploading(true);
         const formData = new FormData();
@@ -390,7 +401,37 @@ export default function AddProductDialog({
                                 <p className="text-red-500 text-sm mt-1">{errorName}</p>
                             )}
                         </div>
+                         {/* STATUS */}
+<div className="border rounded-md p-3 space-y-2">
 
+  <label className="text-sm font-medium">Trạng thái sản phẩm</label>
+
+  <div className="flex gap-6">
+
+    {/* HOT */}
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="checkbox"
+        checked={isHot}
+        onChange={(e) => setIsHot(e.target.checked)}
+        className="accent-yellow-500"
+      />
+      <span className="text-sm">🔥 Hot</span>
+    </label>
+
+    {/* NEW */}
+    <label className="flex items-center gap-2 cursor-pointer">
+      <input
+        type="checkbox"
+        checked={isNew}
+        onChange={(e) => setIsNew(e.target.checked)}
+        className="accent-green-500"
+      />
+      <span className="text-sm">🆕 New</span>
+    </label>
+
+  </div>
+</div>       
                         {/* Images */}
                         <div>
 
@@ -403,9 +444,9 @@ export default function AddProductDialog({
                                             src={mainImageUrl}
                                             alt="Main product visual"
                                             className="h-full w-full object-cover 
-                   hover:object-contain hover:bg-black/80 
-                   transition-all duration-500 ease-in-out 
-                   cursor-zoom-in"
+                                            hover:object-contain hover:bg-black/80 
+                                            transition-all duration-500 ease-in-out 
+                                            cursor-zoom-in"
                                         />
                                     ) : (
                                         /* Trạng thái không có ảnh */

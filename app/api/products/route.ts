@@ -17,7 +17,7 @@ type Variant = {
 type Product = {
   brandId: ObjectId
   name: string
-  slug: string // 👈 thêm cái này
+  slug: string 
   mainImage: string
   gallery: string[]
   variants: Variant[]
@@ -84,7 +84,11 @@ export async function GET(req: NextRequest) {
     const db = client.db("laptop-shop");
 
     const { searchParams } = new URL(req.url);
-
+    const priceParams = searchParams.getAll("price"); // 👈 nhiều giá
+    
+    const ramParams = searchParams.getAll("ram");
+    const ssdParams = searchParams.getAll("ssd");
+console.log("ssdParams=>>>", ssdParams)
     // 👉 params
     let page = Number(searchParams.get("page")) || 1;
     let limit = Number(searchParams.get("limit")) || 5;
@@ -157,6 +161,52 @@ export async function GET(req: NextRequest) {
         },
       });
     }
+
+
+    // =========================
+    // FILTER: PRICE
+    // =========================
+    if (priceParams.length > 0) {
+      pipeline.push({
+        $match: {
+          variants: {
+            $elemMatch: {
+              $or: priceParams.map((p) => {
+                const [min, max] = p.split("-").map(Number);
+
+                return {
+                  price: {
+                    $gte: min,
+                    $lte: max,
+                  },
+                };
+              }),
+            },
+          },
+        },
+      });
+    }
+
+    // =========================
+    // FILTER: RAM
+    // =========================
+    if (ramParams.length > 0) {
+      pipeline.push({
+        $match: {
+          "variants.ram": { $in: ramParams }
+        }
+      });
+    }
+    // =========================
+    // FILTER: SSD
+    // =========================
+    if (ssdParams.length > 0) {
+        pipeline.push({
+          $match: {
+            "variants.ssd": { $in: ssdParams }
+        }
+    });
+}
 
     // =========================
     // COUNT PIPELINE

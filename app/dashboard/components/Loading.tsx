@@ -1,6 +1,12 @@
 
 
 
+
+type Props = {
+  loadingSave: boolean;
+  handleSave: (value: boolean) => void;
+}; 
+
 export default function Loading(){
     return
     (

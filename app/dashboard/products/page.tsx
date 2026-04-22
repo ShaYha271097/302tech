@@ -28,6 +28,8 @@ type Product = {
   brand?: {
     name: string
   }
+  isHot?: boolean
+  isNew?: boolean
 }
 
 export default function ProductDetail() {
@@ -113,6 +115,31 @@ export default function ProductDetail() {
     setSelectedIds([]);
   };
 
+  const toggleHot = async (id: string) => {
+    const res = await fetch(`/api/products/${id}/toggle-hot`, {
+      method: "PATCH",
+    });
+
+    console.log("res.ok", res)
+    if (res.ok) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === id ? { ...p, isHot: !p.isHot } : p
+        )
+      );
+    }
+  };
+  const toggleNew = async (id: string) => {
+  await fetch(`/api/products/${id}/toggle-new`, {
+    method: "PATCH",
+  });
+
+  setProducts((prev) =>
+    prev.map((p) =>
+      p._id === id ? { ...p, isNew: !p.isNew } : p
+    )
+  );
+};
   console.log("openSidebar", openSidebar)
   return (
     <>
@@ -243,11 +270,7 @@ export default function ProductDetail() {
                     />
                   </th>
 
-                  <th className="p-2">
-                    <button>
-                      <i className="far fa-star" />
-                    </button>
-                  </th>
+                  <th className="p-2 text-center">Trạng thái</th>
 
                   <th className="p-2">Ảnh</th>
                   <th className="p-2">Tên</th>
@@ -284,11 +307,36 @@ export default function ProductDetail() {
                             }}
                           />
                         </td>
-
                         <td className="p-2">
-                          <button>
-                            <i className="far fa-star" />
-                          </button>
+                          <div className="flex items-center justify-center gap-3">
+
+                            {/* HOT */}
+                            <button
+                              onClick={() => toggleHot(p._id)}
+                              className="text-xl transition"
+                              title="Hot"
+                            >
+                              {p.isHot ? (
+                                <i className="fas fa-star text-yellow-500" />
+                              ) : (
+                                <i className="far fa-star text-gray-400 hover:text-yellow-500" />
+                              )}
+                            </button>
+
+                            {/* NEW */}
+                           <button
+                          onClick={() => toggleNew(p._id)}
+                          className="text-xl transition"
+                          title="New"
+                        >
+                    {p.isNew ? (
+                      <i className="fas fa-bolt text-green-500" />
+                    ) : (
+                      <i className="far fa-bolt text-gray-400 hover:text-green-500" />
+                    )}
+                  </button>
+
+                          </div>
                         </td>
 
                         <td className="p-2">

@@ -30,12 +30,12 @@ export default function ProductSection({ title, slug, products }: any) {
         <div className="wrap_bottom wrap_list">
             <div className="fixwidth">
                 <div className="title_sp_bc">
-                    <Link href={`/product?brand=${slug}`}>
+                    <Link href={`/products?brand=${slug}`}>
                         <div className="title_sp">{title}</div>
                     </Link>
 
                     <div className="all_xemtatca">
-                        <Link href={`/product?brand=${slug}`}>
+                        <Link href={`/products?brand=${slug}`}>
                             Xem tất cả <i className="fas fa-angle-double-right" />
                         </Link>
                     </div>
@@ -51,7 +51,7 @@ export default function ProductSection({ title, slug, products }: any) {
 
                                     {/* IMAGE */}
                                     <div className="img_sp_bc">
-                                        <Link href={`/product/${p.slug}-${p._id}`}>
+                                        <Link href={`/products/${p.slug}-${p._id}`}>
                                             <div>
                                                 <img
                                                     loading="lazy"
@@ -74,11 +74,11 @@ export default function ProductSection({ title, slug, products }: any) {
 
                                     {/* CONTENT */}
                                     <div className="all_content_sp">
-                                        <a href={p.slug}>
+                                        <Link href={`/products/${p.slug}-${p._id}`}>
                                             <div className="name_sp text-split">
                                                 {p.name} - {getVariantText(cheapest)}
                                             </div>
-                                        </a>
+                                        </Link>
 
                                         <div className="gia_sp">
                                             <span>
@@ -87,9 +87,9 @@ export default function ProductSection({ title, slug, products }: any) {
                                         </div>
 
                                         <div className="cart-product">
-                                            <a href={p.slug} className="muangay_sp">
+                                            <Link href={`/products/${p.slug}-${p._id}`} className="muangay_sp">
                                                 Mua ngay
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
