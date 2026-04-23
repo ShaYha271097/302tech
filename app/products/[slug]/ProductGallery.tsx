@@ -71,7 +71,7 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
       >
         <img
           src={currentImage}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
           draggable={false}
         />
 

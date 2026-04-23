@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -40,10 +40,10 @@ export default function BannerSlider() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 👉 loading
+  // 👉 loading skeleton
   if (loading) {
     return (
-      <div className="w-full h-full object-cover rounded bg-gray-200 animate-pulse rounded-[10px]" />
+      <div className="w-full h-[250px] sm:h-[320px] lg:h-[450px] bg-gray-200 animate-pulse rounded-[10px]" />
     );
   }
 
@@ -52,27 +52,36 @@ export default function BannerSlider() {
       <div className="fixwidth">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
 
-          {/* SLIDER */}
+          {/* ================= LEFT SLIDER ================= */}
           <div className="lg:col-span-2">
+
             {!slider.length ? (
-              <div className="w-full h-full object-cover rounded bg-gray-100 flex items-center justify-center rounded text-gray-400">
+              <div className="w-full h-[250px] sm:h-[320px] lg:h-[450px] flex items-center justify-center bg-gray-100 text-gray-400 rounded-[10px]">
                 Không có banner
               </div>
             ) : (
               <Swiper
-                modules={[Navigation, Pagination]}
+                modules={[Navigation, Pagination, Autoplay]}
                 navigation
                 pagination={{ clickable: true }}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
                 loop={slider.length > 1}
-                className="w-full h-full object-cover rounded rounded-[10px]"
+                className="w-full h-[250px] sm:h-[320px] lg:h-[450px] rounded-[10px]"
               >
                 {slider.map((item, index) => (
                   <SwiperSlide key={index}>
-                    <a href={item.link || "#"} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={item.link || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <img
                         src={item.image}
                         loading="lazy"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain hover:scale-105 transition"
                         alt={`banner-${index}`}
                       />
                     </a>
@@ -82,35 +91,45 @@ export default function BannerSlider() {
             )}
           </div>
 
-          {/* SIDE BANNER */}
-          <div className="grid grid-cols-2  lg:flex lg:flex-col ms:flex ms:flex-col gap-3 sm:gap-4">
+          {/* ================= RIGHT BANNER ================= */}
+          <div className="flex flex-col gap-3">
 
-            {/* TOP */}
+            {/* ===== TOP ===== */}
             {banners.top.image ? (
-              <a href={banners.top.link || "#"} target="_blank" rel="noopener noreferrer">
+              <a
+                href={banners.top.link || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                 className="block overflow-hidden rounded-[10px]"
+              >
                 <img
                   src={banners.top.image}
-                  className="w-full h-full object-cover rounded"
+                  className="w-full h-[120px] sm:h-[155px] lg:h-[220px]  rounded-[10px] hover:scale-105 transition"
                   alt="banner-top"
                 />
               </a>
             ) : (
-              <div className="w-full h-full object-cover rounded flex items-center justify-center bg-gray-100 text-gray-400 rounded">
+              <div className="w-full h-[120px] sm:h-[155px] lg:h-[220px] flex items-center justify-center bg-gray-100 text-gray-400 rounded-[10px]">
                 Banner trên
               </div>
             )}
 
-            {/* BOTTOM */}
+            {/* ===== BOTTOM ===== */}
             {banners.bottom.image ? (
-              <a href={banners.bottom.link || "#"} target="_blank" rel="noopener noreferrer">
+              <a
+                href={banners.bottom.link || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                 className="block overflow-hidden rounded-[10px]"
+              >
                 <img
                   src={banners.bottom.image}
-                  className="w-full h-full object-cover rounded"
+                  className="w-full h-[120px] sm:h-[155px] lg:h-[220px]  rounded-[10px] hover:scale-105 transition"
                   alt="banner-bottom"
                 />
               </a>
             ) : (
-              <div className="w-full h-full object-cover rounded flex items-center justify-center bg-gray-100 text-gray-400 rounded">
+              <div className="w-full h-[120px] sm:h-[155px] lg:h-[220px] flex items-center justify-center bg-gray-100 text-gray-400 rounded-[10px]">
                 Banner dưới
               </div>
             )}

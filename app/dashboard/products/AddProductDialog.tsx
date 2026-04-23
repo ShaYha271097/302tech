@@ -176,7 +176,7 @@ export default function AddProductDialog({
             const mainImageUrl =
                 typeof mainImage === "string"
                     ? mainImage
-                    : await upload(mainImage);
+                    : await upload(mainImage,"product");
 
             // 👉 GALLERY (upload song song nhưng ổn định hơn)
             const galleryUrls = await Promise.all(
@@ -184,7 +184,7 @@ export default function AddProductDialog({
                     .filter((i) => i !== mainImage)
                     .map(async (img) => {
                         if (typeof img === "string") return img;
-                        return await upload(img);
+                        return await upload(img,"product");
                     })
             );
 
@@ -230,10 +230,12 @@ export default function AddProductDialog({
             setLoading(false);
         }
     };
-    const upload = async (file: File) => {
-        setUploading(true);
+    const upload = async (file: File, type: "product" | "slider" | "banner")=> {
+         setUploading(true);
+
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("type", type); // 👈 thêm dòng này
         try {
             const res = await fetch("/api/upload", {
                 method: "POST",

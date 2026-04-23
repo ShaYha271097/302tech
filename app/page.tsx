@@ -22,10 +22,10 @@ export default async function Home() {
     <>
     
       <Header />
-      {/* <BannerSlider /> */}
+      <BannerSlider />
       <div className="wrap-home w-clear">
-        {/* <MultiItemCarousel />
-        <TopSellingSlider /> */}
+        <MultiItemCarousel />
+        {/* <TopSellingSlider /> */}
         {/* <ProductSection
               title="HP"
               slug="hp"

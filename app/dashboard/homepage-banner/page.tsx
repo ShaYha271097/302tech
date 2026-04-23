@@ -73,10 +73,10 @@ export default function HomePageBanner() {
                 setInitialData(formatted);
             });
     }, []);
-    const upload = async (file: File) => {
+    const upload = async (file: File, type: "slider" | "banner") => {
         const formData = new FormData();
         formData.append("file", file);
-
+        formData.append("type", type);
         const res = await fetch("/api/upload", {
             method: "POST",
             body: formData,
@@ -92,15 +92,34 @@ export default function HomePageBanner() {
         return value instanceof File;
     };
     const handleSave = async () => {
+        if (!slider.length) {
+            alert("Cần ít nhất 1 slider");
+            return;
+        }
+
+        if (slider.some((s) => !s.image)) {
+            alert("Slider chưa đủ ảnh");
+            return;
+        }
+
+        if (!banners.top.image) {
+            alert("Thiếu banner trên");
+            return;
+        }
+
+        if (!banners.bottom.image) {
+            alert("Thiếu banner dưới");
+            return;
+        }
         try {
-            
+
             setLoadingSave(true);
             const sliderUploaded = await Promise.all(
                 slider.map(async (item) => {
                     console.log("isFile(item.image)", isFile(item.image), item.image)
                     if (isFile(item.image)) {
 
-                        const url = await upload(item.image);
+                        const url = await upload(item.image, "slider");
                         return { ...item, image: url };
                     }
 
@@ -111,11 +130,11 @@ export default function HomePageBanner() {
             let bottomImage = banners.bottom.image;
 
             if (isFile(topImage)) {
-                topImage = await upload(topImage);
+                topImage = await upload(topImage, "banner");
             }
 
             if (isFile(bottomImage)) {
-                bottomImage = await upload(bottomImage);
+                bottomImage = await upload(bottomImage, "banner");
             }
 
             const payload = {
@@ -151,6 +170,11 @@ export default function HomePageBanner() {
 
         return img;
     };
+    const isValid =
+    slider.length > 0 &&
+    slider.every((s) => s.image) &&
+    banners.top.image &&
+    banners.bottom.image;
     console.log('slider', slider)
     return (
         <>
@@ -180,6 +204,7 @@ export default function HomePageBanner() {
                                     </h4>
 
                                     <button
+
                                         onClick={() =>
                                             setSlider([...slider, { image: "", link: "" }])
                                         }
@@ -232,10 +257,18 @@ export default function HomePageBanner() {
                                                         const file = e.target.files?.[0];
                                                         if (!file) return;
 
+                                                        if (!file.type.startsWith("image/")) {
+                                                            alert("Chỉ được upload ảnh");
+                                                            return;
+                                                        }
+
+                                                        if (file.size > 6 * 1024 * 1024) {
+                                                            alert("Ảnh tối đa 5MB");
+                                                            return;
+                                                        }
+
                                                         const newSlider = [...slider];
-
-                                                        newSlider[index].image = file; // 👈 giữ File luôn
-
+                                                        newSlider[index].image = file;
                                                         setSlider(newSlider);
                                                     }}
                                                 />
@@ -363,7 +396,7 @@ export default function HomePageBanner() {
 
                                 <button
                                     onClick={handleSave}
-                                    disabled={loadingSave}
+                                     disabled={!isValid || loadingSave}
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded text-sm flex items-center justify-center gap-2 disabled:opacity-60"
                                 >
                                     {loadingSave && (

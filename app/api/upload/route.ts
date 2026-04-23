@@ -10,6 +10,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file");
+    const type = formData.get("type"); // 👈 thêm dòng này
 
     if (!(file instanceof File)) {
       return Response.json({ error: "Không có file" }, { status: 400 });
@@ -18,18 +19,52 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // 🎯 chọn transformation theo type
+    let transformation: any = [];
+
+    switch (type) {
+      case "product":
+        transformation: [
+        {
+          width: 800,
+          height: 800,
+          crop: "fill",
+        }
+      ]
+        break;
+
+      case "slider":
+        transformation = [
+          {
+          width: 1200,
+          height: 450,
+        crop: "crop",
+    gravity: "center",
+          
+          },
+        ];
+        break;
+
+      case "banner":
+        transformation = [
+          {
+            width: 400,
+            height: 250,
+            crop: "fill",
+          },
+        ];
+        break;
+
+      default:
+        transformation = [];
+    }
+
     const result: any = await new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
           {
-            folder: "products",
-            transformation: [
-              {
-                width: 800,
-                height: 800,
-                crop: "fill",
-              },
-            ],
+            folder: "uploads",
+            transformation,
           },
           (err, result) => {
             if (err) return reject(err);
