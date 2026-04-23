@@ -2,6 +2,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import SearchBox from "../SearchBox/SearchBox";
 
 
 export default function BannerSlider() {
@@ -84,21 +85,8 @@ export default function BannerSlider() {
                                     decoding="async"
                                 />
                             </Link>
-                            <div className="frm_timkiem timkiem_header timkiem_header_des">
-                                <input
-                                    type="text"
-                                    className="input"
-                                    id="keyword2"
-                                    placeholder="Nhập từ khóa cần tìm..."
-                                />
-                                <button
-                                    type="submit"
-                                    // value=""
-                                    className="nut_tim"
-                                >
-                                    <i className="fas fa-search" />
-                                </button>
-                            </div>
+                                                        
+                            <SearchBox/>
                             <div className="all_search_cart">
                                 <div className="header-block-block-1">
                                     <div className="icon-box featured-box icon-box-left text-left">
@@ -211,29 +199,33 @@ export default function BannerSlider() {
                         <div className="menu">
                             <ul className="menu_cap_cha d-flex justify-content-between">
                                 {brands.map((brand) => {
-                                         const isLaptopMenu = brand.slug === "laptop";   
+                                    const isLaptopMenu = brand.slug === "laptop";
                                     return (
-                                    <li key={brand.slug} className="menulicha">
-                                        <Link
-  href={{
-    pathname: "/products",
-    query: isLaptopMenu
-      ? { category: "laptop" }
-      : { category: "laptop", brand: brand.slug },
-  }}
->
-                                            <img
-                                                loading="lazy"
-                                                width={32}
-                                                height={32}
-                                                src={brand.img}
-                                                alt={brand.name}
-                                            />
-                                            {' '}
-                                            {brand.name}
-                                        </Link>
-                                    </li>
-                                )})}
+                                        <li key={brand.slug} className="menulicha">
+                                            <Link
+                                                href={{
+                                                    pathname: "/products",
+                                                    // query: isLaptopMenu
+                                                    //     ? { category: "laptop" }
+                                                    //     : { category: "laptop", brand: brand.slug },
+                                                          query: isLaptopMenu
+                                                        ? { category: "laptop" }
+                                                        : { category: "laptop", brand: brand.slug },
+                                                }}
+                                            >
+                                                <img
+                                                    loading="lazy"
+                                                    width={32}
+                                                    height={32}
+                                                    src={brand.img}
+                                                    alt={brand.name}
+                                                />
+                                                {' '}
+                                                {brand.name}
+                                            </Link>
+                                        </li>
+                                    )
+                                })}
                             </ul>
                         </div>
                     </div>

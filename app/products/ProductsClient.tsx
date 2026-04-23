@@ -19,8 +19,8 @@ export default function ProductsClient() {
     const ramSelected = searchParams.getAll("ram");
     const ssdSelected = searchParams.getAll("ssd");
     const [products, setProducts] = useState([]);
-const [page, setPage] = useState(3);
-const [totalPages, setTotalPages] = useState(1);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     // const [filters, setFilters] = useState({
     //     price: [],
     //     brand: [],
@@ -34,13 +34,14 @@ const [totalPages, setTotalPages] = useState(1);
 
 
     const handlePageChange = (newPage: number) => {
-    setPage(newPage);
+        setPage(newPage);
 
         const params = new URLSearchParams(searchParams.toString());
 
-        params.set("page", String(page));
-
+        params.set("page", String(newPage));
         router.push(`/products?${params.toString()}`);
+        // 👉 scroll lên top sau khi đổi page
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
     const toggleSSD = (ssd: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -94,40 +95,46 @@ const [totalPages, setTotalPages] = useState(1);
 
 
 
-  const fetchProducts = async (filters: any) => {
-  const params = new URLSearchParams();
+    const fetchProducts = async (filters: any) => {
+        const params = new URLSearchParams();
 
-  if (filters.brand) params.append("brand", filters.brand);
+        if (filters.brand) params.append("brand", filters.brand);
 
-  filters.price.forEach((p: string) => params.append("price", p));
-  filters.ram?.forEach((r: string) => params.append("ram", r));
-  filters.ssd?.forEach((s: string) => params.append("ssd", s));
+        filters.price.forEach((p: string) => params.append("price", p));
+        filters.ram?.forEach((r: string) => params.append("ram", r));
+        filters.ssd?.forEach((s: string) => params.append("ssd", s));
 
-  // 👉 ADD PAGE
-  params.append("page", filters.page || 1);
-  params.append("limit", filters.limit || 10);
+        // 👉 ADD PAGE
+        params.append("page", filters.page || 1);
+        params.append("limit", filters.limit || 10);
+        if (filters.search) {
+        params.append("search", filters.search);
+        }
 
-  const res = await fetch(`/api/products?${params.toString()}`);
-  const data = await res.json();
+        const res = await fetch(`/api/products?${params.toString()}`);
+        const data = await res.json();
 
-  setProducts(data.products);
-};
-   useEffect(() => {
-  const brand = searchParams.get("brand") || "";
-  const price = searchParams.getAll("price");
-  const ram = searchParams.getAll("ram");
-  const ssd = searchParams.getAll("ssd");
-  const page = Number(searchParams.get("page") || 1);
+        setProducts(data.products);
+        setTotalPages(data.totalPages);
+    };
+    useEffect(() => {
+        const brand = searchParams.get("brand") || "";
+        const price = searchParams.getAll("price");
+        const ram = searchParams.getAll("ram");
+        const ssd = searchParams.getAll("ssd");
+        const page = Number(searchParams.get("page") || 1);
+        const search = searchParams.get("search") || "";
 
-  fetchProducts({
-    brand,
-    price,
-    ram,
-    ssd,
-    page,
-    limit: 4,
-  });
-}, [searchParams.toString()]);
+        fetchProducts({
+            brand,
+            price,
+            ram,
+            ssd,
+            page,
+            limit: 5,
+            search
+        });
+    }, [searchParams.toString()]);
 
     const getVariantText = (variant: any) => {
         if (!variant) return "";
@@ -371,9 +378,9 @@ const [totalPages, setTotalPages] = useState(1);
                                         })}
                                     </div>
                                     <Pagination
-                                    page={page}
-                                    totalPages={totalPages}
-                                    onChange={handlePageChange}
+                                        page={page}
+                                        totalPages={totalPages}
+                                        onChange={handlePageChange}
                                     />
                                 </div>
                                 <div className="clear" />

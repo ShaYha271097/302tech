@@ -1,23 +1,22 @@
+export default function Pagination({ page, totalPages, onChange }: any) {
+  if (totalPages <= 1) return null;
 
-
-export default function Pagination  ({ page, totalPages, onChange }: any) {
   const pages = [];
-
   const start = Math.max(1, page - 2);
   const end = Math.min(totalPages, page + 2);
 
   for (let i = start; i <= end; i++) {
     pages.push(i);
   }
-console.log("pages=>>",pages)
+
   return (
     <div className="flex items-center gap-2 mt-6 justify-center">
 
       {/* PREV */}
       <button
         disabled={page === 1}
-        onClick={() => onChange(page - 1)}
-        className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-40"
+        onClick={() => page > 1 && onChange(page - 1)}
+        className="px-3 py-1 border rounded min-w-[36px] hover:bg-gray-100 disabled:opacity-40"
       >
         {"<"}
       </button>
@@ -27,7 +26,7 @@ console.log("pages=>>",pages)
         <>
           <button
             onClick={() => onChange(1)}
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border rounded min-w-[36px]"
           >
             1
           </button>
@@ -40,7 +39,7 @@ console.log("pages=>>",pages)
         <button
           key={p}
           onClick={() => onChange(p)}
-          className={`px-3 py-1 border rounded ${
+          className={`px-3 py-1 border rounded min-w-[36px] ${
             p === page ? "bg-red-500 text-white" : "hover:bg-gray-100"
           }`}
         >
@@ -54,7 +53,7 @@ console.log("pages=>>",pages)
           <span>...</span>
           <button
             onClick={() => onChange(totalPages)}
-            className="px-3 py-1 border rounded"
+            className="px-3 py-1 border rounded min-w-[36px]"
           >
             {totalPages}
           </button>
@@ -64,11 +63,11 @@ console.log("pages=>>",pages)
       {/* NEXT */}
       <button
         disabled={page === totalPages}
-        onClick={() => onChange(page + 1)}
-        className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-40"
+        onClick={() => page < totalPages && onChange(page + 1)}
+        className="px-3 py-1 border rounded min-w-[36px] hover:bg-gray-100 disabled:opacity-40"
       >
         {">"}
       </button>
     </div>
   );
-};
+}
