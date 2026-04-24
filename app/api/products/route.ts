@@ -4,6 +4,7 @@ import clientPromise from "@/lib/mongodb" // chỉnh đúng path của bạn
 import { NextResponse, NextRequest } from "next/server"
 
 import { ObjectId } from "mongodb"
+import { requireAdmin } from "@/lib/auth"
 
 type Variant = {
   cpu: string
@@ -26,6 +27,7 @@ type Product = {
   isNew: boolean;
 }
 export async function POST(req: Request) {
+  requireAdmin(req);
   const body = await req.json();
 
   if (!body.name || body.name.trim().length < 5) {
