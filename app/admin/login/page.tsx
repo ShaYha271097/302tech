@@ -13,37 +13,37 @@ export default function AdminLogin() {
     const router = useRouter();
 
     const isValid = username && password;
-   const handleLogin = async () => {
-  if (!validate()) return;
+    const handleLogin = async () => {
+        if (!validate()) return;
 
-  try {
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
+        try {
+            const res = await fetch("/api/admin/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-    const data = await res.json();
-    console.log("data>>>>>>>>>>>",data)
-    // ❌ login fail
-    if (!res.ok) {
-      setErrors({
-        password: data.error || "Đăng nhập thất bại",
-      });
-      return;
-    }
+            const data = await res.json();
+            console.log("data>>>>>>>>>>>", data)
+            // ❌ login fail
+            if (!res.ok) {
+                setErrors({
+                    password: data.error || "Đăng nhập thất bại",
+                });
+                return;
+            }
 
-    // ✅ login success
-    console.log("=>>>>>")
-    router.push("/dashboard");
- console.log("=>>>>>sss")
-  } catch (err) {
-    console.error(err);
-    alert("Lỗi kết nối server");
-  }
-};
+            // ✅ login success
+            console.log("=>>>>>")
+            router.push("/dashboard");
+            console.log("=>>>>>sss")
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối server");
+        }
+    };
     const handleKeyDown = (e: any) => {
         if (e.key === "Enter") handleLogin();
     };
@@ -67,12 +67,12 @@ export default function AdminLogin() {
     };
     return (
         <div className="relative h-screen flex items-center justify-center">
-
+            <img src={""} />
             {/* BACKGROUND */}
             <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                    backgroundImage: "url('/images/bg-laptop.jpg')",
+                    backgroundImage: "url('../assets/images/homelogin.jpg')",
                 }}
             />
 
@@ -97,27 +97,31 @@ export default function AdminLogin() {
                     <p className="text-red-500 text-xs mb-2">{errors.username}</p>
                 )}
                 {/* PASSWORD */}
-                <div className="relative mb-3">
-                    <input
-                        type={showPass ? "text" : "password"}
-                        placeholder="Password"
-                        className="w-full border p-2  rounded pr-10 outline-none focus:ring-2 focus:ring-blue-500"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                    />
-                    {errors.password && (
-                        <p className="text-red-500 text-xs mb-2">{errors.password}</p>
-                    )}
+                <div className="mb-3">
+                    <div className="relative">
+                        <input
+                            type={showPass ? "text" : "password"}
+                            placeholder="Password"
+                            className="w-full border p-2 rounded pr-10 outline-none focus:ring-2 focus:ring-blue-500"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
 
-                    {/* ICON EYE */}
-                    <button
-                        type="button"
-                        onClick={() => setShowPass(!showPass)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
-                    >
-                        {showPass ? <Eye size={18} /> : <EyeOff size={18} />}
-                    </button>
+                        {/* ICON */}
+                        <button
+                            type="button"
+                            onClick={() => setShowPass(!showPass)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                        >
+                            {showPass ? <Eye size={18} /> : <EyeOff size={18} />}
+                        </button>
+                    </div>
+
+                    {/* ERROR (đưa ra ngoài) */}
+                    {errors.password && (
+                        <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                    )}
                 </div>
 
 

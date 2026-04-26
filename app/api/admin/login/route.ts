@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
+  
   try {
     const { username, password } = await req.json();
 
@@ -21,13 +22,13 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-   
+   console.log("=>>>>>>>>>>>>>SSS",username,password)
     // ✅ check password hash
     const isMatch = await bcrypt.compare(
       password,
       process.env.ADMIN_PASSWORD_HASH!
     );
- console.log("qua day ko",isMatch)
+ console.log("qua day ko=>>>>",isMatch)
     if (!isMatch) {
       return NextResponse.json(
         { error: "Sai tài khoản hoặc mật khẩu" },
