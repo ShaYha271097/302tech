@@ -6,7 +6,21 @@ type Brand = {
   name: string;
   createdAt?: Date;
 };
+async function generateUniqueSlug(db: any, baseSlug: string) {
+  let slug = baseSlug;
+  let count = 1;
 
+  while (true) {
+    const exist = await db.collection("brands").findOne({ slug });
+
+    if (!exist) break;
+
+    slug = `${baseSlug}-${count}`;
+    count++;
+  }
+
+  return slug;
+}
 
 function toSlug(str: string) {
   return str
@@ -42,21 +56,12 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("laptop-shop");
 
-    const slug = toSlug(name); // 👈 tạo slug
-
-    // check trùng theo slug (chuẩn hơn name)
-    const exist = await db.collection("brands").findOne({ slug });
-
-    if (exist) {
-      return NextResponse.json(
-        { message: "Thương hiệu đã tồn tại" },
-        { status: 400 }
-      );
-    }
+    const baseSlug = toSlug(name);
+    const slug = await generateUniqueSlug(db, baseSlug);
 
     const newBrand = {
       name,
-      slug, // 👈 thêm slug
+      slug,
       createdAt: new Date(),
     };
 

@@ -59,10 +59,16 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
                 {openMenu && (
                     <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-50">
                         <button
-                            onClick={() => {
-                                console.log("logout");
+                           onClick={async () => {
+                                await fetch("/api/admin/logout", {
+                                    method: "POST",
+                                });
+
                                 setOpenMenu(false);
-                            }}
+
+                                // 👉 chuyển về trang login
+                                window.location.href = "/admin/login";
+                                }}
                             className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
                         >
                             Đăng xuất

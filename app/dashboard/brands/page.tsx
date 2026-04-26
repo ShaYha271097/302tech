@@ -6,6 +6,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import Topbar from "../components/TopBar";
 import MobileSidebar from "../components/MobileSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
+import AddPBrandDialog from "./AddPBrandDialog";
 
 type Brand = {
     _id: string
@@ -43,18 +44,45 @@ export default function BrandDetail() {
             });
     }, []);
 
+
+  const fetchProducts = async (keyword: string) => {
+    const res = await fetch(`/api/brands?search=${keyword}`);
+    const data = await res.json();
+    setBrands(data);
+  };
+ const handleBulkDelete = async () => {
+    const ok = confirm(`Xóa ${selectedIds.length} thương hiệu ?`);
+    if (!ok) return;
+
+    await fetch("/api/brands/bulk-delete", {
+      method: "POST",
+      body: JSON.stringify({ ids: selectedIds }),
+    });
+
+    setBrands((prev) =>
+      prev.filter((p) => !selectedIds.includes(p._id))
+    );
+
+    setSelectedIds([]);
+  };
+
+
     return (
         <>
             {/* ================= HEADER TOP ================= */}
             <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
             {/* ================= TOPBAR ================= */}
-            <Topbar title="Sản phẩm" showSearch showAdd onAdd={() => {
+            <Topbar title="Sản phẩm" showSearch showAdd 
+            onAdd={() => {
                 setEditingProduct(null);
                 setOpen(true);
-            }} onSearch={(value) => {
+            }} 
+            onSearch={(value) => {
                 setSearch(value);
                 router.push(`?search=${value}`);
-            }} selectedCount={selectedIds.length}
+            }} 
+            selectedCount={selectedIds.length}
+             onDelete={handleBulkDelete}
             />
 
             <div className="flex min-h-screen bg-gray-50">
@@ -64,9 +92,10 @@ export default function BrandDetail() {
 
                 {/* MOBILE SIDEBAR */}
                 {/* <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} /> */}
-                <section className="flex-1 p-4 overflow-y-auto">
+               
+        <section className="flex-1 p-4 overflow-y-auto">
                     {/* ================= DESKTOP TABLE ================= */}
-                    <div className="hidden md:block border rounded-lg overflow-hidden">
+                   <div className="hidden md:block border rounded-lg overflow-hidden">
                         <table className="w-full text-sm">
                             <thead className="bg-blue-100 text-left">
                                 <tr>
@@ -152,9 +181,7 @@ export default function BrandDetail() {
                             </tbody>
                         </table>
                     </div>
-                </section>
-
-                {/* ================= PAGINATION ================= */}
+                     {/* ================= PAGINATION ================= */}
                 <div className="flex flex-col md:flex-row gap-3 items-center justify-between mt-4">
 
                     {/* LEFT */}
@@ -231,17 +258,20 @@ export default function BrandDetail() {
             </div>
 
                 </div>
+                </section>
+
+               
             </div>
 
 
 
-            {/* <AddProductDialog
+            <AddPBrandDialog
         open={open}
         setOpen={setOpen}
         mode={editingProduct ? "edit" : "create"}
-        product={editingProduct}
+        brand={editingProduct}
         onSuccess={() => fetchProducts(search)}
-      /> */}
+      />
         </>
     )
 }
