@@ -94,13 +94,12 @@ export async function GET(req: NextRequest) {
     
     const ramParams = searchParams.getAll("ram");
     const ssdParams = searchParams.getAll("ssd");
-console.log("ssdParams=>>>", ssdParams)
     // 👉 params
     let page = Number(searchParams.get("page")) || 1;
     let limit = Number(searchParams.get("limit")) || 5;
     const brandParam = searchParams.get("brand") || "";
     const search = searchParams.get("search") || "";
-
+const isHot = searchParams.get("isHot");
     // 👉 validate
     if (page < 1) page = 1;
     if (limit < 1) limit = 5;
@@ -112,6 +111,9 @@ console.log("ssdParams=>>>", ssdParams)
     const brandSlugs = brandParam
       ? brandParam.split(",").map((b) => b.trim())
       : [];
+
+
+
 
     // =========================
     // PIPELINE BASE
@@ -214,7 +216,16 @@ console.log("ssdParams=>>>", ssdParams)
         }
     });
 }
-
+      // =========================
+  // FILTER: ISHOT
+  // =========================
+  if (isHot === "true") {
+    pipeline.push({
+      $match: {
+        isHot: true,
+      },
+    });
+  }
     // =========================
     // COUNT PIPELINE
     // =========================

@@ -12,6 +12,7 @@ type Brand = {
     _id: string
     name: string
     slug: string
+    image:string
     createdAt: string
 }
 
@@ -21,10 +22,7 @@ export default function BrandDetail() {
     const [search, setSearch] = useState(initialSearch);
     const router = useRouter();
 
-    const [openUser, setOpenUser] = useState(false);
     const [open, setOpen] = useState(false);
-    const [expandedId, setExpandedId] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
     const [total, setTotal] = useState(0)
@@ -66,7 +64,7 @@ export default function BrandDetail() {
     setSelectedIds([]);
   };
 
-
+  c
     return (
         <>
             {/* ================= HEADER TOP ================= */}
@@ -115,6 +113,7 @@ export default function BrandDetail() {
                                             }}
                                         />
                                     </th>
+                                    <th className="p-2">Hình ảnh</th>
                                     <th className="p-2">Tên</th>
                                     <th className="p-2">Slug</th>
                                     <th className="p-2">Ngày Tạo</th>
@@ -127,8 +126,7 @@ export default function BrandDetail() {
                                         <React.Fragment key={p._id}>
 
                                             {/* ROW */}
-                                            <tr className="border-b hover:bg-gray-100">
-
+                                            <tr className="border-b hover:bg-gray-200" style={{ borderBottom: "0.5px solid #d1d5db" }}>
                                                 <td className="p-2">
                                                     <input
                                                         type="checkbox"
@@ -144,12 +142,12 @@ export default function BrandDetail() {
                                                         }}
                                                     />
                                                 </td>
-                                                {/* <td className="p-2">
-                                                          <img
-                                                            src={p.mainImage || "https://via.placeholder.com/60"}
-                                                            className="w-12 h-12 object-cover rounded"
-                                                          />
-                                                        </td> */}
+                                                <td className="p-2">
+                                                    <img
+                                                          src={p.image || "https://via.placeholder.com/60"}
+                                                        className="w-10 h-10 object-cover rounded"
+                                                    />
+                                                    </td>
                                                 <td className="p-2 text-red-500">
                                                     {p.name}
                                                 </td>

@@ -40,9 +40,9 @@ export async function PUT(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params; // 👈 QUAN TRỌNG
+    const { id } = await context.params;
 
-    const { name } = await req.json();
+    const { name, image } = await req.json(); // 👈 thêm image
 
     if (!name) {
       return NextResponse.json(
@@ -65,6 +65,7 @@ export async function PUT(
       );
     }
 
+    // 🔥 xử lý slug
     let slug = brand.slug;
 
     if (brand.name !== name) {
@@ -72,13 +73,21 @@ export async function PUT(
       slug = await generateUniqueSlug(db, baseSlug, id);
     }
 
+    // 🔥 build update data
+    const updateData: any = {
+      name,
+      slug,
+    };
+
+    // 👇 chỉ update image khi có gửi lên
+    if (image !== undefined) {
+      updateData.image = image;
+    }
+
     await db.collection("brands").updateOne(
       { _id: new ObjectId(id) },
       {
-        $set: {
-          name,
-          slug,
-        },
+        $set: updateData,
       }
     );
 

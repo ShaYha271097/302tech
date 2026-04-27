@@ -1,221 +1,283 @@
 "use client";
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogClose,
-    DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { X, Trash } from "lucide-react";
-import { useEffect } from "react"
-import ImageCropDialog from "../components/ImageCropDialog";
-import { Loader2 } from "lucide-react";
-
+import { X, Loader2 } from "lucide-react";
 
 type Props = {
-    open: boolean;
-    setOpen: (v: boolean) => void;
-    mode: "create" | "edit";
-    brand?: any; // chỉ dùng khi edit
-    onSuccess?: () => void;
-}
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  mode: "create" | "edit";
+  brand?: any;
+  onSuccess?: () => void;
+};
 
 export default function AddPBrandDialog({
-    open,
-    setOpen,
-    mode,
-    brand,
-    onSuccess
+  open,
+  setOpen,
+  mode,
+  brand,
+  onSuccess,
 }: Props) {
-    console.log("brand", brand)
-    // const variantsRef = useRef<HTMLDivElement>(null);
-    const bodyRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
-    const [name, setName] = useState("")
-    const [errorName, setErrorName] = useState("")
+  const [name, setName] = useState("");
+  const [errorName, setErrorName] = useState("");
 
-    const [images, setImages] = useState<File[]>([]);
-    const [mainImage, setMainImage] = useState<File | null>(null);
-    const [loading, setLoading] = useState(false);
+  const [mainImage, setMainImage] = useState<File | string | null>(null);
 
-   
-    const resetForm = () => {
-        setName("");
-        setImages([]);
-        setMainImage(null);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const resetForm = () => {
+    setName("");
+    setMainImage(null);
+  };
+
+  // 🔥 set data khi edit
+  useEffect(() => {
+    if (!open) return;
+
+    if (mode === "edit" && brand) {
+      setName(brand.name || "");
+      setMainImage(brand.image || null); // 👈 QUAN TRỌNG
+    } else {
+      resetForm();
+    }
+  }, [open, mode, brand]);
+
+  const mainImageUrl = useMemo(() => {
+    if (!mainImage) return "";
+    return typeof mainImage === "string"
+      ? mainImage
+      : URL.createObjectURL(mainImage);
+  }, [mainImage]);
+
+  // 🔥 cleanup đúng
+  useEffect(() => {
+    return () => {
+      if (mainImage && typeof mainImage !== "string") {
+        URL.revokeObjectURL(mainImageUrl);
+      }
     };
-    useEffect(() => {
-        if (!open) return; // 🔥 chỉ chạy khi dialog mở
+  }, [mainImage]);
 
-        if (mode === "edit" && brand) {
-            setName(brand.name || "");
-        } else {
-            // create
-            resetForm();
-        }
-    }, [open, mode, brand]);
+  const validateForm = () => {
+    if (!name.trim() || name.trim().length < 2) {
+      return "Tên thương hiệu tối thiểu 2 ký tự";
+    }
+    return null;
+  };
 
+  const upload = async (file: File) => {
+    setUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "brand");
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      return data.url;
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async () => {
-        const err = validateForm();
-        if (err) {
-            alert(err);
-            return;
+    const err = validateForm();
+    if (err) {
+      alert(err);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      let imageUrl = "";
+
+      if (mainImage && typeof mainImage !== "string") {
+        imageUrl = await upload(mainImage);
+      } else {
+        imageUrl = mainImage || "";
+      }
+
+      const payload = {
+        name,
+        image: imageUrl,
+      };
+
+      const res = await fetch(
+        mode === "create"
+          ? "/api/brands"
+          : `/api/brands/${brand._id}`,
+        {
+          method: mode === "create" ? "POST" : "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
         }
-        setLoading(true);
+      );
 
-        try {
-            const payload = {
-                name,
-            };
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Lỗi lưu thương hiệu");
+        return;
+      }
 
-            console.log("payload", mode, payload);
+      setOpen(false);
+      onSuccess?.();
+    } catch (err) {
+      console.error(err);
+      alert("Upload thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            const res = await fetch(
-                mode === "create"
-                    ? "/api/brands"
-                    : `/api/brands/${brand._id}`,
-                {
-                    method: mode === "create" ? "POST" : "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent className="sm:max-w-xl flex flex-col max-h-[85vh]" showCloseButton={false}>
+        
+        {/* HEADER */}
+        <DialogHeader className="flex flex-row items-center justify-between">
+          <DialogTitle>
+            {mode === "create" ? "Thêm thương hiệu" : "Sửa thương hiệu"}
+          </DialogTitle>
 
-            if (!res.ok) {
-                const data = await res.json();
-                console.log("ERROR:", data);
-                alert(data.error || "Lỗi lưu sản phẩm");
-                return;
-            }
+          <DialogClose asChild>
+            <button>
+              <X className="w-5 h-5" />
+            </button>
+          </DialogClose>
+        </DialogHeader>
 
-            setOpen(false);
-            onSuccess?.();
+        {/* BODY */}
+        <div ref={bodyRef} className="space-y-4">
 
-        } catch (err) {
-            console.error("UPLOAD ERROR:", err);
-            alert("Upload thất bại");
-        } finally {
-            setLoading(false);
-        }
-    };
+          {/* NAME */}
+          <div>
+            <label className="text-sm font-medium">Tên thương hiệu</label>
+            <input
+              className={`w-full border rounded-md p-2 mt-1 ${
+                errorName ? "border-red-500" : ""
+              }`}
+              value={name}
+              onChange={(e) => {
+                const value = e.target.value;
+                setName(value);
 
-    const mainImageUrl = useMemo(() => {
-        if (!mainImage) return "";
+                if (!value.trim()) setErrorName("Không được để trống");
+                else if (value.length < 2)
+                  setErrorName("Ít nhất 2 ký tự");
+                else setErrorName("");
+              }}
+            />
+            {errorName && (
+              <p className="text-red-500 text-sm mt-1">{errorName}</p>
+            )}
+          </div>
 
-        return typeof mainImage === "string"
-            ? mainImage
-            : URL.createObjectURL(mainImage);
-    }, [mainImage]);
+          {/* IMAGE */}
+          <div>
+            <label className="group relative w-full h-32 rounded border bg-white cursor-pointer overflow-hidden">
 
+              {mainImageUrl ? (
+                <>
+                  <img
+                    src={mainImageUrl}
+                    className="absolute inset-0 m-auto max-w-[80%] max-h-[80%] object-contain"
+                  />
 
-    useEffect(() => {
-        if (bodyRef.current) {
-            bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-        }
-    }, [bodyRef]);
+                  {/* overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition" />
 
+                  {/* delete */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMainImage(null);
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+                  >
+                    ✕
+                  </button>
+                </>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                  + Tải logo
+                </div>
+              )}
 
+              <input
+                type="file"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
 
-    useEffect(() => {
-        return () => {
-            if (typeof mainImage !== "string") {
-                URL.revokeObjectURL(mainImageUrl);
-            }
-        };
-    }, [mainImageUrl]);
+                  if (!file.type.startsWith("image/")) {
+                    alert("Chỉ upload ảnh");
+                    return;
+                  }
 
+                  if (file.size > 5 * 1024 * 1024) {
+                    alert("Max 5MB");
+                    return;
+                  }
 
-    const validateForm = () => {
-        if (!name.trim() || name.trim().length < 3) {
-            return "Tên sản phẩm tối thiểu 3 ký tự";
-        }
-        return null;
-    };
-    const count = images.filter(i => i !== mainImage).length;
-    const isInvalid = count < 2 || count > 6;
-    return (
-        <>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-xl flex flex-col max-h-[85vh]" showCloseButton={false}>
+                  setMainImage(file);
+                }}
+              />
 
-                    {/* HEADER */}
-                    <DialogHeader className="flex flex-row items-center justify-between">
-                        <DialogTitle className="text-lg font-semibold">
-                            {mode === "create" ? "Thêm thương hiệu" : "Sửa thương hiệu"}
-                        </DialogTitle>
+              {/* 🔥 uploading overlay */}
+              {uploading && (
+                <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                </div>
+              )}
+            </label>
+          </div>
+        </div>
 
-                        <DialogClose asChild>
-                            <button>
-                                <X className="w-5 h-5" />
-                            </button>
-                        </DialogClose>
-                    </DialogHeader>
+        {/* FOOTER */}
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Huỷ</Button>
+          </DialogClose>
 
-                    {/* BODY */}
-                    <div
-                        ref={bodyRef}
-                        className={`flex-1 overflow-y-auto space-y-4 pr-2 ${loading ? "pointer-events-none opacity-60" : ""
-                            }`}
-                    >
+          <Button disabled={loading || uploading} onClick={handleSubmit}>
+            {(loading || uploading) && (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            )}
+            {loading ? "Đang lưu..." : "Lưu"}
+          </Button>
+        </DialogFooter>
 
-                        {/* Name */}
-                        <div>
-                            <label className="text-sm font-medium">Tên Thương hiệu</label>
-                            <input
-                                className={`w-full border rounded-md p-2 mt-1 ${errorName ? "border-red-500" : ""
-                                    }`}
-                                placeholder="vui lòng nhập thương hiệu"
-                                value={name}
-                                onChange={(e) => {
-                                    const value = e.target.value
-                                    setName(value)
-
-                                    if (!value.trim()) {
-                                        setErrorName("Không được để trống")
-                                    } else if (value.length < 3) {
-                                        setErrorName("Tên phải ít nhất 3 ký tự")
-                                    } else {
-                                        setErrorName("")
-                                    }
-                                }}
-                            />
-
-                            {errorName && (
-                                <p className="text-red-500 text-sm mt-1">{errorName}</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* FOOTER */}
-                    <DialogFooter className="flex justify-end gap-2 mt-4">
-                        <DialogClose asChild>
-                            <Button variant="outline">Huỷ</Button>
-                        </DialogClose>
-
-                        <Button onClick={handleSubmit} disabled={loading}>
-                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                            {loading ? "Đang lưu..." : "Lưu"}
-                        </Button>
-                    </DialogFooter>
-
-                    {loading && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-50 rounded-lg">
-                            <div className="bg-white px-6 py-4 rounded-xl flex items-center gap-3 shadow-lg">
-                                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                                <span className="text-sm font-medium">Đang lưu sản phẩm...</span>
-                            </div>
-                        </div>
-                    )}
-
-
-                </DialogContent>
-            </Dialog>
-        </>
-    );
+        {/* FULL LOADING */}
+        {loading && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <div className="bg-white px-6 py-4 rounded-xl flex items-center gap-3">
+              <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+              <span>Đang xử lý...</span>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
 }

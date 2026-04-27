@@ -24,14 +24,10 @@ export default function Sidebar() {
     },
     {
       name: "Danh mục",
-      href: "/dashboard/products",
+      href: "/dashboard/brands",
       icon: "fas fa-list",
     },
-    {
-      name: "Thuộc tính",
-      href: "/dashboard/products",
-      icon: "fas fa-sliders-h",
-    },
+  
   ];
 
   return (

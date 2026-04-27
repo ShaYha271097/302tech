@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file");
-    const type = formData.get("type"); // 👈 thêm dòng này
+    const type = formData.get("type");
 
     if (!(file instanceof File)) {
       return Response.json({ error: "Không có file" }, { status: 400 });
@@ -19,28 +19,26 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 🎯 chọn transformation theo type
-    let transformation: any = [];
+    let transformation: any[] = [];
 
     switch (type) {
       case "product":
-        transformation: [
-        {
-          width: 800,
-          height: 800,
-          crop: "fill",
-        }
-      ]
+        transformation = [
+          {
+            width: 800,
+            height: 800,
+            crop: "fill",
+          },
+        ];
         break;
 
       case "slider":
         transformation = [
           {
-          width: 1200,
-          height: 450,
-        crop: "crop",
-    gravity: "center",
-          
+            width: 1200,
+            height: 450,
+            crop: "crop",
+            gravity: "center",
           },
         ];
         break;
@@ -55,6 +53,18 @@ export async function POST(req: Request) {
         ];
         break;
 
+      // 🔥 THÊM BRAND
+      case "brand":
+        transformation = [
+          {
+            width: 300,
+            height: 300,
+            crop: "fit", // 👈 cực quan trọng cho logo
+            background: "white", // 👈 tránh logo nền trong suốt bị xấu
+          },
+        ];
+        break;
+
       default:
         transformation = [];
     }
@@ -63,7 +73,7 @@ export async function POST(req: Request) {
       cloudinary.uploader
         .upload_stream(
           {
-            folder: "uploads",
+            folder: `uploads/${type || "other"}`, // 👈 chia folder luôn
             transformation,
           },
           (err, result) => {

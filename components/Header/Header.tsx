@@ -1,59 +1,31 @@
 
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBox from "../SearchBox/SearchBox";
 
 
 export default function BannerSlider() {
     const [openMenu, setOpenMenu] = useState(false);
-    const brands = [
-        {
-            name: "LAPTOP",
-            slug: "laptop",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "HP",
-            slug: "hp",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "Asus",
-            slug: "asus",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "Acer",
-            slug: "acer",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "Lenovo",
-            slug: "lenovo",
-            img: "https://laptopgaming.com.vn/upload/2024/download-4.png",
-        },
-        {
-            name: "Dell",
-            slug: "dell",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "MSI",
-            slug: "msi",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "Macbook",
-            slug: "macbook",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-        {
-            name: "GIGABYTE",
-            slug: "gigabyte",
-            img: "https://laptopgaming.com.vn/upload/product/download-4.png",
-        },
-    ];
+    const [brands, setBrands] = useState<any[]>([]);
+    const [loadingBrands, setLoadingBrands] = useState(true);
+
+    useEffect(() => {
+        const fetchBrands = async () => {
+            try {
+                const res = await fetch("/api/brands");
+                const data = await res.json();
+
+                setBrands(data);
+            } catch (err) {
+                console.error("Fetch brands error:", err);
+            } finally {
+                setLoadingBrands(false);
+            }
+        };
+
+        fetchBrands();
+    }, []);
 
     return (
         <>
@@ -85,8 +57,8 @@ export default function BannerSlider() {
                                     decoding="async"
                                 />
                             </Link>
-                                                        
-                            <SearchBox/>
+
+                            <SearchBox />
                             <div className="all_search_cart">
                                 <div className="header-block-block-1">
                                     <div className="icon-box featured-box icon-box-left text-left">
@@ -109,7 +81,7 @@ export default function BannerSlider() {
                                         <div className="icon-box-text last-reset">
                                             <p>Hotline Bảo hành 24/7</p>
                                             <a href="tel:0946932067" target="_blank" title="">
-                                                094 693 2067 - 096 996 8785{" "}
+                                                0946932067{" "}
                                             </a>
                                         </div>
                                     </div>
@@ -197,7 +169,7 @@ export default function BannerSlider() {
                 <div id="menu_top">
                     <div className="clearfix fixwidth">
                         <div className="menu">
-                            <ul className="menu_cap_cha d-flex justify-content-between">
+                            <ul className="menu_cap_cha d-flex justify-content-between p-0">
                                 {brands.map((brand) => {
                                     const isLaptopMenu = brand.slug === "laptop";
                                     return (
@@ -208,7 +180,7 @@ export default function BannerSlider() {
                                                     // query: isLaptopMenu
                                                     //     ? { category: "laptop" }
                                                     //     : { category: "laptop", brand: brand.slug },
-                                                          query: isLaptopMenu
+                                                    query: isLaptopMenu
                                                         ? { category: "laptop" }
                                                         : { category: "laptop", brand: brand.slug },
                                                 }}
@@ -217,7 +189,7 @@ export default function BannerSlider() {
                                                     loading="lazy"
                                                     width={32}
                                                     height={32}
-                                                    src={brand.img}
+                                                    src={brand.image}
                                                     alt={brand.name}
                                                 />
                                                 {' '}
@@ -259,7 +231,9 @@ export default function BannerSlider() {
 
                 {/* MENU LIST */}
                 <div className="p-3 space-y-3">
-                    {brands.map((brand) => (
+                    {loadingBrands ? (
+                        <div className="p-3 text-gray-400">Đang tải brand...</div>
+                    ) : (brands.map((brand) => (
                         <Link
                             key={brand.slug}
                             href={{
@@ -275,7 +249,7 @@ export default function BannerSlider() {
                             />
                             <span>{brand.name}</span>
                         </Link>
-                    ))}
+                    )))}
                 </div>
 
             </div>

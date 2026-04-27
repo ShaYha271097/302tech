@@ -161,7 +161,7 @@ export default function BannerSlider() {
                     <li>
                         <a
                             className="add_this-inner ring_box_phone"
-                            href="tel:0383225889"
+                            href="tel:0946932067"
                             target="_blank"
                             title=""
                         >
@@ -176,7 +176,7 @@ export default function BannerSlider() {
                     <li>
                         <a
                             className="add_this-inner ring_box_phone"
-                            href="https://zalo.me/0569656565"
+                            href="https://zalo.me/0946932067"
                             target="_blank"
                             title=""
                         >
@@ -191,8 +191,7 @@ export default function BannerSlider() {
                     <li>
                         <a
                             className="add_this-inner ring_box_phone"
-                            href="https://www.facebook.com/profile.php?id=100087675154224"
-                            title=""
+                             href="https://m.me/61568759679115"
                             target="_blank"
                         >
                             <img
@@ -206,8 +205,7 @@ export default function BannerSlider() {
                     <li>
                         <a
                             className="add_this-inner ring_box_phone"
-                            href="https://maps.app.goo.gl/Mqws8mrELrLwmiS69"
-                            title=""
+                            href="https://maps.app.goo.gl/LjjyW6V9h5o7zsi96"
                             target="_blank"
                         >
                             <img

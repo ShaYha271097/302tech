@@ -49,7 +49,7 @@ export default function ProductDetail() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [openSidebar, setOpenSidebar] = useState(false);
-
+    
 
 
   const totalPages = Math.ceil(total / limit)
@@ -146,18 +146,14 @@ export default function ProductDetail() {
       {/* ================= HEADER TOP ================= */}
       <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
       {/* ================= TOPBAR ================= */}
-      <Topbar title="Sản phẩm" showSearch showAdd 
-      onAdd={() => {
+      <Topbar title="Sản phẩm" showSearch showAdd onAdd={() => {
         setEditingProduct(null);
         setOpen(true);
-      }} 
-      onSearch={(value) => {
+      }} onSearch={(value) => {
         setSearch(value);
         router.push(`?search=${value}`);
-      }} 
-      selectedCount={selectedIds.length}
-        onDelete={handleBulkDelete} 
-        />
+      }} selectedCount={selectedIds.length}
+        onDelete={handleBulkDelete} />
 
       <div className="flex min-h-screen bg-gray-50">
         <section className="hidden md:block w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
