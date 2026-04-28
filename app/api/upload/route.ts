@@ -9,8 +9,10 @@ cloudinary.config({
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
+
     const file = formData.get("file");
-    const type = formData.get("type"); // 👈 thêm dòng này
+    const type = formData.get("type") as string;
+    const ratio = Number(formData.get("ratio")); // 👈 nhận từ FE
 
     if (!(file instanceof File)) {
       return Response.json({ error: "Không có file" }, { status: 400 });
@@ -19,38 +21,69 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 🎯 chọn transformation theo type
-    let transformation: any = [];
+    // =========================
+    // 🎯 HELPER chọn crop
+    // =========================
+    const getTransform = (
+      width: number,
+      height: number
+    ) => {
+      const targetRatio = width / height;
+
+      if (ratio) {
+        const diff = Math.abs(ratio - targetRatio);
+
+        // 👉 gần giống → fill (đẹp)
+        if (diff < 0.2) {
+          return {
+            width,
+            height,
+            crop: "fill",
+            gravity: "center",
+          };
+        }
+      }
+
+      // 👉 khác nhiều → fit (an toàn)
+      return {
+        width,
+        height,
+        crop: "fit",
+        background: "white",
+      };
+    };
+
+    // =========================
+    // 🎯 chọn transformation
+    // =========================
+    let transformation: any[] = [];
 
     switch (type) {
       case "product":
-        transformation: [
-        {
-          width: 800,
-          height: 800,
-          crop: "fill",
-        }
-      ]
-        break;
-
-      case "slider":
         transformation = [
           {
-          width: 1200,
-          height: 450,
-        crop: "crop",
-    gravity: "center",
-          
+            width: 800,
+            height: 800,
+            crop: "fill",
           },
         ];
         break;
 
+      case "slider":
+        transformation = [getTransform(1200, 450)];
+        break;
+
       case "banner":
+        transformation = [getTransform(400, 250)];
+        break;
+
+      case "brand":
         transformation = [
           {
-            width: 400,
-            height: 250,
-            crop: "fill",
+            width: 300,
+            height: 300,
+            crop: "fit",
+            background: "white",
           },
         ];
         break;
@@ -59,6 +92,9 @@ export async function POST(req: Request) {
         transformation = [];
     }
 
+    // =========================
+    // 🚀 upload cloudinary
+    // =========================
     const result: any = await new Promise((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
@@ -74,12 +110,17 @@ export async function POST(req: Request) {
         .end(buffer);
     });
 
-    return Response.json({ url: result.secure_url });
+    return Response.json({
+      url: result.secure_url,
+    });
 
   } catch (err: any) {
     console.error(err);
     return Response.json(
-      { error: "Upload failed", detail: err.message },
+      {
+        error: "Upload failed",
+        detail: err.message,
+      },
       { status: 500 }
     );
   }
