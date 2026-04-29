@@ -13,6 +13,7 @@ import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import Topbar from "../components/TopBar";
 import MobileSidebar from "../components/MobileSidebar";
+import { uploadImage } from "@/lib/uploadImage";
 
 type SliderItem = {
     image: string | File;
@@ -91,72 +92,79 @@ export default function HomePageBanner() {
     const isFile = (value: any): value is File => {
         return value instanceof File;
     };
-    const handleSave = async () => {
-        if (!slider.length) {
-            alert("Cần ít nhất 1 slider");
-            return;
+   const handleSave = async () => {
+  if (!slider.length) {
+    alert("Cần ít nhất 1 slider");
+    return;
+  }
+
+  if (slider.some((s) => !s.image)) {
+    alert("Slider chưa đủ ảnh");
+    return;
+  }
+
+  if (!banners.top.image) {
+    alert("Thiếu banner trên");
+    return;
+  }
+
+  if (!banners.bottom.image) {
+    alert("Thiếu banner dưới");
+    return;
+  }
+
+  try {
+    setLoadingSave(true);
+
+    // 🔥 upload slider
+    const sliderUploaded = await Promise.all(
+      slider.map(async (item) => {
+        if (item.image instanceof File) {
+          const url = await uploadImage(item.image, "slider");
+          return { ...item, image: url };
         }
+        return item;
+      })
+    );
 
-        if (slider.some((s) => !s.image)) {
-            alert("Slider chưa đủ ảnh");
-            return;
-        }
-
-        if (!banners.top.image) {
-            alert("Thiếu banner trên");
-            return;
-        }
-
-        if (!banners.bottom.image) {
-            alert("Thiếu banner dưới");
-            return;
-        }
-        try {
-
-            setLoadingSave(true);
-            const sliderUploaded = await Promise.all(
-                slider.map(async (item) => {
-                    console.log("isFile(item.image)", isFile(item.image), item.image)
-                    if (isFile(item.image)) {
-
-                        const url = await upload(item.image, "slider");
-                        return { ...item, image: url };
-                    }
-
-                    return item;
-                })
-            );
-            let topImage = banners.top.image;
-            let bottomImage = banners.bottom.image;
-
-            if (isFile(topImage)) {
-                topImage = await upload(topImage, "banner");
-            }
-
-            if (isFile(bottomImage)) {
-                bottomImage = await upload(bottomImage, "banner");
-            }
-
-            const payload = {
-                slider: sliderUploaded,
-                banners: {
-                    top: { ...banners.top, image: topImage },
-                    bottom: { ...banners.bottom, image: bottomImage },
-                },
-            };
-            console.log("payload", payload)
-            await fetch("/api/homepage-banner", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-        } finally {
-            setLoadingSave(false);
-        }
-
+    // 🔥 upload banner
+    const uploadIfFile = async (
+      img: string | File,
+      type: "banner" | "slider"
+    ) => {
+      if (img instanceof File) {
+        return await uploadImage(img, type);
+      }
+      return img;
     };
 
+    const topImage = await uploadIfFile(banners.top.image, "banner");
+    const bottomImage = await uploadIfFile(banners.bottom.image, "banner");
+
+    // 🔥 payload
+    const payload = {
+      slider: sliderUploaded,
+      banners: {
+        top: { ...banners.top, image: topImage },
+        bottom: { ...banners.bottom, image: bottomImage },
+      },
+    };
+
+    await fetch("/api/homepage-banner", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi upload");
+  } finally {
+    setLoadingSave(false);
+  }
+};
     const handleReset = () => {
         setSlider(initialData.slider);
         setBanners(initialData.banners);
