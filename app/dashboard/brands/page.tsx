@@ -7,8 +7,8 @@ import Topbar from "../components/TopBar";
 import MobileSidebar from "../components/MobileSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import AddPBrandDialog from "./AddPBrandDialog";
-
-type Brand = {
+import { Suspense } from "react";
+type Brand = {  
     _id: string
     name: string
     slug: string
@@ -64,9 +64,10 @@ export default function BrandDetail() {
     setSelectedIds([]);
   };
 
-  c
+
     return (
         <>
+            <Suspense fallback={<div>Loading...</div>}>
             {/* ================= HEADER TOP ================= */}
             <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
             {/* ================= TOPBAR ================= */}
@@ -270,6 +271,7 @@ export default function BrandDetail() {
         brand={editingProduct}
         onSuccess={() => fetchProducts(search)}
       />
+      </Suspense>
         </>
     )
 }

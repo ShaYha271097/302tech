@@ -171,14 +171,6 @@ export default function ProductsClient() {
                                 <li className="breadcrumb-item ">
                                     <a
                                         className="text-decoration-none"
-                                        href="https://laptopgaming.com.vn/san-pham"
-                                    >
-                                        <span>Sản phẩm</span>
-                                    </a>
-                                </li>
-                                <li className="breadcrumb-item ">
-                                    <a
-                                        className="text-decoration-none"
                                         href="https://laptopgaming.com.vn/laptop"
                                     >
                                         <span>Laptop</span>

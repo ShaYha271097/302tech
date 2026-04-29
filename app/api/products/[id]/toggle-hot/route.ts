@@ -3,21 +3,23 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  req: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
+
   try {
+      const { id } = await context.params;
     const client = await clientPromise;
     const db = client.db("laptop-shop");
 
     // 👉 FIX QUAN TRỌNG
-    const { id } = await params;
+    
 
     const product = await db.collection("products").findOne({
       _id: new ObjectId(id),
     });
 
-    if (!product) {navigation
+    if (!product) {
       return NextResponse.json(
         { message: "Product not found" },
         { status: 404 }

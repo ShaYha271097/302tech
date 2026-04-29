@@ -95,7 +95,7 @@ export default function TopSellingSlider() {
                   <div className="all_sp_banchay_index">
 
                     <div className="all_img_sp_bc">
-                      <a href={p.slug}>
+                        <Link href={`/products/${p.slug}-${p._id}`}>
                         <div className="img_sp_bc">
                           <div>
                             <img src={p.mainImage} className="w-full h-auto" />
@@ -104,7 +104,7 @@ export default function TopSellingSlider() {
                 <img src={p.img2} className="w-full h-auto" />
               </div> */}
                         </div>
-                      </a>
+                      </Link>
                     </div>
 
                     <div className="all_content_sp">

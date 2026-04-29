@@ -87,12 +87,12 @@ export default function BannerSlider() {
                                     </div>
                                 </div>
                                 <div className="cart">
-                                    <a href="gio-hang">
+                                    {/* <a href="gio-hang">
                                         <i className="fas fa-shopping-bag" />
                                         <span className="cart-icon image-icon">
                                             <strong className="total_cart">0 </strong>
                                         </span>
-                                    </a>
+                                    </a> */}
                                 </div>
                             </div>
                         </div>
@@ -124,17 +124,17 @@ export default function BannerSlider() {
                         <div className="flex items-center gap-3">
 
                             {/* HOTLINE */}
-                            <a href="tel:0569656565" className="text-xs">
+                            <a href="tel:0946932067" className="text-xs">
                                 📞
                             </a>
 
                             {/* CART */}
-                            <div className="relative">
+                            {/* <div className="relative">
                                 🛒
                                 <span className="absolute -top-2 -right-2 text-[10px] bg-red-500 text-white rounded-full px-1">
                                     0
                                 </span>
-                            </div>
+                            </div> */}
 
 
 
@@ -244,7 +244,7 @@ export default function BannerSlider() {
                             className="flex items-center gap-3 py-2 border-b"
                         >
                             <img
-                                src={brand.img}
+                                src={brand.image}
                                 className="w-6 h-6 object-contain"
                             />
                             <span>{brand.name}</span>

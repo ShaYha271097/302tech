@@ -4,13 +4,15 @@ import { ObjectId } from "mongodb";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   const client = await clientPromise;
   const db = client.db("laptop-shop");
 
   const product = await db.collection("products").findOne({
-    _id: new ObjectId(params.id),
+    _id: new ObjectId(id),
   });
 
   if (!product) {
@@ -18,7 +20,7 @@ export async function PATCH(
   }
 
   await db.collection("products").updateOne(
-    { _id: new ObjectId(params.id) },
+    { _id: new ObjectId(id) },
     {
       $set: {
         isNew: !product.isNew,
