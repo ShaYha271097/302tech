@@ -81,7 +81,7 @@ export default function BannerSlider() {
                 >
                   <img
                     src={item.image}
-                    className="w-full h-full object-cover hover:scale-105 transition"
+                    className="w-full h-full object-fit-cover hover:scale-105 transition"
                     alt={`banner-${index}`}
                   />
                 </a>
