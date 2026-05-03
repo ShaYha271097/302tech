@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination/Pagination";
+import Breadcrumb from "./[slug]/Breadcrumb";
 
 
 type Filters = {
@@ -151,7 +152,7 @@ export default function ProductsClient() {
     const formatPrice = (price: number) => {
         return price?.toLocaleString("vi-VN") + "đ";
     };
-
+    console.log("brand....",brand)
     return (
         <div className="wrap-main w-clear">
             <div className="fixwidth">
@@ -159,32 +160,7 @@ export default function ProductsClient() {
                 <div className="content-main w-clear">
                     <div className="breadCrumbs_sanpham mb-3 mt-3">
                         <div>
-                            <ol className="breadcrumb">
-                                <li className="breadcrumb-item">
-                                    <a
-                                        className="text-decoration-none"
-                                        href="https://laptopgaming.com.vn/"
-                                    >
-                                        <span>Trang chủ</span>
-                                    </a>
-                                </li>
-                                <li className="breadcrumb-item ">
-                                    <a
-                                        className="text-decoration-none"
-                                        href="https://laptopgaming.com.vn/laptop"
-                                    >
-                                        <span>Laptop</span>
-                                    </a>
-                                </li>
-                                <li className="breadcrumb-item active">
-                                    <a
-                                        className="text-decoration-none"
-                                        href="https://laptopgaming.com.vn/dell"
-                                    >
-                                        <span>Dell</span>
-                                    </a>
-                                </li>
-                            </ol>
+                           <Breadcrumb brand={brand} />
                         </div>
                     </div>
                     <div className="site-content">
