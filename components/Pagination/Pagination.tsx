@@ -10,7 +10,7 @@ export default function Pagination({ page, totalPages, onChange }: any) {
   }
 
   return (
-    <div className="flex items-center gap-2 mt-6 justify-center">
+    <div className="flex items-center gap-2 mt-6 mb-6 justify-center">
 
       {/* PREV */}
       <button

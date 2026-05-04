@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { formatPrice, getVariantText } from "@/lib/format";
 
 // import "swiper/css";
 
@@ -48,11 +49,6 @@ export default function TopSellingSlider() {
 
   if (!mounted) return null;
 
-  const getVariantText = (variant: any) => {
-    if (!variant) return "";
-
-    return `${variant.cpu}, RAM ${variant.ram}, SSD ${variant.ssd}`;
-  };
 
   const getCheapestVariant = (variants: any[]) => {
     if (!variants?.length) return null;
@@ -61,11 +57,6 @@ export default function TopSellingSlider() {
       v.price < min.price ? v : min
     );
   };
-
-  const formatPrice = (price: number) => {
-    return price?.toLocaleString("vi-VN") + "đ";
-  };
-
 
   return (
     <div className="wrap_bottom wrap_flashsale">
