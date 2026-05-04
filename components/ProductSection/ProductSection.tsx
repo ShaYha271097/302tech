@@ -1,4 +1,5 @@
 
+import { formatPrice, getVariantText } from "@/lib/format";
 import Link from "next/link";
 
 
@@ -7,11 +8,6 @@ export default function ProductSection({ title, slug, products }: any) {
 
 
 
-    const getVariantText = (variant: any) => {
-        if (!variant) return "";
-
-        return `${variant.cpu}, RAM ${variant.ram}, SSD ${variant.ssd}`;
-    };
 
     const getCheapestVariant = (variants: any[]) => {
         if (!variants?.length) return null;
@@ -21,10 +17,7 @@ export default function ProductSection({ title, slug, products }: any) {
         );
     };
 
-    const formatPrice = (price: number) => {
-        return price?.toLocaleString("vi-VN") + "đ";
-    };
-
+ 
    
     return (
         <div className="wrap_bottom wrap_list">

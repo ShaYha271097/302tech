@@ -7,13 +7,16 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
   return (
     <div className="space-y-4">
       {/* 🔥 TÊN (dynamic luôn nếu muốn) */}
-      {/* <h1 className="text-xl font-semibold">
+      <h4 className="text-xl font-bold text-black">
         {product.name} - {selected.cpu} / {selected.ram} / {selected.ssd}
-      </h1> */}
+      </h4>
 
       {/* 🔥 Giá */}
-      <div className="text-2xl font-bold text-red-600">
-        {formatPrice(selected.price)}
+      <div className="text-2xl font-bold">
+        <span >Giá :</span>{" "}
+        <span className="text-red-600">
+          {formatPrice(selected.price)}
+        </span>
       </div>
 
       {/* 🔥 Options */}
@@ -26,10 +29,9 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
               key={v.id}
               onClick={() => setSelected(v)}
               className={`border px-3 py-2 rounded text-sm transition
-                ${
-                  isActive
-                    ? "border-red-500 bg-red-50 text-red-600"
-                    : "border-gray-300 hover:border-red-400"
+                ${isActive
+                  ? "border-red-500 bg-red-50 text-red-600"
+                  : "border-gray-300 hover:border-red-400"
                 }
               `}
             >

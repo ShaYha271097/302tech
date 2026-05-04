@@ -106,7 +106,7 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
 
       {/* Thumbnail */}
      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3">
-  {images.map((img, index) => (
+  {images.slice(0, 5).map((img, index) => (
     <button
       key={index}
       onClick={() => setCurrentImage(img)}

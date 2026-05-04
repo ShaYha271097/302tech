@@ -5,28 +5,35 @@ import { useState } from "react";
 import ProductGallery from "./ProductGallery";
 import ProductInfo from "./ProductInfo";
 import Breadcrumb from "./Breadcrumb";
-
+import Link from "next/link";
+import { useSimilarProducts } from "@/hooks/useSimilarProducts";
+import { formatPrice, getVariantText } from "@/lib/format";
 
 function getCheapestVariant(variants: any[]) {
-  return variants.reduce((min, v) =>
-    v.price < min.price ? v : min
-  );
+    return variants.reduce((min, v) =>
+        v.price < min.price ? v : min
+    );
 }
 
 export default function ProductDetailClient({ product }: any) {
-      const [selected, setSelected] = useState(
-    getCheapestVariant(product.variants)
-  );
+    const [selected, setSelected] = useState(
+        getCheapestVariant(product.variants)
+    );
+    const { data: similarProducts, loading } = useSimilarProducts(
+        product._id,
+        selected.price
+    );
+    console.log("similarProducts", similarProducts)
 
     return (
         <>
-            
+
             <div className="wrap-main w-clear">
                 <div className="fixwidth">
                     <div className="breadCrumbs_sp mt-3 mb-3">
                         <div className="breadCrumbs">
                             <div>
-                                 <Breadcrumb product={product} selected={selected} />
+                                <Breadcrumb product={product} selected={selected} />
                             </div>
                         </div>
                     </div>
@@ -36,14 +43,14 @@ export default function ProductDetailClient({ product }: any) {
                                 <ProductGallery mainImage={product.mainImage} gallery={product.gallery} />
                             </div>
                             <div className="right-pro-detail w-clear">
-                                   <ProductInfo
+                                <ProductInfo
                                     product={product}
                                     selected={selected}
                                     setSelected={setSelected}
-                                    />
+                                />
                             </div>
                             <div className="clear" />
-                            <div className="tabs-pro-detail">
+                            {/* <div className="tabs-pro-detail">
                                 <ul className="ul-tabs-pro-detail w-clear">
                                     <li className="active transition" data-tabs="info-pro-detail">
                                         Thông tin sản phẩm
@@ -55,10 +62,87 @@ export default function ProductDetailClient({ product }: any) {
                                         style={{ maxHeight: "none" }}
                                     ></div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
+                    <div className="title_sp_cungloai text-2xl font-bold text-center mt-8 mb-4">
+                        🔥 Sản phẩm tương tự
+                    </div>
+                   {loading ? (
+   <div className="w-full py-6 text-center text-gray-500">
+    Đang tải sản phẩm...
+  </div>
+) : (
+  <div className="content-main w-clear">
+    {similarProducts.length === 0 ? (
+  <div className="w-full py-6">
+  <div className="w-full bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-center">
+    <strong>Không tìm thấy kết quả</strong>
+  </div>
+</div>
+    ) : (
+      <div className="loadkhung_product1 mainkhung_product">
+        {similarProducts.map((item: any) => {
+          const cheapest = getCheapestVariant(item.variants);
 
+          return (
+            <div key={item._id} className="all_sp_banchay_index">
+              <div className="all_img_sp_bc">
+                <Link href={`/products/${item.slug}-${item._id}`}>
+                  <div className="img_sp_bc">
+                    <div>
+                      <img
+                        loading="lazy"
+                        width={1276}
+                        height={956}
+                        src={item.mainImage}
+                        className={'1'}
+                        alt="Laptop Tèo Em - Cần Thơ"
+                      />
+                    </div>
+                    <div className="img_sp_2">
+                      <img
+                        loading="lazy"
+                        width={1276}
+                        height={956}
+                        src="https://laptopgaming.com.vn/upload/2tr9/z7091979203318_3fa05743fb3591027b992c73476e1979.jpg"
+                        className={'1'}
+                        alt="Laptop Tèo Em - Cần Thơ"
+                      />
+                    </div>
+                  </div>
+                </Link>
+              </div>
+
+              <div className="all_content_sp">
+                <Link href={`/products/${item.slug}-${item._id}`}>
+                  <div className="name_sp text-split">
+                    {item.name} - {getVariantText(cheapest)}
+                  </div>
+                </Link>
+
+                <div className="gia_sp">
+                  <span>{formatPrice(cheapest?.price)}</span>
+                </div>
+
+                <div className="cart-product">
+                  <Link
+                    href={`/products/${item.slug}-${item._id}`}
+                    className="muangay_sp"
+                  >
+                    Mua ngay
+                  </Link>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+
+    <div className="mb-6"></div>
+  </div>
+)}
                 </div>
 
             </div>

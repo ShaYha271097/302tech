@@ -133,7 +133,7 @@ export default function BannerSlider() {
                                     title=""
                                 >
                                     <img
-                                        src="./assets/images/logo-bo-cong-thuong.png"
+                                        src="/assets/images/logo-bo-cong-thuong.png"
                                         className="w-[160px] sm:w-[160px] lg:w-[160px] object-contain"
                                         alt="Laptop 302 Tech "
                                     />
@@ -166,7 +166,7 @@ export default function BannerSlider() {
                             title=""
                         >
                             <img
-                                src="./assets/images/phone2.svg"
+                                src="/assets/images/phone2.svg"
                                 className="ringring"
                                 alt="Laptop 302 Tech "
                             />
@@ -181,7 +181,7 @@ export default function BannerSlider() {
                             title=""
                         >
                             <img
-                                src="./assets/images/zalo2.svg"
+                                src="/assets/images/zalo2.svg"
                                 className="ringring"
                                 alt="Laptop 302 Tech "
                             />
@@ -195,7 +195,7 @@ export default function BannerSlider() {
                             target="_blank"
                         >
                             <img
-                                src="./assets/images/messenger2.svg"
+                                src="/assets/images/messenger2.svg"
                                 className="ringring"
                                 alt="Laptop 302 Tech "
                             />
@@ -209,7 +209,7 @@ export default function BannerSlider() {
                             target="_blank"
                         >
                             <img
-                                src="./assets/images/map2.svg"
+                                src="/assets/images/map2.svg"
                                 className="ringring"
                                 alt="Laptop 302 Tech "
                             />

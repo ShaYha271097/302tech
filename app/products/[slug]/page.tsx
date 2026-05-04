@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ObjectId } from "mongodb";
 import ProductDetailClient from "./ProductDetailClient";
 import Header from "@/components/Header/Header";
-
+import Footer from "@/components/Footer/Footer";
 export default async function ProductDetail({ params }: any) {
     const { slug } = await params;
 
@@ -23,6 +23,7 @@ export default async function ProductDetail({ params }: any) {
         <>
             <Header />
             <ProductDetailClient product={product} />
+             <Footer /> 
         </>);
 }
 
