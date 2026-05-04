@@ -9,7 +9,7 @@ export default async function Home() {
 
 
 
-  const res = await fetch("http://localhost:3000/api/home", {
+  const res = await fetch("/api/home", {
     cache: "no-store",
   });
 
