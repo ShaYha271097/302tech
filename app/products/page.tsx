@@ -2,13 +2,16 @@
 import Header from "@/components/Header/Header";
 import ProductsClient from "./ProductsClient";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 
 export default function ProductsPage() {
   return (
     <>
       <Header />
-      <ProductsClient />
+       <Suspense fallback={<div>Loading...</div>}>
+        <ProductsClient />
+      </Suspense>
     </>
   );
 }
