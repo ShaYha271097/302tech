@@ -1,3 +1,4 @@
+import Link from "next/link";
 
 
 export default function BannerSlider() {
@@ -15,7 +16,7 @@ export default function BannerSlider() {
                             Cơ sở 2: 1073A Đ. Nguyễn Ảnh Thủ, Tân Chánh Hiệp, Trung Mỹ Tây, Hồ Chí Minh{" "}
 
                         </p>
-                        <p>Hotline: 094 693 2067 - 096 996 8785</p>
+                        <p>Hotline: 094 693 2067</p>
                         <p>Giờ làm việc: 9h - 20h (Thứ 2 - Chủ Nhật) </p>
                         <p>Email: ddrduongqua1027@gmail.com</p>
                     </div>
@@ -23,25 +24,16 @@ export default function BannerSlider() {
                         <div className="title_footer">Danh mục sản phẩm</div>
                         <div className="all_menu_footer">
                             <p>
-                                <a href="dien-thoai"> Điện thoại</a>
+                                <Link href="/products?category=dienthoai"> Điện thoại</Link>
                             </p>
                             <p>
-                                <a href="laptop"> Laptop</a>
+                                <Link href="/products?category=laptop"> Laptop</Link>
                             </p>
                             <p>
-                                <a href="tablet"> Tablet</a>
+                                <Link href="/products?category=tablet"> Tablet</Link>
                             </p>
                             <p>
-                                <a href="hang-cu-gia-tot"> Hàng cũ giá tốt</a>
-                            </p>
-                            <p>
-                                <a href="sim"> Sim</a>
-                            </p>
-                            <p>
-                                <a href="dich-vu-co-dinh"> Dịch vụ cố định</a>
-                            </p>
-                            <p>
-                                <a href="phu-kien"> Phụ kiện</a>
+                                <Link href="/products?category=phukien"> Phụ kiện</Link>
                             </p>
                         </div>
                     </div>

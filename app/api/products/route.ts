@@ -18,7 +18,7 @@ type Variant = {
 type Product = {
   brandId: ObjectId
   name: string
-  slug: string 
+  slug: string
   mainImage: string
   gallery: string[]
   variants: Variant[]
@@ -91,15 +91,18 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const priceParams = searchParams.getAll("price"); // 👈 nhiều giá
-    
+
     const ramParams = searchParams.getAll("ram");
     const ssdParams = searchParams.getAll("ssd");
     // 👉 params
     let page = Number(searchParams.get("page")) || 1;
     let limit = Number(searchParams.get("limit")) || 5;
     const brandParam = searchParams.get("brand") || "";
+
+    const category = searchParams.get("category") || "laptop";
+
     const search = searchParams.get("search") || "";
-const isHot = searchParams.get("isHot");
+    const isHot = searchParams.get("isHot");
     // 👉 validate
     if (page < 1) page = 1;
     if (limit < 1) limit = 5;
@@ -149,7 +152,7 @@ const isHot = searchParams.get("isHot");
     // =========================
     // FILTER: SEARCH
     // =========================
-    
+
     if (search) {
       pipeline.push({
         $match: {
@@ -210,22 +213,22 @@ const isHot = searchParams.get("isHot");
     // FILTER: SSD
     // =========================
     if (ssdParams.length > 0) {
-        pipeline.push({
-          $match: {
-            "variants.ssd": { $in: ssdParams }
+      pipeline.push({
+        $match: {
+          "variants.ssd": { $in: ssdParams }
         }
-    });
-}
-      // =========================
-  // FILTER: ISHOT
-  // =========================
-  if (isHot === "true") {
-    pipeline.push({
-      $match: {
-        isHot: true,
-      },
-    });
-  }
+      });
+    }
+    // =========================
+    // FILTER: ISHOT
+    // =========================
+    if (isHot === "true") {
+      pipeline.push({
+        $match: {
+          isHot: true,
+        },
+      });
+    }
     // =========================
     // COUNT PIPELINE
     // =========================
@@ -249,7 +252,15 @@ const isHot = searchParams.get("isHot");
     ]);
 
     const total = totalResult[0]?.total || 0;
-
+    if (category !== "laptop") {
+      return NextResponse.json({
+        products: [],
+        total: 0,
+        page: 1,
+        limit: 5,
+        totalPages: 0,
+      });
+    }
     return NextResponse.json({
       products,
       total,
@@ -269,88 +280,3 @@ const isHot = searchParams.get("isHot");
   }
 }
 
-
-// export async function PUT(
-//   req: NextRequest,
-//   { params }: { params: { id: string } }
-// ) {
-//   try {
-//     console.log("co vo day ko")
-//     const client = await clientPromise;
-//     const db = client.db("laptop-shop");
-
-//     const id = params.id;
-
-//     // 👉 validate id
-//     if (!ObjectId.isValid(id)) {
-//       return NextResponse.json(
-//         { message: "ID không hợp lệ" },
-//         { status: 400 }
-//       );
-//     }
-
-//     const body = await req.json();
-
-//     const {
-//       name,
-//       brandId,
-//       mainImage,
-//       gallery,
-//       variants,
-//     } = body;
-
-//     // 👉 validate
-//     if (!name || name.trim().length < 5) {
-//       return NextResponse.json(
-//         { message: "Tên không hợp lệ" },
-//         { status: 400 }
-//       );
-//     }
-
-//     if (!brandId) {
-//       return NextResponse.json(
-//         { message: "Thiếu brand" },
-//         { status: 400 }
-//       );
-//     }
-
-//     if (!variants || !variants.length) {
-//       return NextResponse.json(
-//         { message: "Chưa có cấu hình" },
-//         { status: 400 }
-//       );
-//     }
-
-//     // 👉 update data
-//     const updateData = {
-//       name,
-//       brandId: new ObjectId(brandId),
-//       mainImage,
-//       gallery,
-//       variants,
-//       updatedAt: new Date(),
-//     };
-
-//     const result = await db.collection("products").updateOne(
-//       { _id: new ObjectId(id) },
-//       { $set: updateData }
-//     );
-
-//     if (result.matchedCount === 0) {
-//       return NextResponse.json(
-//         { message: "Không tìm thấy sản phẩm" },
-//         { status: 404 }
-//       );
-//     }
-
-//     return NextResponse.json({
-//       message: "Cập nhật thành công",
-//     });
-
-//   } catch (error) {
-//     return NextResponse.json(
-//       { message: "Lỗi server", error: String(error) },
-//       { status: 500 }
-//     );
-//   }
-// }

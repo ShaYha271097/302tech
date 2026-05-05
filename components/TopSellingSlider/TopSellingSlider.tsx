@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formatPrice, getVariantText } from "@/lib/format";
+import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 
 // import "swiper/css";
 
@@ -50,13 +50,6 @@ export default function TopSellingSlider() {
   if (!mounted) return null;
 
 
-  const getCheapestVariant = (variants: any[]) => {
-    if (!variants?.length) return null;
-
-    return variants.reduce((min, v) =>
-      v.price < min.price ? v : min
-    );
-  };
 
   return (
     <div className="wrap_bottom wrap_flashsale">

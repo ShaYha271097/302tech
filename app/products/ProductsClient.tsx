@@ -5,43 +5,31 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination/Pagination";
 import Breadcrumb from "./[slug]/Breadcrumb";
-
-
-type Filters = {
-    price: string[];
-};
+import { useProducts } from "@/hooks/useProducts";
+import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 
 export default function ProductsClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const brand = searchParams.get("brand") || "";
-    const price = searchParams.getAll("price");
-    const selectedPrices = searchParams.getAll("price");
-    const ramSelected = searchParams.getAll("ram");
-    const ssdSelected = searchParams.getAll("ssd");
-    const [products, setProducts] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    // const [filters, setFilters] = useState({
-    //     price: [],
-    //     brand: [],
-    //     ram: [],
-    //     ssd: [],
-    // });
-
-    const [filters, setFilters] = useState<Filters>({
-        price: [],
-    });
-
-
+    const {
+        products,
+        loading,
+        page,
+        totalPages,
+        brand,
+        selectedPrices,
+        ramSelected,
+        ssdSelected,
+    } = useProducts();
+    const [showFilter, setShowFilter] = useState(false);
+    
     const handlePageChange = (newPage: number) => {
-        setPage(newPage);
-
         const params = new URLSearchParams(searchParams.toString());
 
         params.set("page", String(newPage));
+
         router.push(`/products?${params.toString()}`);
-        // 👉 scroll lên top sau khi đổi page
+
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
     const toggleSSD = (ssd: string) => {
@@ -93,66 +81,10 @@ export default function ProductsClient() {
 
         router.push(`/products?${params.toString()}`);
     };
+  
 
 
-
-    const fetchProducts = async (filters: any) => {
-        const params = new URLSearchParams();
-
-        if (filters.brand) params.append("brand", filters.brand);
-
-        filters.price.forEach((p: string) => params.append("price", p));
-        filters.ram?.forEach((r: string) => params.append("ram", r));
-        filters.ssd?.forEach((s: string) => params.append("ssd", s));
-
-        // 👉 ADD PAGE
-        params.append("page", filters.page || 1);
-        params.append("limit", filters.limit || 10);
-        if (filters.search) {
-        params.append("search", filters.search);
-        }
-
-        const res = await fetch(`/api/products?${params.toString()}`);
-        const data = await res.json();
-
-        setProducts(data.products);
-        setTotalPages(data.totalPages);
-    };
-    useEffect(() => {
-        const brand = searchParams.get("brand") || "";
-        const price = searchParams.getAll("price");
-        const ram = searchParams.getAll("ram");
-        const ssd = searchParams.getAll("ssd");
-        const page = Number(searchParams.get("page") || 1);
-        const search = searchParams.get("search") || "";
-
-        fetchProducts({
-            brand,
-            price,
-            ram,
-            ssd,
-            page,
-            limit: 5,
-            search
-        });
-    }, [searchParams.toString()]);
-
-    const getVariantText = (variant: any) => {
-        if (!variant) return "";
-        return `${variant.cpu}, RAM ${variant.ram}, SSD ${variant.ssd}`;
-    };
-
-    const getCheapestVariant = (variants: any[]) => {
-        if (!variants?.length) return null;
-        return variants.reduce((min, v) =>
-            v.price < min.price ? v : min
-        );
-    };
-
-    const formatPrice = (price: number) => {
-        return price?.toLocaleString("vi-VN") + "đ";
-    };
-    console.log("brand....",brand)
+ 
     return (
         <div className="wrap-main w-clear">
             <div className="fixwidth">
@@ -160,13 +92,24 @@ export default function ProductsClient() {
                 <div className="content-main w-clear">
                     <div className="breadCrumbs_sanpham mb-3 mt-3">
                         <div>
-                           <Breadcrumb brand={brand} />
+                            <Breadcrumb brand={brand} />
                         </div>
                     </div>
-                    <div className="site-content">
+
+                    {/* MOBILE BUTTON */}
+                    <div className="lg:hidden mb-3">
+                        <button
+                        onClick={() => setShowFilter(true)}
+                        className="w-full border px-4 py-2 rounded bg-white shadow-sm"
+                        >
+                        Bộ lọc
+                        </button>
+                    </div>
+
+                    <div className="site-content mb-6">
                         <div className="row-product">
                             <div className="col-product-left">
-                                <div className="w-64 bg-white rounded-xl border shadow-sm p-4 space-y-5">
+                                <div className="w-64 bg-white  border shadow-sm p-4 space-y-5">
 
                                     {/* TITLE */}
                                     <h2 className="font-semibold text-base border-b pb-2">Bộ lọc</h2>
@@ -289,68 +232,90 @@ export default function ProductsClient() {
                             </div>
                             <div className="col-product-right">
                                 <div className="all_sp_search">
-                                    <div className="loadkhung_product1 mainkhung_product ">
-                                        {products.map((item: any) => {
-                                            const cheapest = getCheapestVariant(item.variants);
-                                            return (
-                                                <div key={item._id} className="all_sp_banchay_index">
-                                                    <div className="all_img_sp_bc">
-                                                        <Link href={`/products/${item.slug}-${item._id}`}>
-                                                            <div className="img_sp_bc">
-                                                                <div>
-                                                                    <img
-                                                                        loading="lazy"
-                                                                        width={1276}
-                                                                        height={956}
-                                                                        src={item.mainImage}
-                                                                        className={'1'}
-                                                                        alt="Laptop Tèo Em - Cần Thơ "
-                                                                        decoding="async"
-                                                                    />{" "}
+
+                                    {loading ? (
+                                        <div className="w-full py-6 text-center text-gray-500">
+                                            Đang tải sản phẩm...
+                                        </div>
+                                    ) : products.length === 0 ? (
+                                        <div className="w-full ">
+                                            <div className="w-full bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-center">
+                                                <strong>Không tìm thấy kết quả</strong>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="loadkhung_product1 mainkhung_product">
+                                            {products.map((item: any) => {
+                                                const cheapest = getCheapestVariant(item.variants);
+
+                                                return (
+                                                    <div key={item._id} className="all_sp_banchay_index">
+                                                        <div className="all_img_sp_bc">
+                                                            <Link href={`/products/${item.slug}-${item._id}`}>
+                                                                <div className="img_sp_bc">
+                                                                    <div>
+                                                                        <img
+                                                                            loading="lazy"
+                                                                            width={1276}
+                                                                            height={956}
+                                                                            src={item.mainImage}
+                                                                            className="1"
+                                                                            alt="Laptop Tèo Em - Cần Thơ"
+                                                                            decoding="async"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="img_sp_2">
+                                                                        <img
+                                                                            loading="lazy"
+                                                                            width={1276}
+                                                                            height={956}
+                                                                            src="https://laptopgaming.com.vn/upload/2tr9/z7091979203318_3fa05743fb3591027b992c73476e1979.jpg"
+                                                                            className="1"
+                                                                            alt="Laptop Tèo Em - Cần Thơ"
+                                                                            decoding="async"
+                                                                        />
+                                                                    </div>
                                                                 </div>
-                                                                <div className="img_sp_2">
-                                                                    <img
-                                                                        loading="lazy"
-                                                                        width={1276}
-                                                                        height={956}
-                                                                        src="https://laptopgaming.com.vn/upload/2tr9/z7091979203318_3fa05743fb3591027b992c73476e1979.jpg"
-                                                                        className={'1'}
-                                                                        alt="Laptop Tèo Em - Cần Thơ "
-                                                                        decoding="async"
-                                                                    />{" "}
-                                                                </div>
-                                                            </div>
-                                                        </Link>
-                                                    </div>
-                                                    <div className="all_content_sp">
-                                                        <Link href={`/products/${item.slug}-${item._id}`}>
-                                                            <div className="name_sp text-split">
-                                                                {" "}
-                                                                {item.name} - {getVariantText(cheapest)}
-                                                            </div>
-                                                        </Link>
-                                                        <div className="gia_sp">
-                                                            <span> {formatPrice(cheapest?.price)}</span>
-                                                        </div>
-                                                        <div className="cart-product">
-                                                            <Link href={`/products/${item.slug}-${item._id}`}
-                                                                className="muangay_sp"
-                                                            >
-                                                                Mua ngay
                                                             </Link>
                                                         </div>
-                                                    </div>
-                                                </div>
 
-                                            )
-                                        })}
-                                    </div>
-                                    <Pagination
-                                        page={page}
-                                        totalPages={totalPages}
-                                        onChange={handlePageChange}
-                                    />
+                                                        <div className="all_content_sp">
+                                                            <Link href={`/products/${item.slug}-${item._id}`}>
+                                                                <div className="name_sp text-split">
+                                                                    {item.name} - {getVariantText(cheapest)}
+                                                                </div>
+                                                            </Link>
+
+                                                            <div className="gia_sp">
+                                                                <span>{formatPrice(cheapest?.price)}</span>
+                                                            </div>
+
+                                                            <div className="cart-product">
+                                                                <Link
+                                                                    href={`/products/${item.slug}-${item._id}`}
+                                                                    className="muangay_sp"
+                                                                >
+                                                                    Mua ngay
+                                                                </Link>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* 👉 Pagination chỉ hiện khi có data */}
+                                    {!loading && products.length > 0 && (
+                                        <Pagination
+                                            page={page}
+                                            totalPages={totalPages}
+                                            onChange={handlePageChange}
+                                        />
+                                    )}
+
                                 </div>
+
                                 <div className="clear" />
                             </div>
                         </div>

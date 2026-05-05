@@ -11,3 +11,12 @@ export  const getVariantText = (variant: any) => {
 
     return `${variant.cpu}, RAM ${variant.ram}, SSD ${variant.ssd}`;
   };
+
+
+
+export    const getCheapestVariant = (variants: any[]) => {
+        if (!variants?.length) return null;
+        return variants.reduce((min, v) =>
+            v.price < min.price ? v : min
+        );
+    };

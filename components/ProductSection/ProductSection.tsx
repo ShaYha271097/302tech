@@ -1,5 +1,5 @@
 
-import { formatPrice, getVariantText } from "@/lib/format";
+import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import Link from "next/link";
 
 
@@ -7,17 +7,6 @@ import Link from "next/link";
 export default function ProductSection({ title, slug, products }: any) {
 
 
-
-
-    const getCheapestVariant = (variants: any[]) => {
-        if (!variants?.length) return null;
-
-        return variants.reduce((min, v) =>
-            v.price < min.price ? v : min
-        );
-    };
-
- 
    
     return (
         <div className="wrap_bottom wrap_list">

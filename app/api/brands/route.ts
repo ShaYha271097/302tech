@@ -4,6 +4,8 @@ import clientPromise from "@/lib/mongodb";
 type Brand = {
   _id?: string;
   name: string;
+  image:string;
+  slug:string
   createdAt?: Date;
 };
 async function generateUniqueSlug(db: any, baseSlug: string) {
