@@ -41,15 +41,15 @@ export default function BannerSlider() {
                         <div className="title_footer">Thông tin bổ sung</div>
                         <div className="all_menu_footer">
                             <p>
-                                <a href="chinh-sach-hau-mai"> Về chúng tôi</a>
+                                <Link href="/about"> Về chúng tôi</Link>
                             </p>
                             <p>
-                                <a href="chinh-sach-hau-mai"> Liên hệ</a>
+                                <Link href="/contact"> Liên hệ</Link>
                             </p>
                             <p>
-                                <a href="chinh-sach-hau-mai"> Chính sách bảo hành</a>
+                                <Link href="/warranty"> Chính sách bảo hành</Link>
                             </p>
-                            <p>
+                            {/* <p>
                                 <a href="chinh-sach-bao-mat-thong-tin">
                                     {" "}
                                     Chính sách bảo mật thông tin
@@ -69,7 +69,7 @@ export default function BannerSlider() {
                             </p>
                             <p>
                                 <a href="chinh-sach-van-chuyen"> Thu Mua - Ship Cod Toàn Quốc</a>
-                            </p>
+                            </p> */}
                         </div>
                     </div>
                     <div className="col-md-3">

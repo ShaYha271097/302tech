@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-
+import { usePathname } from "next/navigation";
 export default function Breadcrumb({ product, selected, brand }: any) {
+  const pathname = usePathname();
 
   const isDetail = product && selected;
+  const pageTitles: Record<string, string> = {
+    "/warranty": "Chính sách bảo hành",
+    "/contact": "Liên hệ",
+     "/about": "Về chúng tôi",
+};
+
+const currentPageTitle = pageTitles[pathname];
 
   return (
     <ol className="flex items-center flex-wrap text-sm text-gray-500 gap-1">
@@ -18,11 +26,17 @@ export default function Breadcrumb({ product, selected, brand }: any) {
       <ChevronRight className="w-4 h-4" />
 
       {/* CATEGORY */}
-      <li>
-        <Link href="/products?category=laptop" className="hover:text-black">
-          Laptop
-        </Link>
-      </li>
+      {currentPageTitle  ? (
+        <li className="text-black font-medium">
+          {currentPageTitle}
+        </li>
+      ) : (
+        <li>
+          <Link href="/products?category=laptop" className="hover:text-black">
+            Laptop
+          </Link>
+        </li>
+      )}
 
       {/* BRAND */}
       {(brand || product?.brand) && (
