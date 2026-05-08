@@ -23,7 +23,6 @@ export default function ProductDetailClient({ product }: any) {
 
   return (
     <>
-
       <div className="wrap-main w-clear">
         <div className="fixwidth">
           <div className="breadCrumbs_sp mt-3 mb-3">
@@ -34,31 +33,70 @@ export default function ProductDetailClient({ product }: any) {
             </div>
           </div>
           <div className="clearfix">
-            <div className="grid-pro-detail w-clear">
-              <div className="left-pro-detail w-clear">
-                <ProductGallery mainImage={product.mainImage} gallery={product.gallery} />
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+              {/* IMAGE */}
+              <div className="xl:col-span-4">
+                <div className="bg-white  p-1 h-full">
+                  <ProductGallery
+                    mainImage={product.mainImage}
+                    gallery={product.gallery}
+                  />
+                </div>
               </div>
-              <div className="right-pro-detail w-clear">
-                <ProductInfo
-                  product={product}
-                  selected={selected}
-                  setSelected={setSelected}
-                />
+
+              {/* INFO */}
+              <div className="xl:col-span-4">
+                <div className="bg-white  p-1 h-full sticky top-4">
+
+                  <ProductInfo
+                    product={product}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+
+                </div>
               </div>
-              <div className="clear" />
-              {/* <div className="tabs-pro-detail">
-                                <ul className="ul-tabs-pro-detail w-clear">
-                                    <li className="active transition" data-tabs="info-pro-detail">
-                                        Thông tin sản phẩm
-                                    </li>
-                                </ul>
-                                <div className="all_noidung_sp">
-                                    <div
-                                        className="content-tabs-pro-detail info-pro-detail active all_gioithieu_index more_noidung"
-                                        style={{ maxHeight: "none" }}
-                                    ></div>
-                                </div>
-                            </div> */}
+
+              {/* DESCRIPTION */}
+              <div className="xl:col-span-4">
+                <div className="bg-white  p-1 h-full">
+
+                  <h2 className="text-lg font-semibold mb-4">
+                    Mô tả sản phẩm
+                  </h2>
+
+                  <div className="space-y-3 text-sm leading-6 text-gray-700">
+
+                    <div className="flex justify-between gap-3 border-b pb-2">
+                      <span>CPU</span>
+                      <span>{selected?.cpu}</span>
+                    </div>
+
+                    <div className="flex justify-between gap-3 border-b pb-2">
+                      <span>RAM</span>
+                      <span>{selected?.ram}</span>
+                    </div>
+
+                    <div className="flex justify-between gap-3 border-b pb-2">
+                      <span>SSD</span>
+                      <span>{selected?.ssd}</span>
+                    </div>
+
+                    <div className="flex justify-between gap-3 border-b pb-2">
+                      <span>VGA</span>
+                      <span>{selected?.gpu}</span>
+                    </div>
+
+                    <div className="flex justify-between gap-3 border-b pb-2">
+                      <span>Màn hình</span>
+                      <span>{selected?.screen}</span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
           <div className="title_sp_cungloai text-2xl font-bold text-center mt-8 mb-4">

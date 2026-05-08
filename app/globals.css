@@ -1305,3 +1305,10 @@ label {
     width: 95%;
   }
 }
+
+@media (max-width: 1024px) {
+    .col-product-right {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}

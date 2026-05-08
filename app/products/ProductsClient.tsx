@@ -7,6 +7,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import Breadcrumb from "./[slug]/Breadcrumb";
 import { useProducts } from "@/hooks/useProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
+import ProductFilter from "./ProductFilter";
 
 export default function ProductsClient() {
     const router = useRouter();
@@ -22,7 +23,6 @@ export default function ProductsClient() {
         ssdSelected,
     } = useProducts();
     const [showFilter, setShowFilter] = useState(false);
-    
     const handlePageChange = (newPage: number) => {
         const params = new URLSearchParams(searchParams.toString());
 
@@ -81,10 +81,10 @@ export default function ProductsClient() {
 
         router.push(`/products?${params.toString()}`);
     };
-  
 
 
- 
+
+
     return (
         <div className="wrap-main w-clear">
             <div className="fixwidth">
@@ -95,140 +95,28 @@ export default function ProductsClient() {
                             <Breadcrumb brand={brand} />
                         </div>
                     </div>
-
-                    {/* MOBILE BUTTON */}
                     <div className="lg:hidden mb-3">
                         <button
-                        onClick={() => setShowFilter(true)}
-                        className="w-full border px-4 py-2 rounded bg-white shadow-sm"
+                            onClick={() => setShowFilter(true)}
+                            className="w-full border px-4 py-3 rounded-xl bg-white shadow-sm"
                         >
-                        Bộ lọc
+                            Bộ lọc
                         </button>
                     </div>
-
                     <div className="site-content mb-6">
                         <div className="row-product">
-                            <div className="col-product-left">
-                                <div className="w-64 bg-white  border shadow-sm p-4 space-y-5">
-
-                                    {/* TITLE */}
-                                    <h2 className="font-semibold text-base border-b pb-2">Bộ lọc</h2>
-
-                                    {/* PRICE */}
-                                    <div>
-                                        <p className="text-sm font-medium mb-2">Giá</p>
-                                        <div className="space-y-3 text-sm">
-                                            {[
-                                                { label: "Dưới 10 triệu", value: "0-10000000" },
-                                                { label: "10 - 20 triệu", value: "10000000-20000000" },
-                                                { label: "Trên 20 triệu", value: "20000000-999999999" },
-                                            ].map((item) => (
-                                                <label
-                                                    key={item.value}
-                                                    className="!flex items-center gap-3 cursor-pointer hover:text-red-500 transition"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        className="accent-red-500 w-4 h-4"
-                                                        checked={selectedPrices.includes(item.value)} // ✅ đọc từ URL
-                                                        onChange={() => togglePrice(item.value)} // 👈 đổi function
-                                                    />
-                                                    <span>{item.label}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <hr />
-
-                                    {/* BRAND */}
-                                    <div>
-                                        <p className="text-sm font-medium mb-2">Hãng</p>
-                                        <div className="grid grid-cols-2 gap-2 text-sm">
-                                            {["Dell", "Lenovo", "HP", "Asus", "Acer", "MSI", "Macbook"].map((b) => {
-                                                const slug = b.toLowerCase();
-
-                                                return (
-                                                    <label
-                                                        key={b}
-                                                        className="!flex items-center gap-2 cursor-pointer hover:text-red-500 transition"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            className="accent-red-500"
-                                                            checked={brand === slug}
-                                                            onChange={() => {
-                                                                const params = new URLSearchParams(searchParams.toString());
-
-                                                                if (slug === brand) {
-                                                                    params.delete("brand"); // bỏ chọn
-                                                                } else {
-                                                                    params.set("brand", slug); // đổi brand
-                                                                }
-
-                                                                router.push(`/products?${params.toString()}`);
-                                                            }}
-                                                            readOnly                   // 👈 tránh warning React
-                                                        />
-                                                        <span className="leading-5">{b}</span>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <hr />
-
-                                    {/* RAM */}
-                                    <div>
-                                        <p className="text-sm font-medium mb-2">RAM</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {["8GB", "16GB", "32GB"].map((ram) => {
-                                                const active = ramSelected.includes(ram);
-
-                                                return (
-                                                    <button
-                                                        key={ram}
-                                                        onClick={() => toggleRam(ram)}
-                                                        className={`px-3 py-1 border rounded-full text-xs transition
-                                                        ${active
-                                                                ? "bg-red-500 text-white border-red-500"
-                                                                : "hover:border-red-500 hover:text-red-500"
-                                                            }`}
-                                                    >
-                                                        {ram}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <hr />
-
-                                    {/* SSD */}
-                                    <div>
-                                        <p className="text-sm font-medium mb-2">SSD</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {["256GB", "512GB", "1TB"].map((ssd) => {
-                                                const active = ssdSelected.includes(ssd);
-
-                                                return (
-                                                    <button
-                                                        key={ssd}
-                                                        onClick={() => toggleSSD(ssd)}
-                                                        className={`px-3 py-1 border rounded-full text-xs transition
-          ${active
-                                                                ? "bg-red-500 text-white border-red-500"
-                                                                : "hover:border-red-500 hover:text-red-500"
-                                                            }`}
-                                                    >
-                                                        {ssd}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
+                            <div className="hidden lg:block col-product-left">
+                                <ProductFilter
+                                    selectedPrices={selectedPrices}
+                                    togglePrice={togglePrice}
+                                    brand={brand}
+                                    searchParams={searchParams}
+                                    router={router}
+                                    ramSelected={ramSelected}
+                                    toggleRam={toggleRam}
+                                    ssdSelected={ssdSelected}
+                                    toggleSSD={toggleSSD}
+                                />
                             </div>
                             <div className="col-product-right">
                                 <div className="all_sp_search">
@@ -244,12 +132,12 @@ export default function ProductsClient() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="loadkhung_product1 mainkhung_product">
+                                        <div className="loadkhung_product1 mainkhung_product !grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
                                             {products.map((item: any) => {
                                                 const cheapest = getCheapestVariant(item.variants);
 
                                                 return (
-                                                    <div key={item._id} className="all_sp_banchay_index">
+                                                    <div key={item._id} className="all_sp_banchay_index !w-full">
                                                         <div className="all_img_sp_bc">
                                                             <Link href={`/products/${item.slug}-${item._id}`}>
                                                                 <div className="img_sp_bc">
@@ -322,6 +210,61 @@ export default function ProductsClient() {
                     </div>
 
                 </div>
+
+                {/* MOBILE FILTER */}
+         
+                  <>
+    {/* OVERLAY */}
+    <div
+        onClick={() => setShowFilter(false)}
+        className={`fixed inset-0 bg-black/40 z-40 lg:hidden transition-opacity duration-300
+        ${showFilter
+                ? "opacity-100 visible"
+                : "opacity-0 invisible"
+            }`}
+    />
+
+    {/* SIDEBAR */}
+    <div
+        className={`fixed top-0 left-0 h-full w-[300px] max-w-sm bg-white z-50 overflow-y-auto lg:hidden shadow-lg
+        transform transition-transform duration-300
+        ${showFilter
+                ? "translate-x-0"
+                : "-translate-x-full"
+            }`}
+    >
+
+        {/* HEADER */}
+        <div className="flex items-center justify-between p-3 border-b">
+                    <span className="font-semibold">Bộ lọc</span>
+
+                    <button
+                         onClick={() => setShowFilter(false)}
+                        className="text-xl"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+        {/* CONTENT */}
+        <div className="w-full mx-auto p-4">
+
+            <ProductFilter
+            showTitle={false}
+                selectedPrices={selectedPrices}
+                togglePrice={togglePrice}
+                brand={brand}
+                searchParams={searchParams}
+                router={router}
+                ramSelected={ramSelected}
+                toggleRam={toggleRam}
+                ssdSelected={ssdSelected}
+                toggleSSD={toggleSSD}
+            />
+
+        </div>
+    </div>
+</>
             </div>
         </div>
     );
