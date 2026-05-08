@@ -8,6 +8,7 @@ import Breadcrumb from "./Breadcrumb";
 import Link from "next/link";
 import { useSimilarProducts } from "@/hooks/useSimilarProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
+import ProductDescription from "./ProductDescription";
 
 
 
@@ -33,11 +34,11 @@ export default function ProductDetailClient({ product }: any) {
             </div>
           </div>
           <div className="clearfix">
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
 
               {/* IMAGE */}
-              <div className="xl:col-span-4">
-                <div className="bg-white  p-1 h-full">
+              <div className="md:col-span-1 lg:col-span-4">
+                <div className="bg-white p-1 h-full">
                   <ProductGallery
                     mainImage={product.mainImage}
                     gallery={product.gallery}
@@ -46,8 +47,8 @@ export default function ProductDetailClient({ product }: any) {
               </div>
 
               {/* INFO */}
-              <div className="xl:col-span-4">
-                <div className="bg-white  p-1 h-full sticky top-4">
+              <div className="md:col-span-1 lg:col-span-4">
+                <div className="bg-white p-1 h-full sticky top-4">
 
                   <ProductInfo
                     product={product}
@@ -59,42 +60,8 @@ export default function ProductDetailClient({ product }: any) {
               </div>
 
               {/* DESCRIPTION */}
-              <div className="xl:col-span-4">
-                <div className="bg-white  p-1 h-full">
-
-                  <h2 className="text-lg font-semibold mb-4">
-                    Mô tả sản phẩm
-                  </h2>
-
-                  <div className="space-y-3 text-sm leading-6 text-gray-700">
-
-                    <div className="flex justify-between gap-3 border-b pb-2">
-                      <span>CPU</span>
-                      <span>{selected?.cpu}</span>
-                    </div>
-
-                    <div className="flex justify-between gap-3 border-b pb-2">
-                      <span>RAM</span>
-                      <span>{selected?.ram}</span>
-                    </div>
-
-                    <div className="flex justify-between gap-3 border-b pb-2">
-                      <span>SSD</span>
-                      <span>{selected?.ssd}</span>
-                    </div>
-
-                    <div className="flex justify-between gap-3 border-b pb-2">
-                      <span>VGA</span>
-                      <span>{selected?.gpu}</span>
-                    </div>
-
-                    <div className="flex justify-between gap-3 border-b pb-2">
-                      <span>Màn hình</span>
-                      <span>{selected?.screen}</span>
-                    </div>
-
-                  </div>
-                </div>
+              <div className="md:col-span-2 lg:col-span-4">
+                <ProductDescription selected={selected} />
               </div>
 
             </div>
@@ -115,7 +82,7 @@ export default function ProductDetailClient({ product }: any) {
                   </div>
                 </div>
               ) : (
-                <div className="loadkhung_product1 mainkhung_product">
+                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                   {similarProducts.map((item: any) => {
                     const cheapest = getCheapestVariant(item.variants);
 
