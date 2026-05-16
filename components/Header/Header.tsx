@@ -36,7 +36,7 @@ export default function BannerSlider() {
                             loading="lazy"
                             width={1920}
                             height={127}
-                            src="https://laptopgaming.com.vn/upload/17r5/y/grey-black-new-arrival-mobile-banner-ad.png"
+                              src="/assets/images/header-top.png"
                             className={'1'}
                             alt="Laptop Tèo Em - Cần Thơ "
                             decoding="async"
@@ -50,9 +50,8 @@ export default function BannerSlider() {
                             <Link href="/" className="header_logo">
                                 <img
                                     loading="lazy"
-                                    width={2239}
-                                    height={1952}
-                                    src="https://laptopgaming.com.vn/upload/product/logo_teo_em.png"
+                                   
+                                       src="/assets/images/logoB.png"
                                     alt="Laptop Tèo Em - Cần Thơ "
                                     decoding="async"
                                 />
@@ -99,7 +98,7 @@ export default function BannerSlider() {
                     </div>
                 </div>
 
-                <div className="lg:hidden">
+                <div className="lg:hidden header_mobile">
 
                     {/* ROW 1 */}
                     <div className="flex items-center justify-between px-3 py-2 border-b">
@@ -114,9 +113,7 @@ export default function BannerSlider() {
 
                         {/* LOGO */}
                         <img
-                            width={90}
-                            height={90}
-                            src="https://laptopgaming.com.vn/upload/product/logo_teo_em.png"
+                            src="/assets/images/logoB.png"
                         // className="h-8 object-contain"
                         />
 

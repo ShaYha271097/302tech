@@ -31,11 +31,11 @@ export default function ProductFilter({
                     ].map((item) => (
                         <label
                             key={item.value}
-                            className="!flex items-center gap-3 cursor-pointer hover:text-red-500 transition"
+                            className="!flex items-center gap-3 cursor-pointer hover:text-[#ff7a00] transition"
                         >
                             <input
                                 type="checkbox"
-                                className="accent-red-500 w-4 h-4"
+                                className="accent-[#ff7a00] w-4 h-4"
                                 checked={selectedPrices.includes(item.value)} // ✅ đọc từ URL
                                 onChange={() => togglePrice(item.value)} // 👈 đổi function
                             />
@@ -57,11 +57,11 @@ export default function ProductFilter({
                         return (
                             <label
                                 key={b}
-                                className="!flex items-center gap-2 cursor-pointer hover:text-red-500 transition"
+                                className="!flex items-center gap-2 cursor-pointer hover:text-[#ff7a00] transition"
                             >
                                 <input
                                     type="checkbox"
-                                    className="accent-red-500"
+                                    className="accent-[#ff7a00]"
                                     checked={brand === slug}
                                     onChange={() => {
                                         const params = new URLSearchParams(searchParams.toString());
@@ -98,8 +98,8 @@ export default function ProductFilter({
                                 onClick={() => toggleRam(ram)}
                                 className={`px-3 py-1 border rounded-full text-xs transition
                                                         ${active
-                                        ? "bg-red-500 text-white border-red-500"
-                                        : "hover:border-red-500 hover:text-red-500"
+                                      ? "bg-[#ff7a00] text-white border-[#ff7a00]"
+                                        : "hover:border-[#ff7a00] hover:text-[#ff7a00]"
                                     }`}
                             >
                                 {ram}
@@ -124,8 +124,8 @@ export default function ProductFilter({
                                 onClick={() => toggleSSD(ssd)}
                                 className={`px-3 py-1 border rounded-full text-xs transition
           ${active
-                                        ? "bg-red-500 text-white border-red-500"
-                                        : "hover:border-red-500 hover:text-red-500"
+                                       ? "bg-[#ff7a00] text-white border-[#ff7a00]"
+                                        : "hover:border-[#ff7a00] hover:text-[#ff7a00]"
                                     }`}
                             >
                                 {ssd}
