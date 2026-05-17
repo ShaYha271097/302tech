@@ -188,7 +188,7 @@ export default function HomePageBanner() {
         <>
             {/* ================= HEADER TOP ================= */}
             <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
-            <Topbar title="homepage-banner" />
+            <Topbar title="Quản lý banner" />
             <div className="flex min-h-screen bg-gray-50">
                 {/* SIDEBAR */}
                 <section className="w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">

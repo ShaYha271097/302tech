@@ -8,11 +8,12 @@ import MobileSidebar from "../components/MobileSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import AddPBrandDialog from "./AddPBrandDialog";
 import { Suspense } from "react";
-type Brand = {  
+import DashboardPagination from "../components/DashboardPagination";
+type Brand = {
     _id: string
     name: string
     slug: string
-    image:string
+    image: string
     createdAt: string
 }
 
@@ -30,39 +31,40 @@ export default function BrandDetail() {
     const [editingProduct, setEditingProduct] = useState<any>(null);
     const [openSidebar, setOpenSidebar] = useState(false);
     const [brands, setBrands] = useState<Brand[]>([]);
-      const totalPages = Math.ceil(total / limit)
-      const start = (page - 1) * limit + 1
-  const end = Math.min(page * limit, total)
+    const totalPages = Math.ceil(total / limit)
+    const start = (page - 1) * limit + 1
+    const end = Math.min(page * limit, total)
     useEffect(() => {
         fetch("/api/brands")
             .then(res => res.json())
             .then(data => {
                 console.log("data>>>", data)
-                setBrands(data)
+                setBrands(data?.brands)
             });
     }, []);
 
 
-  const fetchProducts = async (keyword: string) => {
-    const res = await fetch(`/api/brands?search=${keyword}`);
-    const data = await res.json();
-    setBrands(data);
-  };
- const handleBulkDelete = async () => {
-    const ok = confirm(`Xóa ${selectedIds.length} thương hiệu ?`);
-    if (!ok) return;
+    const fetchProducts = async (keyword: string) => {
+        const res = await fetch(`/api/brands?search=${keyword}`);
+        const dataBrands = await res.json();
+        console.log("dataBrands", dataBrands)
+        setBrands(dataBrands?.brands);
+    };
+    const handleBulkDelete = async () => {
+        const ok = confirm(`Xóa ${selectedIds.length} thương hiệu ?`);
+        if (!ok) return;
 
-    await fetch("/api/brands/bulk-delete", {
-      method: "POST",
-      body: JSON.stringify({ ids: selectedIds }),
-    });
+        await fetch("/api/brands/bulk-delete", {
+            method: "POST",
+            body: JSON.stringify({ ids: selectedIds }),
+        });
 
-    setBrands((prev) =>
-      prev.filter((p) => !selectedIds.includes(p._id))
-    );
+        setBrands((prev) =>
+            prev.filter((p) => !selectedIds.includes(p._id))
+        );
 
-    setSelectedIds([]);
-  };
+        setSelectedIds([]);
+    };
 
 
     return (
@@ -70,17 +72,17 @@ export default function BrandDetail() {
             {/* ================= HEADER TOP ================= */}
             <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
             {/* ================= TOPBAR ================= */}
-            <Topbar title="Sản phẩm" showSearch showAdd 
-            onAdd={() => {
-                setEditingProduct(null);
-                setOpen(true);
-            }} 
-            onSearch={(value) => {
-                setSearch(value);
-                router.push(`?search=${value}`);
-            }} 
-            selectedCount={selectedIds.length}
-             onDelete={handleBulkDelete}
+            <Topbar title="Quản lý thương hiệu" showSearch showAdd
+                onAdd={() => {
+                    setEditingProduct(null);
+                    setOpen(true);
+                }}
+                onSearch={(value) => {
+                    setSearch(value);
+                    router.push(`?search=${value}`);
+                }}
+                selectedCount={selectedIds.length}
+                onDelete={handleBulkDelete}
             />
 
             <div className="flex min-h-screen bg-gray-50">
@@ -90,16 +92,22 @@ export default function BrandDetail() {
 
                 {/* MOBILE SIDEBAR */}
                 {/* <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} /> */}
-               
-        <section className="flex-1 p-4 overflow-y-auto">
+
+                <section className="flex-1 px-4 py-2.5 overflow-y-auto">
                     {/* ================= DESKTOP TABLE ================= */}
-                   <div className="hidden md:block border rounded-lg overflow-hidden">
-                        <table className="w-full text-sm">
-                            <thead className="bg-blue-100 text-left">
-                                <tr>
-                                    <th className="p-2">
+
+                    <div className="hidden md:block bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
+
+                        <table className="w-full text-sm  border-collapse">
+
+                            {/* HEADER */}
+                            <thead className=" !border-b !border-[#E5E7EB]">
+                                <tr className="text-[#111111]">
+
+                                    <th className="px-4 py-2.5 w-[50px] text-center align-middle">
                                         <input
                                             type="checkbox"
+                                            className="accent-[#ff7a00] w-4 h-4 align-middle"
                                             checked={
                                                 brands.length > 0 &&
                                                 selectedIds.length === brands.length
@@ -113,163 +121,148 @@ export default function BrandDetail() {
                                             }}
                                         />
                                     </th>
-                                    <th className="p-2">Hình ảnh</th>
-                                    <th className="p-2">Tên</th>
-                                    <th className="p-2">Slug</th>
-                                    <th className="p-2">Ngày Tạo</th>
-                                    <th className="p-2">Hành động</th>
+
+                                    <th className="px-4 py-2.5 text-left font-semibold">
+                                        Hình ảnh
+                                    </th>
+
+                                    <th className="px-4 py-2.5 text-left font-semibold">
+                                        Tên thương hiệu
+                                    </th>
+
+                                    <th className="px-4 py-2.5 text-left font-semibold">
+                                        Slug
+                                    </th>
+
+                                    <th className="px-4 py-2.5 text-left font-semibold">
+                                        Ngày tạo
+                                    </th>
+
+                                    <th className="px-4 py-2.5 text-left font-semibold">
+                                        Hành động
+                                    </th>
+
                                 </tr>
                             </thead>
+
+                            {/* BODY */}
                             <tbody>
                                 {brands.map((p) => {
                                     return (
-                                        <React.Fragment key={p._id}>
+                                        <tr
+                                            key={p._id}
+                                            className="
+              !border-b !border-[#F3F4F6] 
+              hover:bg-[#FFF7ED]
+              transition-all duration-200
+            "
+                                        >
 
-                                            {/* ROW */}
-                                            <tr className="border-b hover:bg-gray-200" style={{ borderBottom: "0.5px solid #d1d5db" }}>
-                                                <td className="p-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedIds.includes(p._id)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedIds((prev) => [...prev, p._id]);
-                                                            } else {
-                                                                setSelectedIds((prev) =>
-                                                                    prev.filter((id) => id !== p._id)
-                                                                );
-                                                            }
-                                                        }}
-                                                    />
-                                                </td>
-                                                <td className="p-2">
-                                                    <img
-                                                          src={p.image || "https://via.placeholder.com/60"}
-                                                        className="w-10 h-10 object-cover rounded"
-                                                    />
-                                                    </td>
-                                                <td className="p-2 text-red-500">
+                                            {/* CHECKBOX */}
+                                            <td className="px-4 py-2.5">
+                                                <input
+                                                    type="checkbox"
+                                                    className="accent-[#ff7a00] w-4 h-4"
+                                                    checked={selectedIds.includes(p._id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedIds((prev) => [...prev, p._id]);
+                                                        } else {
+                                                            setSelectedIds((prev) =>
+                                                                prev.filter((id) => id !== p._id)
+                                                            );
+                                                        }
+                                                    }}
+                                                />
+                                            </td>
+
+                                            {/* IMAGE */}
+                                            <td className="px-4 py-2.5">
+                                                <img
+                                                    src={p.image || "https://via.placeholder.com/60"}
+                                                    className="
+                  w-12 h-12
+                  object-cover
+                  rounded-lg
+                  border border-[#E5E7EB]
+                "
+                                                />
+                                            </td>
+
+                                            {/* NAME */}
+                                            <td className="px-4 py-2.5">
+                                                <p className="font-semibold text-[#111111] mb-0">
                                                     {p.name}
-                                                </td>
+                                                </p>
+                                            </td>
 
-                                                <td className="p-2">
+                                            {/* SLUG */}
+                                            <td className="px-4 py-2.5">
+                                                <span className="text-[#6B7280]">
                                                     {p.slug}
-                                                </td>
+                                                </span>
+                                            </td>
 
-                                                <td className="p-2">
-                                                    {new Date(p.createdAt).toLocaleDateString("vi-VN")}
-                                                </td>
+                                            {/* DATE */}
+                                            <td className="px-4 py-2.5 text-[#6B7280]">
+                                                {new Date(p.createdAt).toLocaleDateString("vi-VN")}
+                                            </td>
 
-                                                <td className="p-2">
-                                                    <button
-                                                        className="px-2 py-1 text-blue-600 bg-blue-50 rounded"
-                                                        onClick={() => {
-                                                            setEditingProduct(p);
-                                                            setOpen(true);
-                                                        }}
-                                                    >
-                                                        Sửa
-                                                    </button>
-                                                </td>
+                                            {/* ACTION */}
+                                            <td className="px-4 py-2.5">
+                                                <button
+                                                    className="
+                  px-3 py-2
+                  rounded-lg
+                  bg-[#FFF3E8]
+                  text-[#ff7a00]
+                  font-medium
+                  hover:bg-[#ff7a00]
+                  hover:text-white
+                  transition-all duration-300
+                "
+                                                    onClick={() => {
+                                                        setEditingProduct(p);
+                                                        setOpen(true);
+                                                    }}
+                                                >
+                                                    Sửa
+                                                </button>
+                                            </td>
 
-                                            </tr>
-                                        </React.Fragment>
+                                        </tr>
                                     );
                                 })}
                             </tbody>
+
                         </table>
                     </div>
-                     {/* ================= PAGINATION ================= */}
-                <div className="flex flex-col md:flex-row gap-3 items-center justify-between mt-4">
-
-                    {/* LEFT */}
-                    <div className="flex items-center gap-2">
-                        <span>Hiển thị:</span>
-
-                        <select
-                            value={limit}
-                            onChange={(e) => {
-                                setLimit(Number(e.target.value));
-                                setPage(1);
-                            }}
-                            className="border rounded px-2 py-1"
-                        >
-                            <option value={15}>15</option>
-                            <option value={20}>20</option>
-                        </select>
-                    </div>
-
-                    {/* CENTER */}
-                    <div className="flex items-center gap-2">
-
-              <button
-                onClick={() => setPage(1)}
-                disabled={page === 1}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ⏮
-              </button>
-
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ◀
-              </button>
-
-              <input
-                type="number"
-                value={page}
-                onChange={(e) => {
-                  let val = Number(e.target.value);
-                  if (val < 1) val = 1;
-                  if (val > totalPages) val = totalPages || 1;
-                  setPage(val);
-                }}
-                className="w-12 text-center border rounded"
-              />
-
-              <span>/ {totalPages}</span>
-
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ▶
-              </button>
-
-              <button
-                onClick={() => setPage(totalPages)}
-                disabled={page === totalPages}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ⏭
-              </button>
-
-            </div>
-
-                    {/* RIGHT */}
-                    <div>
-              {start}-{end} trong {total} laptop
-            </div>
-
-                </div>
+                    {/* ================= PAGINATION ================= */}
+                    <DashboardPagination
+                        page={page}
+                        setPage={setPage}
+                        limit={limit}
+                        setLimit={setLimit}
+                        totalPages={totalPages}
+                        start={start}
+                        end={end}
+                        total={total}
+                        label="thương hiệu"
+                    />
                 </section>
 
-               
+
             </div>
 
 
 
             <AddPBrandDialog
-        open={open}
-        setOpen={setOpen}
-        mode={editingProduct ? "edit" : "create"}
-        brand={editingProduct}
-        onSuccess={() => fetchProducts(search)}
-      />
+                open={open}
+                setOpen={setOpen}
+                mode={editingProduct ? "edit" : "create"}
+                brand={editingProduct}
+                onSuccess={() => fetchProducts(search)}
+            />
         </>
     )
 }

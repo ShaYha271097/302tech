@@ -146,7 +146,7 @@ export default function ProductDetail() {
       {/* ================= HEADER TOP ================= */}
       <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
       {/* ================= TOPBAR ================= */}
-      <Topbar title="Sản phẩm" showSearch showAdd onAdd={() => {
+      <Topbar title="Quản lý sản phẩm" showSearch showAdd onAdd={() => {
         setEditingProduct(null);
         setOpen(true);
       }} onSearch={(value) => {

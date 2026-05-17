@@ -34,13 +34,51 @@ function toSlug(str: string) {
     .trim()
     .replace(/\s+/g, "-"); // space -> -
 }
-export async function GET() {
-  const client = await clientPromise;
-  const db = client.db("laptop-shop");
+export async function GET(req:Request) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("laptop-shop");
 
-  const brands = await db.collection("brands").find().toArray();
+    // query
+    const { searchParams } = new URL(req.url);
 
-  return NextResponse.json(brands);
+    const page = Number(searchParams.get("page")) || 1;
+    const limit = Number(searchParams.get("limit")) || 10;
+
+    const skip = (page - 1) * limit;
+
+    // total
+    const total = await db.collection("brands").countDocuments();
+
+    // data
+    const brands = await db
+      .collection("brands")
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    // total pages
+    const totalPages = Math.ceil(total / limit);
+
+    return NextResponse.json({
+      brands,
+      total,
+      page,
+      limit,
+      totalPages,
+    });
+
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: "Server Error",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
 
 export async function POST(req: Request) {

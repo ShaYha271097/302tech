@@ -247,7 +247,7 @@ export default function AddPBrandDialog({
               {/* 🔥 uploading overlay */}
               {uploading && (
                 <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                  <Loader2 className="w-5 h-5 animate-spin text-[#ff7a00]" />
                 </div>
               )}
             </label>
@@ -255,24 +255,51 @@ export default function AddPBrandDialog({
         </div>
 
         {/* FOOTER */}
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Huỷ</Button>
-          </DialogClose>
+      <DialogFooter>
 
-          <Button disabled={loading || uploading} onClick={handleSubmit}>
-            {(loading || uploading) && (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            )}
-            {loading ? "Đang lưu..." : "Lưu"}
-          </Button>
-        </DialogFooter>
+  {/* CANCEL */}
+  <DialogClose asChild>
+    <Button
+      variant="outline"
+      className="
+        border border-[#E5E7EB]
+        text-[#6B7280]
+        hover:bg-[#F9FAFB]
+        hover:text-[#111111]
+        transition-all duration-300
+      "
+    >
+      Huỷ
+    </Button>
+  </DialogClose>
+
+  {/* SAVE */}
+  <Button
+    disabled={loading || uploading}
+    onClick={handleSubmit}
+    className="
+      bg-[#ff7a00]
+      hover:bg-[#ea6d00]
+      text-white
+      border-none
+      transition-all duration-300
+      disabled:opacity-60
+    "
+  >
+    {(loading || uploading) && (
+      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+    )}
+
+    {loading ? "Đang lưu..." : "Lưu"}
+  </Button>
+
+</DialogFooter>
 
         {/* FULL LOADING */}
         {loading && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <div className="bg-white px-6 py-4 rounded-xl flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+              <Loader2 className="w-5 h-5 animate-spin text-[#ff7a00]" />
               <span>Đang xử lý...</span>
             </div>
           </div>
