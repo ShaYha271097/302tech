@@ -147,9 +147,8 @@ export default function AddProductDialog({
     useEffect(() => {
         const fetchBrands = async () => {
             const res = await fetch("/api/brands")
-            const data = await res.json()
-            console.log("data", data)
-            setBrands(data)
+            const dataBrands = await res.json()
+            setBrands(dataBrands?.brands)
         }
 
         fetchBrands()
@@ -176,7 +175,7 @@ export default function AddProductDialog({
             const mainImageUrl =
                 typeof mainImage === "string"
                     ? mainImage
-                    : await upload(mainImage,"product");
+                    : await upload(mainImage, "product");
 
             // 👉 GALLERY (upload song song nhưng ổn định hơn)
             const galleryUrls = await Promise.all(
@@ -184,7 +183,7 @@ export default function AddProductDialog({
                     .filter((i) => i !== mainImage)
                     .map(async (img) => {
                         if (typeof img === "string") return img;
-                        return await upload(img,"product");
+                        return await upload(img, "product");
                     })
             );
 
@@ -230,8 +229,8 @@ export default function AddProductDialog({
             setLoading(false);
         }
     };
-    const upload = async (file: File, type: "product" | "slider" | "banner")=> {
-         setUploading(true);
+    const upload = async (file: File, type: "product" | "slider" | "banner") => {
+        setUploading(true);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -327,424 +326,915 @@ export default function AddProductDialog({
     const isInvalid = count < 2 || count > 6;
     return (
         <>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-4xl flex flex-col max-h-[85vh]" showCloseButton={false}>
+            <Dialog open={open} onOpenChange={setOpen} >
+                <DialogContent
+                    showCloseButton={false}
+                    className="
+        !w-[96vw]
+        !max-w-[1000px]
+        !max-h-[92vh]
+        overflow-hidden
+        p-0
+        rounded-2xl
+        border border-[#E5E7EB]
+        bg-[#FAFAFA]
+    "
+                >
 
                     {/* HEADER */}
-                    <DialogHeader className="flex flex-row items-center justify-between">
-                        <DialogTitle className="text-lg font-semibold">
-                            {mode === "create" ? "Thêm Sản Phẩm" : "Sửa Sản Phẩm"}
-                        </DialogTitle>
+                    <DialogHeader
+                        className="
+                !px-7 !py-5
+                bg-white
+                !border-b !border-[#ECECEC]
+            "
+                    >
+                        <div className="flex items-center justify-between">
 
-                        <DialogClose asChild>
-                            <button>
-                                <X className="w-5 h-5" />
-                            </button>
-                        </DialogClose>
+                            {/* LEFT */}
+                            <div className="flex items-center gap-4">
+
+                                <div
+                                    className="
+                            !w-14 !h-14
+                            rounded-2xl
+                            bg-[#FFF1E7]
+                            flex items-center justify-center
+                        "
+                                >
+                                    <i className="fas fa-box-open text-[24px] text-[#ff7a00]" />
+                                </div>
+
+                                <div>
+                                    <DialogTitle
+                                        className="
+                                text-[28px]
+                                font-bold
+                                text-[#111827]
+                            "
+                                    >
+                                        {mode === "create"
+                                            ? "Thêm Sản Phẩm"
+                                            : "Sửa Sản Phẩm"}
+                                    </DialogTitle>
+
+                                    <p className="text-sm text-[#6B7280] mt-1">
+                                        Quản lý thông tin laptop, cấu hình và hình ảnh sản phẩm
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            {/* CLOSE */}
+                            <DialogClose asChild>
+                                <button
+                                    className="
+                            !w-10 !h-10
+                            !rounded-xl
+                            !border !border-[#E5E7EB]
+                            bg-white
+                            flex items-center justify-center
+                            hover:bg-[#FFF4EC]
+                            hover:border-[#FED7AA]
+                            transition-all
+                        "
+                                >
+                                    <X className="!w-5 !h-5" />
+                                </button>
+                            </DialogClose>
+
+                        </div>
                     </DialogHeader>
 
                     {/* BODY */}
                     <div
                         ref={bodyRef}
-                        className={`flex-1 overflow-y-auto space-y-4 pr-2 ${loading ? "pointer-events-none opacity-60" : ""
-                            }`}
+                        className={`
+                !px-7 !py-3
+                !max-h-[78vh]
+                overflow-y-auto
+                space-y-6
+                ${loading ? "pointer-events-none opacity-60" : ""}
+            `}
                     >
 
-                        {/* Brand */}
-                        <div>
-                            <div className="flex items-center justify-between ">
-                                <label className="text-sm font-medium">Thương hiệu</label>
+                        {/* TOP */}
+                        <div className="grid grid-cols-3 gap-5 items-start mb-0">
 
-                                <button
-                                    type="button"
-                                    className="text-sm text-blue-600"
-                                    onClick={() => setOpenBrand(true)}
-                                >
-                                    + Thêm
-                                </button>
+                            {/* BRAND */}
+                            <div className="flex flex-col">
+
+                                <div className="flex items-center justify-between ">
+
+                                    <label className="text-[15px] font-semibold text-[#111827] mb-2">
+                                        Thương hiệu <span className="text-red-500">*</span>
+                                    </label>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setOpenBrand(true)}
+                                        className="
+                                        text-[#ff7a00]
+                                        text-sm
+                                        font-semibold
+                                        hover:underline
+                                    "
+                                    >
+                                        + Thêm
+                                    </button>
+
+                                </div>
+
+                                <div className="relative">
+
+                                    <select
+                                        value={brandId}
+                                        onChange={(e) => setBrandId(e.target.value)}
+                                        className="
+                                        w-full !h-[35px]
+                                        rounded-xl
+                                        border border-[#DCDCDC]
+                                        bg-white
+                                        px-3 pr-10
+                                        outline-none
+                                        text-[15px]
+                                        appearance-none
+                                        transition-all
+                                        focus:border-[#ff7a00]
+                                        focus:ring-4
+                                        focus:ring-[#FFF3E8]
+                                    "
+                                    >
+                                        {brands.map((b: any) => (
+                                            <option
+                                                key={b._id?.toString()}
+                                                value={b._id}
+                                            >
+                                                {b.name}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <i
+                                        className="
+                                        fas fa-chevron-down
+                                        absolute right-3 top-1/2
+                                        -translate-y-1/2
+                                        text-[12px]
+                                        text-[#9CA3AF]
+                                        pointer-events-none
+                                    "
+                                    />
+
+                                </div>
+
                             </div>
 
-                            <select
-                                className="w-full border rounded-md p-2 mt-1"
-                                value={brandId}
-                                onChange={(e) => setBrandId(e.target.value)}
-                            >
-                                {brands.map((b: any) => (
-                                    <option key={b._id?.toString()} value={b._id}>
-                                        {b.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                            {/* NAME */}
+                            <div className="flex flex-col">
 
-                        {/* Name */}
-                        <div>
-                            <label className="text-sm font-medium">Tên Sản Phẩm</label>
-                            <input
-                                className={`w-full border rounded-md p-2 mt-1 ${errorName ? "border-red-500" : ""
-                                    }`}
-                                placeholder="ThinkPad X1 Carbon Gen 9"
-                                value={name}
-                                onChange={(e) => {
-                                    const value = e.target.value
-                                    setName(value)
-
-                                    if (!value.trim()) {
-                                        setErrorName("Không được để trống")
-                                    } else if (value.length < 5) {
-                                        setErrorName("Tên phải ít nhất 5 ký tự")
-                                    } else {
-                                        setErrorName("")
-                                    }
-                                }}
-                            />
-
-                            {errorName && (
-                                <p className="text-red-500 text-sm mt-1">{errorName}</p>
-                            )}
-                        </div>
-                        {/* STATUS */}
-                        <div >
-
-                            <label className="text-sm font-medium">Trạng thái sản phẩm</label>
-
-                            <div className="flex items-center gap-6 border rounded-md p-2 ">
-
-                                {/* HOT */}
-                                <label className="!flex items-center gap-2 cursor-pointer m-0">
-                                    <input
-                                        type="checkbox"
-                                        checked={isHot}
-                                        onChange={(e) => setIsHot(e.target.checked)}
-                                        className="accent-yellow-500"
-                                    />
-                                    <span className="text-sm">🔥 Hot</span>
+                                <label className="text-[15px] font-semibold text-[#111827] mb-2">
+                                    Tên Sản Phẩm <span className="text-red-500">*</span>
                                 </label>
 
-                                {/* NEW */}
-                                <label className="!flex items-center gap-2 cursor-pointer m-0">
-                                    <input
-                                        type="checkbox"
-                                        checked={isNew}
-                                        onChange={(e) => setIsNew(e.target.checked)}
-                                        className="accent-green-500"
-                                    />
-                                    <span className="text-sm">🆕 New</span>
-                                </label>
+                                <input
+                                    value={name}
+                                    placeholder="Nhập tên sản phẩm"
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setName(value);
 
-                            </div>
-                        </div>
-                        {/* Images */}
-                        <div>
+                                        if (!value.trim()) {
+                                            setErrorName("Không được để trống");
+                                        } else if (value.length < 5) {
+                                            setErrorName("Tên phải ít nhất 5 ký tự");
+                                        } else {
+                                            setErrorName("");
+                                        }
+                                    }}
+                                    className={`
+                                    w-full !h-[35px]
+                                    rounded-xl
+                                    border
+                                    bg-white
+                                    px-4
+                                    outline-none
+                                    text-[15px]
+                                    transition-all
+                                    focus:ring-4
+                                    focus:ring-[#FFF3E8]
+                                    ${errorName
+                                            ? "border-red-500"
+                                            : "border-[#DCDCDC] focus:border-[#ff7a00]"
+                                        }
+                                `}
+                                />
 
-                            {/* MAIN IMAGE */}
-                            <div className="mt-2">
-                                {/* Thẻ container, quy định kích thước cố định */}
-                                <div className="relative w-full h-48 rounded border overflow-hidden bg-gray-100">
-                                    {mainImageUrl ? (
-                                        <img
-                                            src={mainImageUrl}
-                                            alt="Main product visual"
-                                            className="h-full w-full object-cover 
-                                            hover:object-contain hover:bg-black/80 
-                                            transition-all duration-500 ease-in-out 
-                                            cursor-zoom-in"
-                                        />
-                                    ) : (
-                                        /* Trạng thái không có ảnh */
-                                        <div className="flex items-center justify-center h-full text-gray-400">
-                                            Chưa có ảnh
-                                        </div>
+                                {/* FIX HEIGHT */}
+                                <div className="h-[20px] mt-1">
+                                    {errorName && (
+                                        <p className="text-red-500 text-sm">
+                                            {errorName}
+                                        </p>
                                     )}
                                 </div>
+
                             </div>
-                            {uploading && (
-                                <p className="text-sm text-blue-500 mt-2 flex items-center gap-2">
-                                    <span className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
-                                    Đang upload ảnh...
-                                </p>
-                            )}
 
-                            {/* THUMB LIST */}
-                            <div className="flex gap-2 mt-3 flex-wrap">
-                                {images.map((img, index) => {
-                                    const url =
-                                        typeof img === "string"
-                                            ? img
-                                            : URL.createObjectURL(img);
+                            {/* SLUG */}
+                            <div className="flex flex-col">
 
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={`relative cursor-pointer border rounded overflow-hidden ${img === mainImage ? "border-blue-500" : ""
-                                                }`}
-                                            onClick={() => {
-                                                setCropImage(url);
-                                                setCropIndex(index);
-                                                setCropOpen(true);
-                                            }}
-                                        >
-                                            <img
-                                                src={url}
-                                                className="w-20 h-20 object-contain bg-white rounded"
-                                            />
-
-                                            {/* MAIN LABEL */}
-                                            {img === mainImage && (
-                                                <span className="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 rounded-br">
-                                                    Main
-                                                </span>
-                                            )}
-
-                                            {/* DELETE */}
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-
-                                                    const newImgs = images.filter((i) => i !== img);
-                                                    setImages(newImgs);
-
-                                                    if (img === mainImage) {
-                                                        setMainImage(newImgs[0] || null);
-                                                    }
-                                                }}
-                                                className="absolute bottom-0 right-0 text-xs bg-white px-1 border"
-                                            >
-                                                Xóa
-                                            </button>
-                                        </div>
-                                    );
-                                })}
-
-                                {/* UPLOAD */}
-                                <label className="border rounded-md px-4 py-2 cursor-pointer flex items-center">
-                                    + Tải ảnh
-                                    <input
-                                        type="file"
-                                        multiple
-                                        hidden
-                                        onChange={(e) => {
-                                            const files = Array.from(e.target.files || []);
-
-                                            const validFiles: File[] = [];
-
-                                            for (const file of files) {
-                                                if (!file.type.startsWith("image/")) {
-                                                    alert("Chỉ được upload ảnh");
-                                                    continue;
-                                                }
-
-                                                if (file.size > 5 * 1024 * 1024) {
-                                                    alert("Ảnh tối đa 5MB");
-                                                    continue;
-                                                }
-
-                                                validFiles.push(file);
-                                            }
-
-                                            if (!validFiles.length) {
-                                                e.target.value = "";
-                                                return;
-                                            }
-
-                                            setImages((prev) => {
-                                                const newList = [...prev, ...validFiles];
-
-                                                if (!mainImage && newList.length > 0) {
-                                                    setMainImage(newList[0]);
-                                                }
-
-                                                return newList;
-                                            });
-
-                                            e.target.value = "";
-                                        }}
-                                    />
+                                <label className="text-[15px] font-semibold text-[#111827] mb-2">
+                                    Slug
                                 </label>
+
+                                <input
+                                    value={""}
+                                    // value={slug}
+                                    // onChange={(e) => setSlug(e.target.value)}
+                                    placeholder="tu-dong-tao-slug"
+                                    className="
+                                    w-full !h-[35px]
+                                    rounded-xl
+                                    border border-[#DCDCDC]
+                                    bg-white
+                                    px-4
+                                    outline-none
+                                    text-[15px]
+                                    transition-all
+                                    focus:border-[#ff7a00]
+                                    focus:ring-4
+                                    focus:ring-[#FFF3E8]
+                                "
+                                />
+
+                                {/* giữ chiều cao đồng đều */}
+                                <div className="h-[20px] mt-1" />
+
                             </div>
-                            <p
-                                className={`text-sm mt-2 flex items-center gap-1 ${isInvalid ? "text-red-500" : "text-gray-500"
-                                    }`}
-                            >
-                                {isInvalid && <span>⚠️</span>}
-                                Ảnh phụ: {count}/6 (tối thiểu 2)
-                            </p>
+
                         </div>
 
-                        {/* VARIANTS */}
-                        <div>
-                            <label className="text-sm font-medium">Cấu hình</label>
+                        {/* STATUS */}
+                        <div
+                            className="
+                         
+                    bg-white
+                    border border-[#E5E7EB]
+                    rounded-2xl
+                    !p-5
+                    flex items-center justify-between
+                "
+                        >
 
-                            <div className="border rounded-md overflow-hidden">
+                            {/* LEFT */}
+                            <div>
+
+                                <label className="text-[15px] font-semibold text-[#111827] !mb-4">
+                                    Trạng thái sản phẩm
+                                </label>
+
+                                <div className="flex items-center gap-3">
+
+                                  {/* HOT */}
+<label
+    className={`
+        !flex !items-center !gap-3
+        !h-[52px]
+        !px-4
+        rounded-xl
+        border
+        cursor-pointer
+        transition-all
+        ${
+            isHot
+                ? "border-[#FED7AA] bg-[#FFF7ED]"
+                : "border-[#E5E7EB] bg-white"
+        }
+    `}
+>
+    <div
+        className="
+            !w-8 !h-8
+            rounded-lg
+            bg-[#FFF1E7]
+            flex items-center justify-center
+            text-[18px]
+        "
+    >
+        🔥
+    </div>
+
+    <input
+        type="checkbox"
+        checked={isHot}
+        onChange={(e) => setIsHot(e.target.checked)}
+        className="
+            !w-4 !h-4
+            accent-[#ff7a00]
+        "
+    />
+
+    <span className="text-[15px] font-medium text-[#374151]">
+        Hot
+    </span>
+</label>
+
+{/* NEW */}
+<label
+    className={`
+        !flex items-center gap-3
+        !h-[52px]
+        !px-4
+        rounded-xl
+        border
+        cursor-pointer
+        transition-all
+        ${
+            isNew
+                ? "border-[#BBF7D0] bg-[#F0FDF4]"
+                : "border-[#E5E7EB] bg-white"
+        }
+    `}
+>
+    <div
+        className="
+            !px-2 !h-8
+            rounded-lg
+            bg-[#DCFCE7]
+            flex items-center justify-center
+            text-[12px]
+            font-bold
+            text-[#16A34A]
+        "
+    >
+        NEW
+    </div>
+
+    <input
+        type="checkbox"
+        checked={isNew}
+        onChange={(e) => setIsNew(e.target.checked)}
+        className="
+            !w-4 !h-4
+            accent-[#ff7a00]
+        "
+    />
+
+    <span className="text-[15px] font-medium text-[#374151]">
+        New
+    </span>
+</label>
+
+                                </div>
+
+                            </div>
+
+                            {/* RIGHT */}
+                            <div
+                                className="
+                        border-l border-[#E5E7EB]
+                        pl-8
+                        flex items-center gap-4
+                    "
+                            >
+
+                                <div>
+                                    <label className="text-[15px] font-semibold text-[#111827]">
+                                        Sản phẩm hoạt động
+                                    </label>
+
+                                    <p className="text-sm text-[#6B7280] mt-1">
+                                        Tắt để ẩn sản phẩm khỏi cửa hàng
+                                    </p>
+                                </div>
+
+                                {/* TOGGLE */}
+                                <button
+                                    type="button"
+                                    className={`
+                            relative
+                            !w-[52px] !h-[30px]
+                            rounded-full
+                            transition-all duration-300
+                            
+                        `}
+                                >
+                                    <div
+                                        className={`
+                                absolute top-[3px]
+                                !w-6 !h-6
+                                !rounded-full
+                                !bg-white
+                                shadow-md
+                                transition-all duration-300
+                               
+                            `}
+                                    />
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        {/* IMAGE */}
+                        <div>
+
+                            <div className="flex items-center justify-between mb-3">
+
+                                    <label className="text-[15px] font-semibold text-[#111827] text-lg">
+                                    Ảnh sản phẩm
+                                    <span className="text-[#6B7280] font-normal text-sm">
+                                        {" "}
+                                        (tối thiểu 2 ảnh)
+                                    </span>
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+
+                            </div>
+
+                            {/* MAIN */}
+                            <div
+                                className="
+                        border-2 border-dashed border-[#FED7AA]
+                        bg-[#FFF9F5]
+                        rounded-2xl
+                        h-[230px]
+                        flex flex-col items-center justify-center
+                        relative
+                        overflow-hidden
+                    "
+                            >
+
+                                {mainImageUrl ? (
+                                    <img
+                                        src={mainImageUrl}
+                                        className="
+                                w-full h-full
+                                object-contain
+                            "
+                                    />
+                                ) : (
+                                    <>
+                                        <div
+                                            className="
+                                    w-20 h-20
+                                    rounded-full
+                                    bg-[#FFF1E7]
+                                    flex items-center justify-center
+                                "
+                                        >
+                                            <i className="fas fa-images text-3xl text-[#ff7a00]" />
+                                        </div>
+
+                                        <p className="mt-4 text-[#6B7280]">
+                                            Kéo thả ảnh vào đây hoặc click để chọn
+                                        </p>
+
+                                        <label
+                                            className="
+                                    mt-4
+                                    h-11 px-6
+                                    rounded-xl
+                                    border border-[#DCDCDC]
+                                    bg-white
+                                    flex items-center gap-2
+                                    cursor-pointer
+                                    hover:border-[#ff7a00]
+                                "
+                                        >
+                                            <i className="fas fa-plus" />
+                                            Tải ảnh
+
+                                            <input
+                                                type="file"
+                                                multiple
+                                                hidden
+                                                onChange={(e) => {
+                                                    const files = Array.from(e.target.files || []);
+
+                                                    const validFiles: File[] = [];
+
+                                                    for (const file of files) {
+                                                        if (!file.type.startsWith("image/")) {
+                                                            alert("Chỉ được upload ảnh");
+                                                            continue;
+                                                        }
+
+                                                        if (file.size > 5 * 1024 * 1024) {
+                                                            alert("Ảnh tối đa 5MB");
+                                                            continue;
+                                                        }
+
+                                                        validFiles.push(file);
+                                                    }
+
+                                                    if (!validFiles.length) {
+                                                        e.target.value = "";
+                                                        return;
+                                                    }
+
+                                                    setImages((prev) => {
+                                                        const newList = [...prev, ...validFiles];
+
+                                                        if (!mainImage && newList.length > 0) {
+                                                            setMainImage(newList[0]);
+                                                        }
+
+                                                        return newList;
+                                                    });
+
+                                                    e.target.value = "";
+                                                }}
+                                            />
+                                        </label>
+                                    </>
+                                )}
+
+                            </div>
+                            {/* VARIANTS */}
+                            <div
+                                className="
+        bg-white
+        border border-[#E5E7EB]
+        rounded-2xl
+        overflow-hidden
+    "
+                            >
+
                                 {/* HEADER */}
-                                <div className="grid grid-cols-8 bg-gray-100 text-xs font-semibold px-2 py-2 text-gray-600">
+                                <div
+                                    className="
+            px-5 py-4
+            border-b border-[#E5E7EB]
+            flex items-center justify-between
+        "
+                                >
+
+                                    <div>
+                                        <h2 className="font-semibold text-[#111827]">
+                                            Cấu hình sản phẩm
+                                        </h2>
+
+                                        <p className="text-sm text-[#6B7280] mt-1">
+                                            Quản lý nhiều phiên bản cấu hình
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        onClick={addVariant}
+                                        className="
+                h-10 px-4
+                rounded-xl
+                border border-[#FED7AA]
+                bg-[#FFF4EC]
+                text-[#ff7a00]
+                font-medium
+                hover:bg-[#FFE7D6]
+                transition-all
+            "
+                                    >
+                                        + Thêm cấu hình
+                                    </button>
+
+                                </div>
+
+                                {/* TABLE HEADER */}
+                                <div
+                                    className="
+            grid grid-cols-9
+            gap-3
+            px-5 py-3
+            bg-[#F9FAFB]
+            border-b border-[#E5E7EB]
+            text-xs font-semibold text-[#6B7280]
+        "
+                                >
                                     <div>CPU</div>
                                     <div>RAM</div>
                                     <div>SSD</div>
+                                    <div>GPU</div>
                                     <div>Size</div>
-                                    <div>Res</div>
-                                    <div>Ref</div>
+                                    <div>Độ phân giải</div>
+                                    <div>Tần số</div>
                                     <div>Giá</div>
-                                    <div></div>
+                                    <div className="text-center">Xóa</div>
                                 </div>
 
                                 {/* BODY */}
-                                {variants.map((v, index) => (
-                                    <div
-                                        key={v.id}
-                                        className="grid grid-cols-8 gap-2 items-center px-2 py-2 border-t hover:bg-gray-50"
-                                    >
-                                        <input
-                                            className="border rounded px-2 py-1 text-sm"
-                                            placeholder="CPU"
-                                            value={v.cpu}
-                                            onChange={(e) => {
-                                                const newVariants = [...variants];
-                                                newVariants[index].cpu = e.target.value;
-                                                setVariants(newVariants);
-                                            }}
-                                        />
+                                <div className="divide-y divide-[#F3F4F6]">
 
-                                        <select
-                                            className="border rounded px-2 py-1 text-sm"
-                                            value={v.ram}
-                                            onChange={(e) =>
-                                                setVariants(prev =>
-                                                    prev.map(item =>
-                                                        item.id === v.id ? { ...item, ram: e.target.value } : item
-                                                    )
-                                                )
-                                            }
+                                    {variants.map((v, index) => (
+                                        <div
+                                            key={v.id}
+                                            className="
+                    grid grid-cols-9
+                    gap-3
+                    px-5 py-4
+                    items-center
+                    hover:bg-[#FAFAFA]
+                    transition-all
+                "
                                         >
-                                            <option value="8GB">8GB</option>
-                                            <option value="16GB">16GB</option>
-                                            <option value="32GB">32GB</option>
-                                            <option value="64GB">64GB</option>
-                                        </select>
-                                        <select
-                                            className="border rounded px-2 py-1 text-sm"
-                                            value={v.ssd}
-                                            onChange={(e) =>
-                                                setVariants(prev =>
-                                                    prev.map(item =>
-                                                        item.id === v.id ? { ...item, ssd: e.target.value } : item
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            <option value="128GB">128GB</option>
-                                            <option value="256GB">256GB</option>
-                                            <option value="512GB">512GB</option>
-                                            <option value="1TB">1TB</option>
-                                        </select>
 
-                                        <select
-                                            className="border rounded px-2 py-1 text-sm"
-                                            value={v.screenSize}
-                                            onChange={(e) =>
-                                                setVariants(prev =>
-                                                    prev.map(item =>
-                                                        item.id === v.id ? { ...item, screenSize: e.target.value } : item
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            <option value="13.3">13.3"</option>
-                                            <option value="14">14"</option>
-                                            <option value="15.6">15.6"</option>
-                                        </select>
+                                            {/* CPU */}
+                                            <input
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                        focus:ring-4
+                        focus:ring-[#FFF3E8]
+                    "
+                                                placeholder="i7-1165G7"
+                                                value={v.cpu}
+                                                onChange={(e) => {
+                                                    const newVariants = [...variants];
+                                                    newVariants[index].cpu = e.target.value;
+                                                    setVariants(newVariants);
+                                                }}
+                                            />
 
-                                        <select
-                                            className="border rounded px-2 py-1 text-sm"
-                                            value={v.resolution}
-                                            onChange={(e) =>
-                                                setVariants(prev =>
-                                                    prev.map(item =>
-                                                        item.id === v.id ? { ...item, resolution: e.target.value } : item
+                                            {/* RAM */}
+                                            <select
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                    "
+                                                value={v.ram}
+                                                onChange={(e) =>
+                                                    setVariants(prev =>
+                                                        prev.map(item =>
+                                                            item.id === v.id
+                                                                ? { ...item, ram: e.target.value }
+                                                                : item
+                                                        )
                                                     )
-                                                )
-                                            }
-                                        >
-                                            <option value="FHD">FHD</option>
-                                            <option value="2K">2K</option>
-                                            <option value="4K">4K</option>
-                                        </select>
-                                        <select
-                                            className="border rounded px-2 py-1 text-sm"
-                                            value={v.refreshRate}
-                                            onChange={(e) =>
-                                                setVariants(prev =>
-                                                    prev.map(item =>
-                                                        item.id === v.id ? { ...item, refreshRate: e.target.value } : item
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            <option value="60">60Hz</option>
-                                            <option value="90">90Hz</option>
-                                            <option value="120">120Hz</option>
-                                            <option value="144">144Hz</option>
-                                        </select>
-                                        <input
-                                            className="border rounded px-2 py-1 text-sm"
-                                            value={v.priceInput ?? formatPrice(v.price)}
-                                            onChange={(e) => {
-                                                let value = e.target.value.replace(/\D/g, "").replace(/^0+/, "");
-                                                setVariants(prev =>
-                                                    prev.map(item =>
-                                                        item.id === v.id
-                                                            ? {
-                                                                ...item,
-                                                                priceInput: value,
-                                                                price: Number(value || 0),
-                                                            }
-                                                            : item
-                                                    )
-                                                );
-                                            }}
-                                        />
+                                                }
+                                            >
+                                                <option value="8GB">8GB</option>
+                                                <option value="16GB">16GB</option>
+                                                <option value="32GB">32GB</option>
+                                                <option value="64GB">64GB</option>
+                                            </select>
 
-                                        <div className="flex justify-center">
-                                            {variants.length > 1 && index > 0 && (
-                                                <button onClick={() => removeVariant(v.id)}>
-                                                    <Trash className="w-4 h-4 text-red-500 hover:scale-110 transition" />
-                                                </button>
-                                            )}
+                                            {/* SSD */}
+                                            <select
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                    "
+                                                value={v.ssd}
+                                                onChange={(e) =>
+                                                    setVariants(prev =>
+                                                        prev.map(item =>
+                                                            item.id === v.id
+                                                                ? { ...item, ssd: e.target.value }
+                                                                : item
+                                                        )
+                                                    )
+                                                }
+                                            >
+                                                <option value="128GB">128GB</option>
+                                                <option value="256GB">256GB</option>
+                                                <option value="512GB">512GB</option>
+                                                <option value="1TB">1TB</option>
+                                            </select>
+
+                                            {/* GPU */}
+                                            <input
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                        focus:ring-4
+                        focus:ring-[#FFF3E8]
+                    "
+                                                placeholder="Intel Iris Xe"
+                                                value={""}
+                                            // value={v.gpu || ""}
+                                            // onChange={(e) => {
+                                            //     const newVariants = [...variants];
+                                            //     newVariants[index].gpu = e.target.value;
+                                            //     setVariants(newVariants);
+                                            // }}
+                                            />
+
+                                            {/* SIZE */}
+                                            <select
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                    "
+                                                value={v.screenSize}
+                                                onChange={(e) =>
+                                                    setVariants(prev =>
+                                                        prev.map(item =>
+                                                            item.id === v.id
+                                                                ? { ...item, screenSize: e.target.value }
+                                                                : item
+                                                        )
+                                                    )
+                                                }
+                                            >
+                                                <option value="13.3">13.3"</option>
+                                                <option value="14">14"</option>
+                                                <option value="15.6">15.6"</option>
+                                                <option value="16">16"</option>
+                                            </select>
+
+                                            {/* RESOLUTION */}
+                                            <select
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                    "
+                                                value={v.resolution}
+                                                onChange={(e) =>
+                                                    setVariants(prev =>
+                                                        prev.map(item =>
+                                                            item.id === v.id
+                                                                ? { ...item, resolution: e.target.value }
+                                                                : item
+                                                        )
+                                                    )
+                                                }
+                                            >
+                                                <option value="FHD">FHD</option>
+                                                <option value="2K">2K</option>
+                                                <option value="4K">4K</option>
+                                            </select>
+
+                                            {/* REFRESH */}
+                                            <select
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                    "
+                                                value={v.refreshRate}
+                                                onChange={(e) =>
+                                                    setVariants(prev =>
+                                                        prev.map(item =>
+                                                            item.id === v.id
+                                                                ? { ...item, refreshRate: e.target.value }
+                                                                : item
+                                                        )
+                                                    )
+                                                }
+                                            >
+                                                <option value="60">60Hz</option>
+                                                <option value="90">90Hz</option>
+                                                <option value="120">120Hz</option>
+                                                <option value="144">144Hz</option>
+                                            </select>
+
+                                            {/* PRICE */}
+                                            <input
+                                                className="
+                        h-11
+                        rounded-xl
+                        border border-[#DCDCDC]
+                        bg-white
+                        px-3
+                        text-sm
+                        outline-none
+                        focus:border-[#ff7a00]
+                        focus:ring-4
+                        focus:ring-[#FFF3E8]
+                    "
+                                                value={v.priceInput ?? formatPrice(v.price)}
+                                                onChange={(e) => {
+                                                    let value = e.target.value
+                                                        .replace(/\D/g, "")
+                                                        .replace(/^0+/, "");
+
+                                                    setVariants(prev =>
+                                                        prev.map(item =>
+                                                            item.id === v.id
+                                                                ? {
+                                                                    ...item,
+                                                                    priceInput: value,
+                                                                    price: Number(value || 0),
+                                                                }
+                                                                : item
+                                                        )
+                                                    );
+                                                }}
+                                            />
+
+                                            {/* DELETE */}
+                                            <div className="flex justify-center">
+
+                                                {variants.length > 1 && (
+                                                    <button
+                                                        onClick={() => removeVariant(v.id)}
+                                                        className="
+                                w-10 h-10
+                                rounded-xl
+                                border border-[#FECACA]
+                                bg-[#FEF2F2]
+                                flex items-center justify-center
+                                text-red-500
+                                hover:bg-red-500
+                                hover:text-white
+                                transition-all
+                            "
+                                                    >
+                                                        <Trash className="w-4 h-4" />
+                                                    </button>
+                                                )}
+
+                                            </div>
+
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
 
-                            <button
-                                onClick={addVariant}
-                                className="mt-3 border rounded px-3 py-1"
-                            >
-                                + Thêm cấu hình
-                            </button>
+                                </div>
+
+                            </div>
                         </div>
+
                     </div>
 
                     {/* FOOTER */}
-                    <DialogFooter className="flex justify-end gap-2 mt-4">
+                    <DialogFooter
+                        className="
+                px-7 py-4
+                bg-white
+                border-t border-[#ECECEC]
+                flex justify-end gap-3
+            "
+                    >
+
                         <DialogClose asChild>
-                            <Button variant="outline">Huỷ</Button>
+                            <Button
+                                variant="outline"
+                                className="h-11 px-7 rounded-xl"
+                            >
+                                Huỷ
+                            </Button>
                         </DialogClose>
 
-                        <Button onClick={handleSubmit} disabled={loading}>
-                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            className="
+                    h-11 px-8
+                    rounded-xl
+                    bg-[#ff7a00]
+                    hover:bg-[#eb6f00]
+                    text-white
+                    shadow-lg shadow-orange-200
+                "
+                        >
+                            {loading && (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            )}
+
                             {loading ? "Đang lưu..." : "Lưu"}
                         </Button>
+
                     </DialogFooter>
-
-                    {loading && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-50 rounded-lg">
-                            <div className="bg-white px-6 py-4 rounded-xl flex items-center gap-3 shadow-lg">
-                                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                                <span className="text-sm font-medium">Đang lưu sản phẩm...</span>
-                            </div>
-                        </div>
-                    )}
-
 
                 </DialogContent>
             </Dialog>

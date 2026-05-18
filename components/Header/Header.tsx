@@ -14,9 +14,9 @@ export default function BannerSlider() {
         const fetchBrands = async () => {
             try {
                 const res = await fetch("/api/brands");
-                const data = await res.json();
+                const dataBranchs = await res.json();
 
-                setBrands(data);
+                setBrands(dataBranchs?.brands);
             } catch (err) {
                 console.error("Fetch brands error:", err);
             } finally {

@@ -10,6 +10,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import Topbar from "../components/TopBar";
 import { useRouter, useSearchParams } from "next/navigation";
 import MobileSidebar from "../components/MobileSidebar";
+import DashboardPagination from "../components/DashboardPagination";
 type Variant = {
   id: string
   cpu: string
@@ -33,71 +34,61 @@ type Product = {
 }
 
 export default function ProductDetail() {
-  const searchParams = useSearchParams();
-  const initialSearch = searchParams.get("search") || "";
-  const [search, setSearch] = useState(initialSearch);
-  const router = useRouter();
+const searchParams = useSearchParams();
+const router = useRouter();
+   const [openSidebar, setOpenSidebar] = useState(false);
+const [search, setSearch] = useState(
+  searchParams.get("search") || ""
+);
 
-  const [openUser, setOpenUser] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [total, setTotal] = useState(0)
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [editingProduct, setEditingProduct] = useState<any>(null);
-  const [openSidebar, setOpenSidebar] = useState(false);
-    
+const [open, setOpen] = useState(false);
+const [expandedId, setExpandedId] = useState<string | null>(null);
 
+const [products, setProducts] = useState<Product[]>([]);
+const [page, setPage] = useState(1);
+const [limit, setLimit] = useState(10);
+const [total, setTotal] = useState(0);
 
-  const totalPages = Math.ceil(total / limit)
+const [selectedIds, setSelectedIds] = useState<string[]>([]);
+const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const start = (page - 1) * limit + 1
-  const end = Math.min(page * limit, total)
+const totalPages = Math.ceil(total / limit);
 
-  // debounce
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const params = new URLSearchParams();
+const start = total === 0 ? 0 : (page - 1) * limit + 1;
+const end = Math.min(page * limit, total);
 
-      if (search) {
-        params.set("search", search);
-      }
+const fetchProducts = async () => {
+  const params = new URLSearchParams();
 
-      router.push(`/dashboard/products?${params.toString()}`);
+  params.set("page", String(page));
+  params.set("limit", String(limit));
 
-      fetchProducts(search);
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [search]);
-
-  const fetchProducts = async (keyword: string) => {
-    const res = await fetch(`/api/products?search=${keyword}`);
-    const data = await res.json();
-    setProducts(data.products);
-  };
-
-
-
-
-
-
-  useEffect(() => {
-    fetch(`/api/products?page=${page}&limit=${limit}`)
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data.products)
-        setTotal(data.total)
-      })
-  }, [page, limit])
-
-  const toggleExpand = (id: string) => {
-    setExpandedId(prev => (prev === id ? null : id))
+  if (search) {
+    params.set("search", search);
   }
 
+  const res = await fetch(`/api/products?${params.toString()}`);
+  const data = await res.json();
+
+  setProducts(data.products || []);
+  setTotal(data.total || 0);
+};
+
+useEffect(() => {
+  const timeout = setTimeout(() => {
+    const params = new URLSearchParams();
+
+    if (search) {
+      params.set("search", search);
+    }
+
+    router.push(`/dashboard/products?${params.toString()}`);
+
+    fetchProducts();
+  }, 300);
+
+  return () => clearTimeout(timeout);
+}, [search, page, limit]);
 
   const handleBulkDelete = async () => {
     const ok = confirm(`Xóa ${selectedIds.length} sản phẩm?`);
@@ -130,17 +121,16 @@ export default function ProductDetail() {
     }
   };
   const toggleNew = async (id: string) => {
-  await fetch(`/api/products/${id}/toggle-new`, {
-    method: "PATCH",
-  });
+    await fetch(`/api/products/${id}/toggle-new`, {
+      method: "PATCH",
+    });
 
-  setProducts((prev) =>
-    prev.map((p) =>
-      p._id === id ? { ...p, isNew: !p.isNew } : p
-    )
-  );
-};
-  console.log("openSidebar", openSidebar)
+    setProducts((prev) =>
+      prev.map((p) =>
+        p._id === id ? { ...p, isNew: !p.isNew } : p
+      )
+    );
+  };
   return (
     <>
       {/* ================= HEADER TOP ================= */}
@@ -164,58 +154,201 @@ export default function ProductDetail() {
         <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
 
 
-        <section className="flex-1 p-4 overflow-y-auto">
+        <section className="flex-1 px-3 md:px-4 py-2.5 overflow-y-auto">
 
           {/* ================= MOBILE CARD ================= */}
           <div className="md:hidden space-y-3">
 
+            {/* SELECT ALL */}
+            {products.length > 0 && (
+              <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  className="accent-[#ff7a00] w-4 h-4"
+                  checked={
+                    selectedIds.length === products.length
+                  }
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedIds(
+                        products.map((p) => p._id)
+                      );
+                    } else {
+                      setSelectedIds([]);
+                    }
+                  }}
+                />
+
+                <span className="text-sm font-medium text-[#111111]">
+                  Chọn tất cả
+                </span>
+              </div>
+            )}
+
+            {/* PRODUCT ITEM */}
             {products.map((p) => {
               const first = p.variants[0];
               const more = p.variants.length - 1;
 
               return (
-                <div key={p._id} className="bg-white border rounded-lg p-3">
-
+                <div
+                  key={p._id}
+                  className="
+                        bg-white
+                        border border-[#E5E7EB]
+                        rounded-xl
+                        p-3
+                        shadow-sm
+                    "
+                >
                   {/* TOP */}
                   <div className="flex gap-3">
 
-                    <img
-                      src={p.mainImage || "https://via.placeholder.com/60"}
-                      className="w-16 h-16 object-cover rounded border"
+                    {/* CHECKBOX */}
+                    <input
+                      type="checkbox"
+                      className="accent-[#ff7a00] w-4 h-4 mt-1"
+                      checked={selectedIds.includes(p._id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedIds((prev) => [
+                            ...prev,
+                            p._id,
+                          ]);
+                        } else {
+                          setSelectedIds((prev) =>
+                            prev.filter(
+                              (id) => id !== p._id
+                            )
+                          );
+                        }
+                      }}
                     />
 
-                    <div className="flex-1">
-                      <div className="font-medium text-sm line-clamp-2">
+                    {/* IMAGE */}
+                    <img
+                      src={
+                        p.mainImage ||
+                        "https://via.placeholder.com/60"
+                      }
+                      className="
+                                w-20 h-20
+                                object-cover
+                                rounded-lg
+                                border border-[#E5E7EB]
+                            "
+                    />
+
+                    {/* INFO */}
+                    <div className="flex-1 min-w-0">
+
+                      <h3 className="font-semibold text-[#111111] line-clamp-2">
                         {p.name}
-                      </div>
+                      </h3>
 
-                      <div className="text-red-500 text-sm mt-1">
+                      <p className="text-[#ff7a00] font-semibold text-sm mt-1">
                         {first?.price?.toLocaleString() || 0} đ
-                      </div>
+                      </p>
 
-                      <div className="text-xs text-gray-500">
+                      <p className="text-xs text-[#6B7280] mt-1 line-clamp-1">
                         {first?.cpu} / {first?.ram} / {first?.ssd}
                         {more > 0 && ` (+${more})`}
-                      </div>
+                      </p>
+
+                      <p className="text-xs text-[#9CA3AF] mt-2">
+                        {new Date(
+                          p.createdAt
+                        ).toLocaleDateString("vi-VN")}
+                      </p>
+
                     </div>
                   </div>
 
-                  {/* ACTIONS */}
-                  <div className="flex justify-between mt-3">
+                  {/* STATUS */}
+                  <div className="flex items-center gap-3 mt-3">
+
+                    {/* HOT */}
+                    <button
+                      onClick={() => toggleHot(p._id)}
+                      className="
+                                flex items-center gap-1
+                                px-2 py-1
+                                rounded-lg
+                                bg-[#FFF7ED]
+                                text-[#ff7a00]
+                                text-xs
+                                font-medium
+                            "
+                    >
+                      <i
+                        className={
+                          p.isHot
+                            ? "fas fa-star text-yellow-500"
+                            : "far fa-star"
+                        }
+                      />
+
+                      Hot
+                    </button>
+
+                    {/* NEW */}
+                    <button
+                      onClick={() => toggleNew(p._id)}
+                      className="
+                                flex items-center gap-1
+                                px-2 py-1
+                                rounded-lg
+                                bg-[#ECFDF3]
+                                text-green-600
+                                text-xs
+                                font-medium
+                            "
+                    >
+                      <i
+                        className={
+                          p.isNew
+                            ? "fas fa-bolt"
+                            : "far fa-bolt"
+                        }
+                      />
+
+                      New
+                    </button>
+
+                  </div>
+
+                  {/* ACTION */}
+                  <div className="flex justify-between items-center mt-4">
 
                     <button
                       onClick={() => toggleExpand(p._id)}
-                      className="text-xs text-blue-600"
+                      className="
+                                text-sm
+                                text-[#ff7a00]
+                                font-medium
+                            "
                     >
-                      {expandedId === p._id ? "Thu gọn" : "Chi tiết"}
+                      {expandedId === p._id
+                        ? "Thu gọn"
+                        : "Chi tiết"}
                     </button>
 
                     <button
+                      className="
+                                px-3 py-2
+                                rounded-lg
+                                bg-[#FFF3E8]
+                                text-[#ff7a00]
+                                font-medium
+                                text-sm
+                                hover:bg-[#ff7a00]
+                                hover:text-white
+                                transition-all duration-300
+                            "
                       onClick={() => {
                         setEditingProduct(p);
                         setOpen(true);
                       }}
-                      className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded"
                     >
                       Sửa
                     </button>
@@ -224,18 +357,51 @@ export default function ProductDetail() {
 
                   {/* EXPAND */}
                   {expandedId === p._id && (
-                    <div className="mt-3 border-t pt-2 text-xs text-gray-600 space-y-1">
+                    <div className="mt-4 border-t border-[#F3F4F6] pt-3">
 
-                      <div>Thương hiệu: {p.brand?.name || "-"}</div>
+                      {/* BRAND */}
+                      <div className="mb-3">
+                        <span className="text-xs text-[#6B7280]">
+                          Thương hiệu:
+                        </span>
 
-                      {p.variants.map((v) => (
-                        <div key={v.id} className="flex justify-between">
-                          <span>{v.cpu}/{v.ram}/{v.ssd}</span>
-                          <span className="text-red-500">
-                            {v.price.toLocaleString()} đ
-                          </span>
-                        </div>
-                      ))}
+                        <span
+                          className="
+                                        ml-2
+                                        inline-flex
+                                        px-2 py-1
+                                        rounded-lg
+                                        bg-[#F9FAFB]
+                                        text-xs
+                                        font-medium
+                                    "
+                        >
+                          {p.brand?.name || "-"}
+                        </span>
+                      </div>
+
+                      {/* VARIANTS */}
+                      <div className="space-y-2">
+                        {p.variants.map((v) => (
+                          <div
+                            key={v.id}
+                            className="
+                                            flex justify-between items-center
+                                            border border-[#F3F4F6]
+                                            rounded-lg
+                                            px-3 py-2
+                                        "
+                          >
+                            <div className="text-xs text-[#374151]">
+                              {v.cpu} / {v.ram} / {v.ssd}
+                            </div>
+
+                            <div className="text-[#ff7a00] text-sm font-semibold">
+                              {v.price.toLocaleString()} đ
+                            </div>
+                          </div>
+                        ))}
+                      </div>
 
                     </div>
                   )}
@@ -243,26 +409,30 @@ export default function ProductDetail() {
                 </div>
               );
             })}
-
           </div>
 
           {/* ================= DESKTOP TABLE ================= */}
-          <div className="hidden md:block border rounded-lg overflow-hidden">
+          <div className="hidden md:block bg-white !border border-[#E5E7EB] rounded-xl overflow-hidden">
 
-            <table className="w-full text-sm">
+            <table className="w-full text-sm border-collapse">
 
-              <thead className="bg-blue-100 text-left">
-                <tr>
-                  <th className="p-2">
+              {/* HEADER */}
+              <thead className="!border-b border-[#E5E7EB]">
+                <tr className="text-[#111111]">
+
+                  <th className="px-4 py-2.5 w-[50px] text-center align-middle">
                     <input
                       type="checkbox"
+                      className="accent-[#ff7a00] w-4 h-4 align-middle"
                       checked={
                         products.length > 0 &&
                         selectedIds.length === products.length
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedIds(products.map((p) => p._id));
+                          setSelectedIds(
+                            products.map((p) => p._id)
+                          );
                         } else {
                           setSelectedIds([]);
                         }
@@ -270,17 +440,38 @@ export default function ProductDetail() {
                     />
                   </th>
 
-                  <th className="p-2 text-center">Trạng thái</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">
+                    Trạng thái
+                  </th>
 
-                  <th className="p-2">Ảnh</th>
-                  <th className="p-2">Tên</th>
-                  <th className="p-2">Giá</th>
-                  <th className="p-2">Cấu hình</th>
-                  <th className="p-2">Ngày</th>
-                  <th className="p-2">Hành động</th>
+                  <th className="px-4 py-2.5 text-left font-semibold">
+                    Ảnh
+                  </th>
+
+                  <th className="px-4 py-2.5 text-left font-semibold">
+                    Tên sản phẩm
+                  </th>
+
+                  <th className="px-4 py-2.5 text-left font-semibold">
+                    Giá
+                  </th>
+
+                  <th className="px-4 py-2.5 text-left font-semibold">
+                    Cấu hình
+                  </th>
+
+                  <th className="px-4 py-2.5 text-left font-semibold">
+                    Ngày tạo
+                  </th>
+
+                  <th className="px-4 py-2.5 text-left font-semibold">
+                    Hành động
+                  </th>
+
                 </tr>
               </thead>
 
+              {/* BODY */}
               <tbody>
                 {products.map((p) => {
                   const first = p.variants[0];
@@ -290,85 +481,180 @@ export default function ProductDetail() {
                     <React.Fragment key={p._id}>
 
                       {/* ROW */}
-                      <tr className="border-b hover:bg-gray-100">
-
-                        <td className="p-2">
+                      <tr
+                        className="
+                                    !border-b border-[#F3F4F6]
+                                    hover:bg-[#FFF7ED]
+                                    transition-all duration-200
+                                "
+                      >
+                        {/* CHECKBOX */}
+                        <td className="px-4 py-2.5">
                           <input
                             type="checkbox"
+                            className="accent-[#ff7a00] w-4 h-4"
                             checked={selectedIds.includes(p._id)}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedIds((prev) => [...prev, p._id]);
+                                setSelectedIds((prev) => [
+                                  ...prev,
+                                  p._id,
+                                ]);
                               } else {
                                 setSelectedIds((prev) =>
-                                  prev.filter((id) => id !== p._id)
+                                  prev.filter(
+                                    (id) => id !== p._id
+                                  )
                                 );
                               }
                             }}
                           />
                         </td>
-                        <td className="p-2">
-                          <div className="flex items-center justify-center gap-3">
 
-                            {/* HOT */}
-                            <button
-                              onClick={() => toggleHot(p._id)}
-                              className="text-xl transition"
-                              title="Hot"
-                            >
-                              {p.isHot ? (
-                                <i className="fas fa-star text-yellow-500" />
-                              ) : (
-                                <i className="far fa-star text-gray-400 hover:text-yellow-500" />
-                              )}
-                            </button>
+         {/* STATUS */}
+<td className="px-4 py-2.5">
+    <div className="flex items-center justify-center gap-2">
 
-                            {/* NEW */}
-                           <button
-                          onClick={() => toggleNew(p._id)}
-                          className="text-xl transition"
-                          title="New"
-                        >
-                    {p.isNew ? (
-                      <i className="fas fa-bolt text-green-500" />
-                    ) : (
-                      <i className="far fa-bolt text-gray-400 hover:text-green-500" />
-                    )}
-                  </button>
+        {/* ACTIVE TOGGLE */}
+        <button
+            // onClick={() => toggleActive(p._id)}
+            className={`
+                relative
+                w-11 h-6
+                !rounded-full
+                transition-all duration-300
+                ${
+                    p.isActive
+                        ? "bg-[#ff7a00]"
+                        : "bg-[#E5E7EB]"
+                }
+            `}
+            title={
+                p.isActive
+                    ? "Đang bán"
+                    : "Ngừng bán"
+            }
+        >
+            <div
+                className={`
+                    absolute top-0.5
+                    w-5 h-5
+                    !rounded-full
+                    bg-white
+                    shadow-sm
+                    transition-all duration-300
+                    ${
+                        p.isActive
+                            ? "left-[22px]"
+                            : "left-[2px]"
+                    }
+                `}
+            />
+        </button>
 
-                          </div>
-                        </td>
+        {/* HOT */}
+        <button
+            onClick={() => toggleHot(p._id)}
+            className={`
+                w-8 h-8
+                rounded-lg
+                border
+                flex items-center justify-center
+                transition-all duration-300
+                ${
+                    p.isHot
+                        ? "bg-[#FFF7ED] border-[#FED7AA] text-[#ff7a00]"
+                        : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#FED7AA] hover:text-[#ff7a00]"
+                }
+            `}
+            title="Sản phẩm nổi bật"
+        >
+            <i className="fas fa-star text-[13px]" />
+        </button>
 
-                        <td className="p-2">
+        {/* NEW */}
+        <button
+            onClick={() => toggleNew(p._id)}
+            className={`
+                w-8 h-8
+                rounded-lg
+                border
+                flex items-center justify-center
+                transition-all duration-300
+                ${
+                    p.isNew
+                        ? "bg-[#ECFDF3] border-[#BBF7D0] text-[#16A34A]"
+                        : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#BBF7D0] hover:text-[#16A34A]"
+                }
+            `}
+            title="Hàng mới về"
+        >
+            <i className="fas fa-bolt text-[13px]" />
+        </button>
+
+    </div>
+</td>
+                        {/* IMAGE */}
+                        <td className="px-4 py-2.5">
                           <img
-                            src={p.mainImage || "https://via.placeholder.com/60"}
-                            className="w-12 h-12 object-cover rounded"
+                            src={
+                              p.mainImage ||
+                              "https://via.placeholder.com/60"
+                            }
+                            className="
+                                            w-12 h-12
+                                            object-cover
+                                            rounded-lg
+                                            border border-[#E5E7EB]
+                                        "
                           />
                         </td>
 
+                        {/* NAME */}
                         <td
-                          className="p-2 font-medium cursor-pointer hover:text-blue-600"
+                          className="
+                                        px-4 py-2.5
+                                        font-semibold
+                                        text-[#111111]
+                                        cursor-pointer
+                                        hover:text-[#ff7a00]
+                                    "
                           onClick={() => toggleExpand(p._id)}
                         >
                           {expandedId === p._id ? "▼" : "▶"} {p.name}
                         </td>
 
-                        <td className="p-2 text-red-500">
+                        {/* PRICE */}
+                        <td className="px-4 py-2.5 text-[#ff7a00] font-semibold">
                           {first?.price?.toLocaleString() || 0} đ
                         </td>
 
-                        <td className="p-2">
+                        {/* CONFIG */}
+                        <td className="px-4 py-2.5 text-[#6B7280]">
                           {first?.cpu} / {first?.ram} / {first?.ssd}
                           {more > 0 && ` (+${more})`}
                         </td>
 
-                        <td className="p-2">
-                          {new Date(p.createdAt).toLocaleDateString("vi-VN")}
+                        {/* DATE */}
+                        <td className="px-4 py-2.5 text-[#6B7280]">
+                          {new Date(
+                            p.createdAt
+                          ).toLocaleDateString("vi-VN")}
                         </td>
 
-                        <td className="p-2">
+                        {/* ACTION */}
+                        <td className="px-4 py-2.5">
                           <button
-                            className="px-2 py-1 text-blue-600 bg-blue-50 rounded"
+                            className="
+                                            px-3 py-2
+                                            rounded-lg
+                                            bg-[#FFF3E8]
+                                            text-[#ff7a00]
+                                            font-medium
+                                            hover:bg-[#ff7a00]
+                                            hover:text-white
+                                            transition-all duration-300
+                                        "
                             onClick={() => {
                               setEditingProduct(p);
                               setOpen(true);
@@ -377,65 +663,87 @@ export default function ProductDetail() {
                             Sửa
                           </button>
                         </td>
-
                       </tr>
 
-                      {/* EXPAND (DESKTOP ONLY) */}
+                      {/* EXPAND */}
                       {expandedId === p._id && (
                         <tr>
-                          <td colSpan={8} className="p-4 bg-gray-100">
-                            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition">
+                          <td
+                            colSpan={8}
+                            className="bg-[#FFFDFB] px-6 py-5"
+                          >
+                            <div className="flex gap-6">
 
-                              <div className="flex gap-6">
-
-                                {/* IMAGE */}
-                                <div className="w-48 h-48 flex-shrink-0">
-                                  <img
-                                    src={p.mainImage || "https://via.placeholder.com/150"}
-                                    className="w-full h-full object-cover rounded-md border"
-                                  />
-                                </div>
-
-                                {/* INFO */}
-                                <div className="flex-1">
-
-                                  {/* NAME */}
-                                  <h2 className="text-xl font-semibold pb-2 mb-2 border-b border-gray-200">
-                                    {p.name}
-                                  </h2>
-
-                                  {/* BRAND */}
-                                  <div className="mb-3">
-                                    <span className="text-sm text-gray-500">Thương hiệu:</span>{" "}
-                                    <span className="inline-block text-sm bg-gray-100 px-2 py-1 rounded font-medium">
-                                      {p.brand?.name || "-"}
-                                    </span>
-                                  </div>
-
-                                  {/* CONFIG TITLE */}
-                                  <p className="font-medium mb-2">Cấu hình:</p>
-
-                                  {/* VARIANTS */}
-                                  <div className="space-y-2">
-                                    {p.variants.map((v) => (
-                                      <div
-                                        key={v.id}
-                                        className="flex justify-between items-center border-b border-gray-100 pb-1"
-                                      >
-                                        <span>
-                                          • {v.cpu} / {v.ram} / {v.ssd}
-                                        </span>
-
-                                        <span className="text-red-500 font-medium">
-                                          {v.price.toLocaleString()} đ
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-
-                                </div>
+                              {/* IMAGE */}
+                              <div className="w-48 h-48 flex-shrink-0">
+                                <img
+                                  src={
+                                    p.mainImage ||
+                                    "https://via.placeholder.com/150"
+                                  }
+                                  className="
+                                                        w-full h-full
+                                                        object-cover
+                                                        rounded-xl
+                                                        border border-[#E5E7EB]
+                                                    "
+                                />
                               </div>
 
+                              {/* INFO */}
+                              <div className="flex-1">
+
+                                <h2 className="text-xl font-semibold text-[#111111] !border-b border-[#F3F4F6] pb-3 mb-4">
+                                  {p.name}
+                                </h2>
+
+                                <div className="mb-4">
+                                  <span className="text-sm text-[#6B7280]">
+                                    Thương hiệu:
+                                  </span>
+
+                                  <span
+                                    className="
+                                                            ml-2
+                                                            inline-flex
+                                                            px-2 py-1
+                                                            rounded-lg
+                                                            bg-[#F9FAFB]
+                                                            text-sm
+                                                            font-medium
+                                                        "
+                                  >
+                                    {p.brand?.name || "-"}
+                                  </span>
+                                </div>
+
+                                <p className="font-medium mb-3">
+                                  Cấu hình:
+                                </p>
+
+                                <div className="space-y-2">
+                                  {p.variants.map((v) => (
+                                    <div
+                                      key={v.id}
+                                      className="
+                                                                flex justify-between items-center
+                                                                border border-[#F3F4F6]
+                                                                rounded-lg
+                                                                px-4 py-3
+                                                            "
+                                    >
+                                      <span>
+                                        {v.cpu} / {v.ram} / {v.ssd}
+                                      </span>
+
+                                      <span className="text-[#ff7a00] font-semibold">
+                                        {v.price.toLocaleString()} đ
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+
+                              </div>
                             </div>
                           </td>
                         </tr>
@@ -447,85 +755,21 @@ export default function ProductDetail() {
               </tbody>
 
             </table>
-
           </div>
 
           {/* ================= PAGINATION ================= */}
-          <div className="flex flex-col md:flex-row gap-3 items-center justify-between mt-4">
-
-            {/* LEFT */}
-            <div className="flex items-center gap-2">
-              <span>Hiển thị:</span>
-
-              <select
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="border rounded px-2 py-1"
-              >
-                <option value={15}>15</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-
-            {/* CENTER */}
-            <div className="flex items-center gap-2">
-
-              <button
-                onClick={() => setPage(1)}
-                disabled={page === 1}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ⏮
-              </button>
-
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ◀
-              </button>
-
-              <input
-                type="number"
-                value={page}
-                onChange={(e) => {
-                  let val = Number(e.target.value);
-                  if (val < 1) val = 1;
-                  if (val > totalPages) val = totalPages || 1;
-                  setPage(val);
-                }}
-                className="w-12 text-center border rounded"
-              />
-
-              <span>/ {totalPages}</span>
-
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ▶
-              </button>
-
-              <button
-                onClick={() => setPage(totalPages)}
-                disabled={page === totalPages}
-                className="px-2 py-1 border rounded disabled:opacity-50"
-              >
-                ⏭
-              </button>
-
-            </div>
-
-            {/* RIGHT */}
-            <div>
-              {start}-{end} trong {total} laptop
-            </div>
-
+          <div className="mt-4">
+            <DashboardPagination
+              page={page}
+              setPage={setPage}
+              limit={limit}
+              setLimit={setLimit}
+              totalPages={totalPages}
+              start={start}
+              end={end}
+              total={total}
+              label="sản phẩm"
+            />
           </div>
 
         </section>

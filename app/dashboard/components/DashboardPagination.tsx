@@ -29,7 +29,7 @@ export default function DashboardPagination({
 }: Props) {
     console.log("totalPages",totalPages)
     return (
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-2">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-3">
 
             {/* LEFT */}
             <div className="flex items-center gap-2 text-sm">
