@@ -12,12 +12,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import MobileSidebar from "../components/MobileSidebar";
 import DashboardPagination from "../components/DashboardPagination";
 type Variant = {
-  id: string
-  cpu: string
-  ram: string
-  ssd: string
-  price: number
-}
+  id: string;
+  cpu: string;
+  ram: string;
+  ssd: string;
+  gpu: string;
+  price: number;
+  screenSize: string;
+  resolution: string;
+  refreshRate: string;
+};
 
 type Product = {
   _id: string
@@ -31,64 +35,65 @@ type Product = {
   }
   isHot?: boolean
   isNew?: boolean
+  isActive: boolean;
 }
 
 export default function ProductDetail() {
-const searchParams = useSearchParams();
-const router = useRouter();
-   const [openSidebar, setOpenSidebar] = useState(false);
-const [search, setSearch] = useState(
-  searchParams.get("search") || ""
-);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [openSidebar, setOpenSidebar] = useState(false);
+  const [search, setSearch] = useState(
+    searchParams.get("search") || ""
+  );
 
-const [open, setOpen] = useState(false);
-const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-const [products, setProducts] = useState<Product[]>([]);
-const [page, setPage] = useState(1);
-const [limit, setLimit] = useState(10);
-const [total, setTotal] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [total, setTotal] = useState(0);
 
-const [selectedIds, setSelectedIds] = useState<string[]>([]);
-const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.ceil(total / limit);
 
-const start = total === 0 ? 0 : (page - 1) * limit + 1;
-const end = Math.min(page * limit, total);
+  const start = total === 0 ? 0 : (page - 1) * limit + 1;
+  const end = Math.min(page * limit, total);
 
-const fetchProducts = async () => {
-  const params = new URLSearchParams();
-
-  params.set("page", String(page));
-  params.set("limit", String(limit));
-
-  if (search) {
-    params.set("search", search);
-  }
-
-  const res = await fetch(`/api/products?${params.toString()}`);
-  const data = await res.json();
-
-  setProducts(data.products || []);
-  setTotal(data.total || 0);
-};
-
-useEffect(() => {
-  const timeout = setTimeout(() => {
+  const fetchProducts = async () => {
     const params = new URLSearchParams();
+
+    params.set("page", String(page));
+    params.set("limit", String(limit));
 
     if (search) {
       params.set("search", search);
     }
 
-    router.push(`/dashboard/products?${params.toString()}`);
+    const res = await fetch(`/api/products?${params.toString()}`);
+    const data = await res.json();
 
-    fetchProducts();
-  }, 300);
+    setProducts(data.products || []);
+    setTotal(data.total || 0);
+  };
 
-  return () => clearTimeout(timeout);
-}, [search, page, limit]);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams();
+
+      if (search) {
+        params.set("search", search);
+      }
+
+      router.push(`/dashboard/products?${params.toString()}`);
+
+      fetchProducts();
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [search, page, limit]);
 
   const handleBulkDelete = async () => {
     const ok = confirm(`Xóa ${selectedIds.length} sản phẩm?`);
@@ -106,31 +111,29 @@ useEffect(() => {
     setSelectedIds([]);
   };
 
-  const toggleHot = async (id: string) => {
-    const res = await fetch(`/api/products/${id}/toggle-hot`, {
+  const toggleField = async (
+    id: string,
+    field: "isHot" | "isNew" | "isActive",
+    api: string
+  ) => {
+    const res = await fetch(`/api/products/${id}/${api}`, {
       method: "PATCH",
     });
 
-    console.log("res.ok", res)
-    if (res.ok) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p._id === id ? { ...p, isHot: !p.isHot } : p
-        )
-      );
-    }
-  };
-  const toggleNew = async (id: string) => {
-    await fetch(`/api/products/${id}/toggle-new`, {
-      method: "PATCH",
-    });
+    if (!res.ok) return;
 
     setProducts((prev) =>
       prev.map((p) =>
-        p._id === id ? { ...p, isNew: !p.isNew } : p
+        p._id === id
+          ? { ...p, [field]: !p[field] }
+          : p
       )
     );
   };
+  const toggleExpand = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id))
+  }
+
   return (
     <>
       {/* ================= HEADER TOP ================= */}
@@ -266,10 +269,43 @@ useEffect(() => {
 
                   {/* STATUS */}
                   <div className="flex items-center gap-3 mt-3">
-
+                    {/* ACTIVE TOGGLE */}
+                    <button
+                      onClick={() => toggleField(p._id, "isActive", "toggle-active")}
+                      className={`
+                relative
+                w-11 h-6
+                rounded-full
+                transition-all duration-300
+                ${p.isActive
+                          ? "bg-[#ff7a00]"
+                          : "bg-[#E5E7EB]"
+                        }
+            `}
+                      title={
+                        p.isActive
+                          ? "Đang bán"
+                          : "Ngừng bán"
+                      }
+                    >
+                      <div
+                        className={`
+                    absolute top-0.5
+                    w-5 h-5
+                    rounded-full
+                    bg-white
+                    shadow-sm
+                    transition-all duration-300
+                    ${p.isActive
+                            ? "left-[22px]"
+                            : "left-[2px]"
+                          }
+                `}
+                      />
+                    </button>
                     {/* HOT */}
                     <button
-                      onClick={() => toggleHot(p._id)}
+                      onClick={() => toggleField(p._id, "isHot", "toggle-hot")}
                       className="
                                 flex items-center gap-1
                                 px-2 py-1
@@ -293,7 +329,7 @@ useEffect(() => {
 
                     {/* NEW */}
                     <button
-                      onClick={() => toggleNew(p._id)}
+                      onClick={() => toggleField(p._id, "isNew", "toggle-new")}
                       className="
                                 flex items-center gap-1
                                 px-2 py-1
@@ -412,12 +448,12 @@ useEffect(() => {
           </div>
 
           {/* ================= DESKTOP TABLE ================= */}
-          <div className="hidden md:block bg-white !border border-[#E5E7EB] rounded-xl overflow-hidden">
+          <div className="hidden md:block bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
 
             <table className="w-full text-sm border-collapse">
 
               {/* HEADER */}
-              <thead className="!border-b border-[#E5E7EB]">
+              <thead className="border-b border-[#E5E7EB]">
                 <tr className="text-[#111111]">
 
                   <th className="px-4 py-2.5 w-[50px] text-center align-middle">
@@ -483,7 +519,7 @@ useEffect(() => {
                       {/* ROW */}
                       <tr
                         className="
-                                    !border-b border-[#F3F4F6]
+                                    border-b border-[#F3F4F6]
                                     hover:bg-[#FFF7ED]
                                     transition-all duration-200
                                 "
@@ -511,89 +547,85 @@ useEffect(() => {
                           />
                         </td>
 
-         {/* STATUS */}
-<td className="px-4 py-2.5">
-    <div className="flex items-center justify-center gap-2">
+                        {/* STATUS */}
+                        <td className="px-4 py-2.5">
+                          <div className="flex items-center justify-center gap-2">
 
-        {/* ACTIVE TOGGLE */}
-        <button
-            // onClick={() => toggleActive(p._id)}
-            className={`
+                            {/* ACTIVE TOGGLE */}
+                            <button
+                              onClick={() => toggleField(p._id, "isActive", "toggle-active")}
+                              className={`
                 relative
                 w-11 h-6
-                !rounded-full
+                rounded-full
                 transition-all duration-300
-                ${
-                    p.isActive
-                        ? "bg-[#ff7a00]"
-                        : "bg-[#E5E7EB]"
-                }
+                ${p.isActive
+                                  ? "bg-[#ff7a00]"
+                                  : "bg-[#E5E7EB]"
+                                }
             `}
-            title={
-                p.isActive
-                    ? "Đang bán"
-                    : "Ngừng bán"
-            }
-        >
-            <div
-                className={`
+                              title={
+                                p.isActive
+                                  ? "Đang bán"
+                                  : "Ngừng bán"
+                              }
+                            >
+                              <div
+                                className={`
                     absolute top-0.5
                     w-5 h-5
-                    !rounded-full
+                    rounded-full
                     bg-white
                     shadow-sm
                     transition-all duration-300
-                    ${
-                        p.isActive
-                            ? "left-[22px]"
-                            : "left-[2px]"
-                    }
+                    ${p.isActive
+                                    ? "left-[22px]"
+                                    : "left-[2px]"
+                                  }
                 `}
-            />
-        </button>
+                              />
+                            </button>
 
-        {/* HOT */}
-        <button
-            onClick={() => toggleHot(p._id)}
-            className={`
+                            {/* HOT */}
+                            <button
+                              onClick={() => toggleField(p._id, "isHot", "toggle-hot")}
+                              className={`
                 w-8 h-8
                 rounded-lg
                 border
                 flex items-center justify-center
                 transition-all duration-300
-                ${
-                    p.isHot
-                        ? "bg-[#FFF7ED] border-[#FED7AA] text-[#ff7a00]"
-                        : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#FED7AA] hover:text-[#ff7a00]"
-                }
+                ${p.isHot
+                                  ? "bg-[#FFF7ED] border-[#FED7AA] text-[#ff7a00]"
+                                  : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#FED7AA] hover:text-[#ff7a00]"
+                                }
             `}
-            title="Sản phẩm nổi bật"
-        >
-            <i className="fas fa-star text-[13px]" />
-        </button>
+                              title="Sản phẩm nổi bật"
+                            >
+                              <i className="fas fa-star text-[13px]" />
+                            </button>
 
-        {/* NEW */}
-        <button
-            onClick={() => toggleNew(p._id)}
-            className={`
+                            {/* NEW */}
+                            <button
+                              onClick={() => toggleField(p._id, "isNew", "toggle-new")}
+                              className={`
                 w-8 h-8
                 rounded-lg
                 border
                 flex items-center justify-center
                 transition-all duration-300
-                ${
-                    p.isNew
-                        ? "bg-[#ECFDF3] border-[#BBF7D0] text-[#16A34A]"
-                        : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#BBF7D0] hover:text-[#16A34A]"
-                }
+                ${p.isNew
+                                  ? "bg-[#ECFDF3] border-[#BBF7D0] text-[#16A34A]"
+                                  : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#BBF7D0] hover:text-[#16A34A]"
+                                }
             `}
-            title="Hàng mới về"
-        >
-            <i className="fas fa-bolt text-[13px]" />
-        </button>
+                              title="Hàng mới về"
+                            >
+                              <i className="fas fa-bolt text-[13px]" />
+                            </button>
 
-    </div>
-</td>
+                          </div>
+                        </td>
                         {/* IMAGE */}
                         <td className="px-4 py-2.5">
                           <img
@@ -693,7 +725,7 @@ useEffect(() => {
                               {/* INFO */}
                               <div className="flex-1">
 
-                                <h2 className="text-xl font-semibold text-[#111111] !border-b border-[#F3F4F6] pb-3 mb-4">
+                                <h2 className="text-xl font-semibold text-[#111111] border-b border-[#F3F4F6] pb-3 mb-4">
                                   {p.name}
                                 </h2>
 
@@ -782,8 +814,10 @@ useEffect(() => {
         setOpen={setOpen}
         mode={editingProduct ? "edit" : "create"}
         product={editingProduct}
-        onSuccess={() => fetchProducts(search)}
+        onSuccess={() => fetchProducts()}
       />
     </>
   )
 }
+
+

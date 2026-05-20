@@ -1,3 +1,5 @@
+
+ 
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -57,6 +59,8 @@ a:hover,
 a:active {
     text-decoration: none !important;
 }
+
+
 
 .all_menu_top {
     background: #fff;
@@ -288,12 +292,12 @@ header_mobile img {
     margin-bottom: 15px;
 }
 
-a,
+/* a,
 input,
 textarea {
     outline: none;
     padding: 0px;
-}
+} */
 
 .wrap_list .title_sp {
     color: #111;
@@ -1164,10 +1168,7 @@ ins.highlight {
     font-weight: 600;
     font-size: 14px;
 }
-label {
-    display: inline-block;
-    margin-bottom: 0.5rem;
-}
+
 .all_danhmuctour {
     border-bottom: 1px solid #c6c6c6;
     padding-bottom: 15px;
