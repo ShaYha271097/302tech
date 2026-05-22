@@ -89,7 +89,7 @@ a:active {
   
 }
 
-header_mobile img {
+.header_mobile img {
     transition: all 0.3s;
     /* max-width: 90px; */
    width: 150px;
@@ -106,58 +106,79 @@ header_mobile img {
 
 .frm_timkiem {
     position: relative;
+
     width: 100%;
-    padding: 10px;
+    max-width: 520px;
+
+    display: flex;
+    align-items: center;
 }
 
-.frm_timkiem .input {
-    text-indent: 10px;
-    outline: none;
-    transition: all ease 0.5s;
-    padding: 5px 0px;
-    padding-right: 20px;
-    border: 0;
-    width: 100%;
-    z-index: 99;
-    color: #333;
-    background: #fff;
-    font-size: 14px;
-    border: 1px solid #3985f7;
-}
-
-.timkiem_header input {
-    padding: 10px 0px !important;
-    border: 2px solid #0000001a !important;
-}
-
-.frm_timkiem button {
-    background: none;
-    outline: none;
-    border: none;
-    right: 0;
-    position: absolute;
-    z-index: 9;
-    top: 0;
-    height: 100%;
-    background: #EFEFEF;
-    width: 100px;
-}
 
 .timkiem_header {
-    width: 40% !important;
-    padding: 0 !important;
+    width: 40%;
 }
 
-.timkiem_header_mobile {
+/* INPUT */
+.frm_timkiem .input {
     width: 100%;
-    padding: 0 !important;
-}
-.timkiem_header_mobile input {
-    border: 2px solid #0000001a !important;
-    padding: 10px 0 !important;
+    height: 46px;
+
+    padding: 0 56px 0 16px;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+
+    outline: none;
+
+    font-size: 14px;
+    color: #111827;
+
+    background: #fff;
+
+    transition: all 0.25s ease;
 }
 
 
+/* FOCUS */
+.frm_timkiem .input:focus {
+    border-color: #ff7a00;
+    box-shadow: 0 0 0 4px #FFF3E8;
+}
+
+/* PLACEHOLDER */
+.frm_timkiem .input::placeholder {
+    color: #9CA3AF;
+}
+
+/* BUTTON */
+.nut_tim {
+    position: absolute;
+
+    right: 5px;
+
+    width: 36px;
+    height: 36px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #ff7a00;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+}
+/* HOVER */
+
+
+/* ICON */
+.nut_tim i {
+    font-size: 14px;
+}
 
 .all_search_cart {
     display: flex;

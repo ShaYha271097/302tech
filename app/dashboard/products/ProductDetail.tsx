@@ -74,7 +74,7 @@ export default function ProductDetail() {
 
     const res = await fetch(`/api/products?${params.toString()}`);
     const data = await res.json();
-
+    console.log("data=>>>>",data)
     setProducts(data.products || []);
     setTotal(data.total || 0);
   };
@@ -190,6 +190,7 @@ export default function ProductDetail() {
 
             {/* PRODUCT ITEM */}
             {products.map((p) => {
+              console.log("p", p)
               const first = p.variants[0];
               const more = p.variants.length - 1;
 

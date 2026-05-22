@@ -14,7 +14,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
     // ❌ sai username
     if (username !== process.env.ADMIN_USERNAME) {
       return NextResponse.json(
@@ -22,11 +21,11 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-   console.log("=>>>>>>>>>>>>>SSS",username,password)
+   console.log("=>>>>>>>>>>>>>SSS",username,password,process.env.ADMIN_PASSWORD_HASH!)
     // ✅ check password hash
     const isMatch = await bcrypt.compare(
       password,
-      process.env.ADMIN_PASSWORD_HASH!
+      "$2b$10$3KsnFyejDt8Fdfi3zYxjj.U9KS9T.9rrJP71PKGiRkBzv4BiOFbXG"
     );
  console.log("qua day ko=>>>>",isMatch)
     if (!isMatch) {
