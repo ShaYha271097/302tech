@@ -39,21 +39,23 @@ export default function BrandDetail() {
     const start = total === 0 ? 0 : (page - 1) * limit + 1;
     const end = Math.min(page * limit, total);
 
-    const fetchBrands = async (keyword = search) => {
-        const res = await fetch(
-            `/api/brands?search=${keyword}&page=${page}&limit=${limit}`
-        );
 
-        const data = await res.json();
+const [sort, setSort] = useState("name_asc");
 
-        setBrands(data.brands || []);
-        setTotal(data.total || 0);
-    };
+const fetchBrands = async (keyword = search) => {
 
-    useEffect(() => {
-        fetchBrands();
-    }, [page, limit]);
+  const res = await fetch(
+    `/api/brands?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
+  );
 
+  const data = await res.json();
+
+  setBrands(data.brands || []);
+  setTotal(data.total || 0);
+};
+useEffect(() => {
+  fetchBrands();
+}, [page, limit, sort]);
     const handleBulkDelete = async () => {
         const ok = confirm(`Xóa ${selectedIds.length} thương hiệu ?`);
         if (!ok) return;
@@ -132,17 +134,60 @@ export default function BrandDetail() {
                             Hình ảnh
                         </th>
 
-                        <th className="px-4 py-2.5 text-left font-semibold">
-                            Tên thương hiệu
-                        </th>
+                       <th className="px-4 py-2.5 text-left font-semibold">
+          <button
+  onClick={() =>
+    setSort((prev) =>
+      prev === "name_asc"
+        ? "name_desc"
+        : "name_asc"
+    )
+  }
+  className="flex items-center gap-1"
+> 
+  Tên thương hiệu
+
+  <i
+    className={`fas ${
+      sort === "name_asc"
+        ? "fa-chevron-up"
+        : "fa-chevron-down"
+    } text-[11px]
+      cursor-pointer
+    `}
+    
+  />
+</button>
+                </th>
 
                         <th className="px-4 py-2.5 text-left font-semibold">
                             Slug
                         </th>
 
                         <th className="px-4 py-2.5 text-left font-semibold">
+                           <button
+                            onClick={() =>
+                                setSort((prev) =>
+                                prev === "date_desc"
+                                    ? "date_asc"
+                                    : "date_desc"
+                                )
+                            }
+                             className="flex items-center gap-1"
+                            >
                             Ngày tạo
-                        </th>
+                            <i
+                                className={`fas ${
+                                sort === "date_desc"
+                                    ? "fa-chevron-up"
+                                    : "fa-chevron-down"
+                                } text-[11px]
+                                  cursor-pointer
+                                `}
+                                
+                            />
+                            </button>
+                            </th>
 
                         <th className="px-4 py-2.5 text-left font-semibold">
                             Hành động

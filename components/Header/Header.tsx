@@ -38,7 +38,7 @@ export default function BannerSlider() {
                             height={127}
                               src="/assets/images/header-top.png"
                             className={'1'}
-                            alt="Laptop Tèo Em - Cần Thơ "
+                            alt="302 Tech"
                             decoding="async"
                         />{" "}
                     </div>
@@ -52,7 +52,7 @@ export default function BannerSlider() {
                                     loading="lazy"
                                    
                                        src="/assets/images/logoB.png"
-                                    alt="Laptop Tèo Em - Cần Thơ "
+                                    alt="302 Tech"
                                     decoding="async"
                                 />
                             </Link>
@@ -69,7 +69,7 @@ export default function BannerSlider() {
                                                         height={100}
                                                         src="./assets/images/hotline_icon.png"
                                                         className="attachment-medium size-medium ring_flas"
-                                                        alt="Laptop Tèo Em - Cần Thơ "
+                                                        alt="302 Tech"
                                                         decoding="async"
                                                         srcSet="https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100.png 100w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-24x24.png 24w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-36x36.png 36w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-48x48.png 48w"
                                                         sizes="(max-width: 100px) 100vw, 100px"

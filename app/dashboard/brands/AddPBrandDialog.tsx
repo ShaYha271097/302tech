@@ -9,7 +9,7 @@ import {
   DialogClose,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Trash } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -150,157 +150,356 @@ export default function AddPBrandDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-xl flex flex-col max-h-[85vh]" showCloseButton={false}>
-        
+      <DialogContent
+        showCloseButton={false}
+        className="
+      sm:max-w-xl
+      p-0
+      overflow-hidden
+      rounded-3xl
+      border border-[#FFE0C2]
+      bg-[#FFFDFB]
+      shadow-2xl
+    "
+      >
         {/* HEADER */}
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle>
-            {mode === "create" ? "Thêm thương hiệu" : "Sửa thương hiệu"}
-          </DialogTitle>
+        <DialogHeader
+          className="
+        px-6 py-5
+        border-b border-[#FFE7D1]
+        bg-gradient-to-r from-[#FFF7F0] to-[#FFFDFB]
+      "
+        >
+          <div className="flex items-center justify-between">
+            {/* LEFT */}
+            <div className="flex items-center gap-4">
+              <div
+                className="
+              w-12 h-12
+              rounded-2xl
+              bg-[#FFF1E7]
+              flex items-center justify-center
+              shadow-sm
+            "
+              >
+                <i className="fas fa-tags text-[#ff7a00] text-xl" />
+              </div>
 
-          <DialogClose asChild>
-            <button>
-              <X className="w-5 h-5" />
-            </button>
-          </DialogClose>
+              <div>
+                <DialogTitle
+                  className="
+                text-[22px]
+                font-bold
+                text-[#111827]
+              "
+                >
+                  {mode === "create"
+                    ? "Thêm thương hiệu"
+                    : "Sửa thương hiệu"}
+                </DialogTitle>
+
+                <p className="text-sm text-[#6B7280] mt-1">
+                  Quản lý logo và thông tin thương hiệu
+                </p>
+              </div>
+            </div>
+
+            {/* CLOSE */}
+            <DialogClose asChild>
+              <button
+                className="
+              w-10 h-10
+              rounded-xl
+              border border-[#E5E7EB]
+              bg-white
+              flex items-center justify-center
+              hover:bg-[#FFF4EC]
+              hover:border-[#FED7AA]
+              transition-all
+            "
+              >
+                <X className="w-5 h-5 text-[#6B7280]" />
+              </button>
+            </DialogClose>
+          </div>
         </DialogHeader>
 
         {/* BODY */}
-        <div ref={bodyRef} className="space-y-4">
-
+        <div
+          ref={bodyRef}
+          className={`
+        px-6 py-5
+        space-y-6
+        relative
+        ${loading ? "pointer-events-none opacity-70" : ""}
+      `}
+        >
           {/* NAME */}
           <div>
-            <label className="text-sm font-medium">Tên thương hiệu</label>
+            <label className="text-[15px] font-semibold text-[#111827]">
+              Tên thương hiệu
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+
             <input
-              className={`w-full border rounded-md p-2 mt-1 ${
-                errorName ? "border-red-500" : ""
-              }`}
+              className={`
+            mt-2
+            w-full h-11
+            rounded-2xl
+            border
+            bg-white
+            px-4
+            text-[15px]
+            outline-none
+            transition-all
+            focus:ring-4
+            focus:ring-[#FFF3E8]
+            ${errorName
+                  ? "border-red-500"
+                  : "border-[#DCDCDC] focus:border-[#ff7a00]"
+                }
+          `}
+              placeholder="Ví dụ: Lenovo"
               value={name}
               onChange={(e) => {
                 const value = e.target.value;
                 setName(value);
 
-                if (!value.trim()) setErrorName("Không được để trống");
-                else if (value.length < 2)
+                if (!value.trim()) {
+                  setErrorName("Không được để trống");
+                } else if (value.length < 2) {
                   setErrorName("Ít nhất 2 ký tự");
-                else setErrorName("");
+                } else {
+                  setErrorName("");
+                }
               }}
             />
-            {errorName && (
-              <p className="text-red-500 text-sm mt-1">{errorName}</p>
-            )}
+
+            <div className="h-[20px] mt-1">
+              {errorName && (
+                <p className="text-sm text-red-500">{errorName}</p>
+              )}
+            </div>
           </div>
 
           {/* IMAGE */}
           <div>
-            <label className="group relative w-full h-32 rounded border bg-white cursor-pointer overflow-hidden">
+            <label className="text-[15px] font-semibold text-[#111827]">
+              Logo thương hiệu
+            </label>
 
+            <div
+              className="
+    relative
+    w-full
+    h-[220px]
+    rounded-3xl
+    border-2 border-dashed border-[#FED7AA]
+    bg-[#FFF9F5]
+    overflow-hidden
+  "
+            >
+              {/* IMAGE */}
               {mainImageUrl ? (
                 <>
                   <img
                     src={mainImageUrl}
-                    className="absolute inset-0 m-auto max-w-[80%] max-h-[80%] object-contain"
+                    className="w-full h-full object-contain p-6"
                   />
 
-                  {/* overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition" />
-
-                  {/* delete */}
+                  {/* DELETE */}
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setMainImage(null);
-                    }}
-                    className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100"
+                    onClick={() => setMainImage(null)}
+                    className="
+          absolute top-4 right-4
+          w-9 h-9
+          rounded-xl
+          bg-white
+          border border-[#FECACA]
+          flex items-center justify-center
+          text-red-500
+          hover:bg-red-500
+          hover:text-white
+          transition-all
+        "
                   >
-                    ✕
+                    <Trash className="w-4 h-4" />
                   </button>
                 </>
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                  + Tải logo
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <div
+                    className="
+          w-20 h-20
+          rounded-full
+          bg-[#FFF1E7]
+          flex items-center justify-center
+        "
+                  >
+                    <i className="fas fa-image text-3xl text-[#ff7a00]" />
+                  </div>
+
+                  <p className="mt-4 text-[#6B7280] text-sm">
+                    Click để tải logo thương hiệu
+                  </p>
                 </div>
               )}
 
-              <input
-                type="file"
-                hidden
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
+              {/* BUTTON PICK FILE */}
+              {!mainImageUrl && (
+                <label
+                  className="
+      absolute bottom-4 right-4
+      h-10 px-4
+      rounded-xl
+      bg-white
+      border border-[#E5E7EB]
+      flex items-center gap-2
+      cursor-pointer
+      hover:border-[#ff7a00]
+      transition-all
+      shadow-sm
+    "
+                >
+                  <i className="fas fa-upload text-[#ff7a00]" />
+                  Chọn ảnh
 
-                  if (!file.type.startsWith("image/")) {
-                    alert("Chỉ upload ảnh");
-                    return;
-                  }
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
 
-                  if (file.size > 5 * 1024 * 1024) {
-                    alert("Max 5MB");
-                    return;
-                  }
+                      if (!file.type.startsWith("image/")) {
+                        alert("Chỉ upload ảnh");
+                        return;
+                      }
 
-                  setMainImage(file);
-                }}
-              />
+                      if (file.size > 5 * 1024 * 1024) {
+                        alert("Max 5MB");
+                        return;
+                      }
 
-              {/* 🔥 uploading overlay */}
-              {uploading && (
-                <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-[#ff7a00]" />
-                </div>
+                      setMainImage(file);
+
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
               )}
-            </label>
+            </div>
           </div>
         </div>
 
         {/* FOOTER */}
-      <DialogFooter>
-
-  {/* CANCEL */}
-  <DialogClose asChild>
-    <Button
-      variant="outline"
-      className="
-        border border-[#E5E7EB]
-        text-[#6B7280]
-        hover:bg-[#F9FAFB]
-        hover:text-[#111111]
-        transition-all duration-300
+        <DialogFooter
+          className="
+        px-6 py-7
+        border-t border-[#FFE7D1]
+        bg-white
+        flex flex-col-reverse sm:flex-row
+        gap-3
       "
-    >
-      Huỷ
-    </Button>
-  </DialogClose>
+        >
+          {/* CANCEL */}
+          <DialogClose asChild>
+            <Button
+              variant="outline"
+              className="
+            h-11
+            rounded-2xl
+            border border-[#E5E7EB]
+            bg-white
+            text-[#6B7280]
+            hover:bg-[#F9FAFB]
+            hover:text-[#111111]
+            transition-all
+          "
+            >
+              Huỷ
+            </Button>
+          </DialogClose>
 
-  {/* SAVE */}
-  <Button
-    disabled={loading || uploading}
-    onClick={handleSubmit}
-    className="
-      bg-[#ff7a00]
-      hover:bg-[#ea6d00]
-      text-white
-      border-none
-      transition-all duration-300
-      disabled:opacity-60
-    "
-  >
-    {(loading || uploading) && (
-      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-    )}
+          {/* SAVE */}
+          <Button
+            disabled={loading || uploading}
+            onClick={handleSubmit}
+            className="
+          h-11
+          rounded-2xl
+          bg-[#ff7a00]
+          hover:bg-[#ea6d00]
+          text-white
+          shadow-lg shadow-orange-200
+          transition-all
+          disabled:opacity-60
+        "
+          >
+            {(loading || uploading) && (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            )}
 
-    {loading ? "Đang lưu..." : "Lưu"}
-  </Button>
-
-</DialogFooter>
+            {loading ? "Đang lưu..." : "Lưu thương hiệu"}
+          </Button>
+        </DialogFooter>
 
         {/* FULL LOADING */}
         {loading && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <div className="bg-white px-6 py-4 rounded-xl flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-[#ff7a00]" />
-              <span>Đang xử lý...</span>
+          <div
+            className="
+      absolute inset-0 z-50
+      bg-white/40
+      backdrop-blur-[6px]
+      flex items-center justify-center
+    "
+          >
+            <div
+              className="
+        min-w-[240px]
+        rounded-3xl
+        border border-[#FFE0C2]
+        bg-white/90
+        shadow-[0_10px_40px_rgba(255,122,0,0.15)]
+        px-7 py-6
+        flex flex-col items-center
+      "
+            >
+              {/* SPINNER */}
+              <div
+                className="
+          relative
+          w-14 h-14
+          rounded-full
+          border-4 border-[#FFE7D1]
+          border-t-[#ff7a00]
+          animate-spin
+        "
+              />
+
+              {/* TEXT */}
+              <h3
+                className="
+          mt-5
+          text-[17px]
+          font-semibold
+          text-[#111827]
+        "
+              >
+                Đang xử lý
+              </h3>
+
+              <p
+                className="
+          mt-1
+          text-sm
+          text-[#6B7280]
+          text-center
+        "
+              >
+                Vui lòng chờ vài giây...
+              </p>
             </div>
           </div>
         )}

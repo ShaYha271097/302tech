@@ -70,11 +70,12 @@ export async function POST(req: Request) {
         break;
 
       case "slider":
-        transformation = [getTransform(1200, 450)];
+        transformation = [];
         break;
 
       case "banner":
-        transformation = [getTransform(400, 250)];
+        // transformation = [getTransform(400, 250)];
+         transformation = [];
         break;
 
       case "brand":

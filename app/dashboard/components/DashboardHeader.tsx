@@ -38,7 +38,7 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
                 <img
 
                     alt="Phần mềm quản lý bán hàng"
-                    className="h-8 max-w-[120px] object-contain"
+                    className=" max-w-[200px] object-contain"
                     title="Phần mềm quản lý bán hàng"
                      src="/assets/images/logoB.png"
                 />
@@ -72,12 +72,12 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
         </div>
 
         {/* Text */}
-        <div className="hidden md:flex flex-col items-start leading-tight">
-            <span className="text-[15px] font-semibold text-[#111111]">
+        <div className="hidden md:flex flex-col items-start leading-tight   cursor-pointer">
+            <span className="text-[15px] font-semibold text-[#111111] ">
                 Admin
             </span>
 
-            <span className="text-[12px] text-[#6B7280]">
+            <span className="text-[12px] text-[#6B7280] ">
                 Quản trị viên
             </span>
         </div>
@@ -89,6 +89,7 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
                 text-[#6B7280]
                 transition-transform duration-300
                 ${openMenu ? "rotate-180" : ""}
+                  cursor-pointer
             `}
         />
     </button>
@@ -126,6 +127,7 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
                     hover:bg-[#FFF3E8]
                     hover:text-[#ff7a00]
                     transition-all duration-200
+                      cursor-pointer
                 "
             >
                 <i className="fas fa-sign-out-alt" />

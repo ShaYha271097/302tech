@@ -37,7 +37,31 @@ type Props = {
   product?: any; // chỉ dùng khi edit
   onSuccess?: () => void;
 };
+const inputClass = `
+  w-full
+  h-9
+  rounded-xl
+  border border-[#DCDCDC]
+  bg-white
+  px-2
+  text-sm
+  outline-none
+  transition-all
+  focus:border-[#ff7a00]
+`;
 
+const selectClass = `
+  appearance-none
+  w-full
+  h-9
+  rounded-xl
+  border border-[#DCDCDC]
+  bg-white
+  px-2
+  text-sm
+  outline-none
+  focus:border-[#ff7a00]
+`;
 
 const slugify = (text: string) => {
   return text
@@ -74,7 +98,7 @@ export default function AddProductDialog({
   console.log("product", product);
   // const variantsRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-
+const [loadingBrand, setLoadingBrand] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [errorName, setErrorName] = useState("");
@@ -223,7 +247,7 @@ export default function AddProductDialog({
       setLoading(false);
     }
   };
-  const upload = async (file: File, type: "product" | "slider" | "banner") => {
+  const upload = async (file: File, type: "product" | "brand" | "slider" | "banner") => {
     setUploading(true);
 
     const formData = new FormData();
@@ -315,15 +339,104 @@ export default function AddProductDialog({
   const count = images.filter((i) => i !== mainImage).length;
   const isInvalid = count < 2 || count > 6;
 
+
+
+  const handleCreateBrand = async () => {
+  if (!newBrand.trim()) {
+    alert("Vui lòng nhập tên thương hiệu");
+    return;
+  }
+
+  setLoadingBrand(true);
+
+  try {
+    let imageUrl = "";
+
+    // upload logo
+    if (mainImage && typeof mainImage !== "string") {
+      imageUrl = await upload(mainImage, "brand");
+    } else {
+      imageUrl = mainImage || "";
+    }
+
+    const payload = {
+      name: newBrand.trim(),
+      image: imageUrl,
+    };
+
+    const res = await fetch("/api/brands", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+if (!res.ok) {
+  alert(data.error || "Lỗi tạo thương hiệu");
+  return;
+}
+
+const brand = data.data;
+
+if (!brand?._id) {
+  alert("Brand không hợp lệ");
+  return;
+}
+
+setBrands((prev) => {
+  const exists = prev.some(
+    (item) => String(item._id) === String(brand._id)
+  );
+
+  if (exists) return prev;
+
+  return [...prev, brand];
+});
+
+setBrandId(String(brand._id));
+    // reset form
+    setNewBrand("");
+    setMainImage(null);
+
+    // đóng popup
+    setOpenBrand(false);
+
+  } catch (err) {
+    console.error(err);
+    alert("Upload thất bại");
+  } finally {
+    setLoadingBrand(false);
+  }
+};
+
+const SelectIcon = () => {
+  return (
+    <i
+      className="
+        fas fa-chevron-down
+        absolute right-3 top-1/2
+        -translate-y-1/2
+        text-[12px]
+        text-[#9CA3AF]
+        pointer-events-none
+      "
+    />
+  );
+};
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           showCloseButton={false}
           className="
-    w-[96vw]
-    sm:max-w-[1000px]
-    h-[90vh]
+    w-[100vw]
+sm:w-[96vw]
+sm:max-w-[1000px]
+h-[100vh]
+sm:h-[90vh]
     flex flex-col
     overflow-hidden
     p-0
@@ -340,7 +453,15 @@ export default function AddProductDialog({
                 border-b border-[#ECECEC]
             "
           >
-            <div className="flex items-center justify-between">
+            <div
+  className="
+    flex flex-col
+    sm:flex-row
+    gap-4
+    sm:items-center
+    sm:justify-between
+  "
+>
               {/* LEFT */}
               <div className="flex items-center gap-4">
                 <div
@@ -357,7 +478,7 @@ export default function AddProductDialog({
                 <div>
                   <DialogTitle
                     className="
-                                text-[28px]
+                               text-[22px] sm:text-[28px]
                                 font-bold
                                 text-[#111827]
                             "
@@ -395,7 +516,7 @@ export default function AddProductDialog({
           <div
             ref={bodyRef}
             className={`
-                px-7 py-3
+                px-4 sm:px-6 lg:px-7 py-4
                 max-h-[78vh]
                 overflow-y-auto
                 space-y-6
@@ -403,7 +524,16 @@ export default function AddProductDialog({
             `}
           >
             {/* TOP */}
-            <div className="grid grid-cols-3 gap-5 items-start mb-0">
+            <div
+              className="
+                grid
+                grid-cols-1
+                md:grid-cols-2
+                xl:grid-cols-3
+                gap-5
+                items-start
+              "
+            >
               {/* BRAND */}
               <div className="flex flex-col">
                 <div className="flex items-center justify-between ">
@@ -426,31 +556,34 @@ export default function AddProductDialog({
                 </div>
 
                 <div className="relative">
-                  <select
-                    value={brandId}
-                    onChange={(e) => setBrandId(e.target.value)}
-                    className="
-                                        w-full h-[35px]
-                                        rounded-xl
-                                        border border-[#DCDCDC]
-                                        bg-white
-                                        px-2 pr-10
-                                        outline-none
-                                        text-[15px]
-                                        appearance-none
-                                        transition-all
-                                        focus:border-[#ff7a00]
-                                        focus:ring-4
-                                        focus:ring-[#FFF3E8]
-                                          cursor-pointer
-                                    "
-                  >
-                    {brands.map((b: any) => (
-                      <option key={b._id?.toString()} value={b._id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
+                 <select
+  value={brandId}
+  onChange={(e) => setBrandId(e.target.value)}
+  className="
+    w-full h-[35px]
+    rounded-xl
+    border border-[#DCDCDC]
+    bg-white
+    px-2 pr-10
+    outline-none
+    text-[15px]
+    appearance-none
+    transition-all
+    focus:border-[#ff7a00]
+    focus:ring-4
+    focus:ring-[#FFF3E8]
+    cursor-pointer
+  "
+>
+  {brands.map((b: any) => (
+    <option
+      key={String(b._id)}
+      value={String(b._id)}
+    >
+      {b.name}
+    </option>
+  ))}
+</select>
 
                   <i
                     className="
@@ -550,13 +683,16 @@ export default function AddProductDialog({
             {/* STATUS */}
             <div
               className="
-                         
-                    bg-white
-                    border border-[#E5E7EB]
-                    rounded-2xl
-                    p-5
-                    flex items-center justify-between
-                "
+                bg-white
+                border border-[#E5E7EB]
+                rounded-2xl
+                p-5
+                flex flex-col
+                lg:flex-row
+                gap-6
+                lg:items-center
+                lg:justify-between
+              "
             >
               {/* LEFT */}
               <div>
@@ -653,13 +789,13 @@ export default function AddProductDialog({
               </div>
 
               {/* RIGHT */}
-              <div
-                className="
-                        border-l border-[#E5E7EB]
-                        pl-8
-                        flex items-center gap-4
-                    "
-              >
+             <div
+              className="
+                lg:border-l border-[#E5E7EB]
+                lg:pl-8
+                flex items-center gap-4
+              "
+            >
                 <div>
                   <label className="text-[15px] font-semibold text-[#111827]">
                     Sản phẩm hoạt động
@@ -718,7 +854,7 @@ export default function AddProductDialog({
     border-2 border-dashed border-[#FED7AA]
     bg-[#FFF9F5]
     rounded-2xl
-    h-[230px]
+    h-[180px] sm:h-[230px]
     flex flex-col items-center justify-center
     relative
     overflow-hidden
@@ -832,7 +968,7 @@ export default function AddProductDialog({
                       }}
                       className={`
           relative
-          w-24 h-24
+         w-20 h-20 sm:w-24 sm:h-24
           rounded-2xl
           overflow-hidden
           border-2
@@ -910,423 +1046,559 @@ export default function AddProductDialog({
               </div>
 
 
-              {/* VARIANTS */}
-              <div
-                className="
-                                    bg-white
-                                    border border-[#E5E7EB]
-                                    rounded-2xl
-                                    overflow-hidden
-                                "
-              >
-                {/* HEADER */}
-                <div
-                  className="
-                                        px-5 py-4
-                                        border-b border-[#E5E7EB]
-                                        flex items-center justify-between
-                                    "
-                >
-                  <div>
-                    <h2 className="text-[15px] font-semibold text-[#111827]">
-                      Cấu hình sản phẩm
-                    </h2>
-
-                    <p className="text-sm text-[#6B7280] mt-1">
-                      Quản lý nhiều phiên bản cấu hình
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={addVariant}
-                    className="
-                h-10 px-4
-                rounded-xl
-                border border-[#FED7AA]
-                bg-[#FFF4EC]
-                text-[#ff7a00]
-                font-medium
-                hover:bg-[#FFE7D6]
-                transition-all
-            "
-                  >
-                    + Thêm cấu hình
-                  </button>
-                </div>
-
-                {/* TABLE HEADER */}
-             <div
+             {/* VARIANTS */}
+<div
   className="
-    grid
-  grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
-    gap-3
-    px-5 py-3
-    bg-[#F9FAFB]
-    border-b border-[#E5E7EB]
-    text-xs font-semibold text-[#6B7280]
+    bg-white
+    border border-[#E5E7EB]
+    rounded-2xl
+    overflow-hidden
+    mt-5
   "
 >
-                  <div>CPU</div>
-                  <div>RAM</div>
-                  <div>SSD</div>
-                  <div>GPU</div>
-                  <div>Size</div>
-                  <div>Độ phân giải</div>
-                  <div>Tần số</div>
-                  <div>Giá</div>
-                  <div className="text-center">Xóa</div>
-                </div>
-
-                {/* BODY */}
-                <div className="divide-y divide-[#F3F4F6]">
-                  {variants.map((v, index) => (
-                  <div
-  key={v.id}
-  className="
-    grid
-   grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
-    gap-3
-    px-5 py-4
-    items-center
-    hover:bg-[#FAFAFA]
-    transition-all
-  "
->
-                      {/* CPU */}
-                      <input
-                      min-w-0
-                        className="
-    w-full
-    h-9
-    rounded-xl
-    border border-[#DCDCDC]
-    bg-white
-    px-2
-    text-sm
-    outline-none
-    transition-all
-    focus:border-[#ff7a00]
-  "
-                        placeholder="i7-1165G7"
-                        value={v.cpu}
-                        onChange={(e) => {
-                          const newVariants = [...variants];
-                          newVariants[index].cpu = e.target.value;
-                          setVariants(newVariants);
-                        }}
-                      />
-
-                      {/* RAM */}
-                      <div className="relative">
-                        <select
-                          className="
-                          w-full
-                        h-8
-                        rounded-xl
-                        border border-[#DCDCDC]
-                        bg-white
-                        px-2
-                        text-sm
-                        outline-none
-                        appearance-none
-                        focus:border-[#ff7a00]
-                    "
-                          value={v.ram}
-                          onChange={(e) =>
-                            setVariants((prev) =>
-                              prev.map((item) =>
-                                item.id === v.id
-                                  ? { ...item, ram: e.target.value }
-                                  : item,
-                              ),
-                            )
-                          }
-                        >
-                          <option value="8GB">8GB</option>
-                          <option value="16GB">16GB</option>
-                          <option value="32GB">32GB</option>
-                          <option value="64GB">64GB</option>
-                        </select>
-                        <i
-                          className="
-                                        fas fa-chevron-down
-                                        absolute right-3 top-1/2
-                                        -translate-y-1/2
-                                        text-[12px]
-                                        text-[#9CA3AF]
-                                        pointer-events-none
-                                    "
-                        />
-                      </div>
-                      {/* SSD */}
-                      <div className="relative">
-                        <select
-
-                          className="
-                        appearance-none
-                        w-full
-                        h-8
-                        rounded-xl
-                        border border-[#DCDCDC]
-                        bg-white
-                        px-2
-                        text-sm
-                        outline-none
-                        focus:border-[#ff7a00]
-                    "
-                          value={v.ssd}
-                          onChange={(e) =>
-                            setVariants((prev) =>
-                              prev.map((item) =>
-                                item.id === v.id
-                                  ? { ...item, ssd: e.target.value }
-                                  : item,
-                              ),
-                            )
-                          }
-                        >
-                          <option value="128GB">128GB</option>
-                          <option value="256GB">256GB</option>
-                          <option value="512GB">512GB</option>
-                          <option value="1TB">1TB</option>
-                        </select>
-                        <i
-                          className="
-                                        fas fa-chevron-down
-                                        absolute right-3 top-1/2
-                                        -translate-y-1/2
-                                        text-[12px]
-                                        text-[#9CA3AF]
-                                        pointer-events-none
-                                    "
-                        />
-                      </div>
-                      {/* GPU */}
-                      <input
-                        className="
-    w-full
-    h-9
-    rounded-xl
-    border border-[#DCDCDC]
-    bg-white
-    px-2 
-    text-sm
-    outline-none
-    transition-all
-    focus:border-[#ff7a00]
-  "
-                        placeholder="Intel Iris Xe"
-                        value={v.gpu || ""}
-                        onChange={(e) => {
-                          const newVariants = [...variants];
-                          newVariants[index].gpu = e.target.value;
-                          setVariants(newVariants);
-                        }}
-                      />
-
-                      {/* SIZE */}
-                      <div className="relative">
-                        <select
-                          className="
-                             appearance-none
-                        w-full
-                        h-8
-                        rounded-xl
-                        border border-[#DCDCDC]
-                        bg-white
-                        px-2
-                        text-sm
-                        outline-none
-                        focus:border-[#ff7a00]
-                    "
-                          value={v.screenSize}
-                          onChange={(e) =>
-                            setVariants((prev) =>
-                              prev.map((item) =>
-                                item.id === v.id
-                                  ? { ...item, screenSize: e.target.value }
-                                  : item,
-                              ),
-                            )
-                          }
-                        >
-                          <option value="13.3">13.3"</option>
-                          <option value="14">14"</option>
-                          <option value="15.6">15.6"</option>
-                          <option value="16">16"</option>
-                        </select>
-                        <i
-                          className="
-                                        fas fa-chevron-down
-                                        absolute right-3 top-1/2
-                                        -translate-y-1/2
-                                        text-[12px]
-                                        text-[#9CA3AF]
-                                        pointer-events-none
-                                    "
-                        />
-                      </div>
-
-                      {/* RESOLUTION */}
-                      <div className="relative">
-                        <select
-                          className="
-                             appearance-none
-                        w-full
-                        h-8
-                        rounded-xl
-                        border border-[#DCDCDC]
-                        bg-white
-                        px-2
-                        text-sm
-                        outline-none
-                        focus:border-[#ff7a00]
-                    "
-                          value={v.resolution}
-                          onChange={(e) =>
-                            setVariants((prev) =>
-                              prev.map((item) =>
-                                item.id === v.id
-                                  ? { ...item, resolution: e.target.value }
-                                  : item,
-                              ),
-                            )
-                          }
-                        >
-                          <option value="FHD">FHD</option>
-                          <option value="2K">2K</option>
-                          <option value="4K">4K</option>
-                        </select>
-                        <i
-                          className="
-                                        fas fa-chevron-down
-                                        absolute right-3 top-1/2
-                                        -translate-y-1/2
-                                        text-[12px]
-                                        text-[#9CA3AF]
-                                        pointer-events-none
-                                    "
-                        />
-                      </div>
-                      {/* REFRESH */}
-                      <div className="relative">
-                        <select
-                          className="
-                             appearance-none
-                        w-full
-                        h-8
-                        rounded-xl
-                        border border-[#DCDCDC]
-                        bg-white
-                        px-2
-                        text-sm
-                        outline-none
-                        focus:border-[#ff7a00]
-                    "
-                          value={v.refreshRate}
-                          onChange={(e) =>
-                            setVariants((prev) =>
-                              prev.map((item) =>
-                                item.id === v.id
-                                  ? { ...item, refreshRate: e.target.value }
-                                  : item,
-                              ),
-                            )
-                          }
-                        >
-                          <option value="60">60Hz</option>
-                          <option value="90">90Hz</option>
-                          <option value="120">120Hz</option>
-                          <option value="144">144Hz</option>
-                        </select>
-                        <i
-                          className="
-                                        fas fa-chevron-down
-                                        absolute right-3 top-1/2
-                                        -translate-y-1/2
-                                        text-[12px]
-                                        text-[#9CA3AF]
-                                        pointer-events-none
-                                    "
-                        />
-                      </div>
-              {/* PRICE */}
-<div className="relative">
-  <input
+  {/* HEADER */}
+  <div
     className="
-    w-full
-    h-9
-    rounded-xl
-    border border-[#DCDCDC]
-    bg-white
-    px-2 pr-6
-    text-sm
-    outline-none
-    transition-all
-    focus:border-[#ff7a00]
-  "
-    value={
-      v.priceInput !== undefined
-        ? new Intl.NumberFormat("vi-VN").format(
-            Number(v.priceInput || 0)
-          )
-        : ""
-    }
-    onChange={(e) => {
-      const raw = e.target.value.replace(/\D/g, "");
-
-      setVariants((prev) =>
-        prev.map((item) =>
-          item.id === v.id
-            ? {
-                ...item,
-                priceInput: raw,
-                price: Number(raw || 0),
-              }
-            : item
-        )
-      );
-    }}
-    placeholder="15.900.000"
-  />
-
-  <span
-    className="
-      absolute right-3 top-1/2
-      -translate-y-1/2
-      text-sm text-[#6B7280]
-      pointer-events-none
+      px-4 sm:px-5 py-4
+      border-b border-[#E5E7EB]
+      flex flex-col sm:flex-row
+      gap-4
+      sm:items-center
+      sm:justify-between
     "
   >
-    đ
-  </span>
-</div>
+    <div>
+      <h2 className="text-[15px] font-semibold text-[#111827]">
+        Cấu hình sản phẩm
+      </h2>
 
-                      {/* DELETE */}
-                      <div className="flex justify-center">
-                        {variants.length > 1 && (
-                          <button
-                            onClick={() => removeVariant(v.id)}
-                            className="
-                                w-8 h-8
-                                rounded-xl
-                                border border-[#FECACA]
-                                bg-[#FEF2F2]
-                                flex items-center justify-center
-                                text-red-500
-                                hover:bg-red-500
-                                hover:text-white
-                                transition-all
-                            "
-                          >
-                            <Trash className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      <p className="text-sm text-[#6B7280] mt-1">
+        Quản lý nhiều phiên bản cấu hình
+      </p>
+    </div>
+
+    <button
+      onClick={addVariant}
+      className="
+        h-10 px-4
+        rounded-xl
+        border border-[#FED7AA]
+        bg-[#FFF4EC]
+        text-[#ff7a00]
+        font-medium
+        hover:bg-[#FFE7D6]
+        transition-all
+        w-full sm:w-auto
+      "
+    >
+      + Thêm cấu hình
+    </button>
+  </div>
+
+  {/* DESKTOP HEADER */}
+  <div
+    className="
+      hidden lg:grid
+      grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
+      gap-3
+      px-5 py-3
+      bg-[#F9FAFB]
+      border-b border-[#E5E7EB]
+      text-xs font-semibold text-[#6B7280]
+    "
+  >
+    <div>CPU</div>
+    <div>RAM</div>
+    <div>SSD</div>
+    <div>GPU</div>
+    <div>Size</div>
+    <div>Độ phân giải</div>
+    <div>Tần số</div>
+    <div>Giá</div>
+    <div className="text-center">Xóa</div>
+  </div>
+
+  {/* BODY */}
+  <div className="divide-y divide-[#F3F4F6]">
+    {variants.map((v, index) => (
+      <div
+        key={v.id}
+        className="
+          p-4 lg:px-5 lg:py-4
+          hover:bg-[#FAFAFA]
+          transition-all
+        "
+      >
+
+        {/* DESKTOP */}
+        <div
+          className="
+            hidden lg:grid
+            grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
+            gap-3
+            items-center
+          "
+        >
+
+          {/* CPU */}
+          <input
+            className={selectClass}
+            placeholder="i7-1165G7"
+            value={v.cpu}
+            onChange={(e) => {
+              const newVariants = [...variants];
+              newVariants[index].cpu = e.target.value;
+              setVariants(newVariants);
+            }}
+          />
+
+          {/* RAM */}
+          <div className="relative">
+            <select
+             className={selectClass}
+              value={v.ram}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, ram: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="8GB">8GB</option>
+              <option value="16GB">16GB</option>
+              <option value="32GB">32GB</option>
+              <option value="64GB">64GB</option>
+            </select>
+
+           <SelectIcon />
+          </div>
+
+          {/* SSD */}
+          <div className="relative">
+            <select
+             className={selectClass}
+              value={v.ssd}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, ssd: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="128GB">128GB</option>
+              <option value="256GB">256GB</option>
+              <option value="512GB">512GB</option>
+              <option value="1TB">1TB</option>
+            </select>
+
+           <SelectIcon />
+          </div>
+
+          {/* GPU */}
+          <input
+          className={selectClass}
+            placeholder="RTX 4060"
+            value={v.gpu || ""}
+            onChange={(e) => {
+              const newVariants = [...variants];
+              newVariants[index].gpu = e.target.value;
+              setVariants(newVariants);
+            }}
+          />
+
+          {/* SIZE */}
+          <div className="relative">
+            <select
+             className={selectClass}
+              value={v.screenSize}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, screenSize: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="13.3">13.3"</option>
+              <option value="14">14"</option>
+              <option value="15.6">15.6"</option>
+              <option value="16">16"</option>
+            </select>
+
+           <SelectIcon />
+          </div>
+
+          {/* RESOLUTION */}
+          <div className="relative">
+            <select
+             className={selectClass}
+              value={v.resolution}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, resolution: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="FHD">FHD</option>
+              <option value="2K">2K</option>
+              <option value="4K">4K</option>
+            </select>
+
+           <SelectIcon />
+          </div>
+
+          {/* REFRESH */}
+          <div className="relative">
+            <select
+           className={selectClass}
+              value={v.refreshRate}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, refreshRate: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="60">60Hz</option>
+              <option value="90">90Hz</option>
+              <option value="120">120Hz</option>
+              <option value="144">144Hz</option>
+            </select>
+
+           <SelectIcon />
+          </div>
+
+          {/* PRICE */}
+          <div className="relative">
+            <input
+             className={selectClass}
+              value={
+                v.priceInput !== undefined
+                  ? new Intl.NumberFormat("vi-VN").format(
+                      Number(v.priceInput || 0)
+                    )
+                  : ""
+              }
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "");
+
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? {
+                          ...item,
+                          priceInput: raw,
+                          price: Number(raw || 0),
+                        }
+                      : item
+                  )
+                );
+              }}
+              placeholder="15.900.000"
+            />
+
+            <span
+              className="
+                absolute right-3 top-1/2
+                -translate-y-1/2
+                text-sm text-[#6B7280]
+              "
+            >
+              đ
+            </span>
+          </div>
+
+          {/* DELETE */}
+          <div className="flex justify-center">
+            {variants.length > 1 && (
+              <button
+                onClick={() => removeVariant(v.id)}
+                className="
+                  w-8 h-8
+                  rounded-xl
+                  border border-[#FECACA]
+                  bg-[#FEF2F2]
+                  flex items-center justify-center
+                  text-red-500
+                  hover:bg-red-500
+                  hover:text-white
+                  transition-all
+                "
+              >
+                <Trash className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* MOBILE + TABLET */}
+        <div className="lg:hidden space-y-3">
+
+          {/* CPU */}
+       
+          <input
+            className="
+              w-full h-10
+              rounded-xl
+              border border-[#DCDCDC]
+              px-3
+              text-sm
+               
+            "
+            placeholder="CPU"
+            value={v.cpu}
+            onChange={(e) => {
+              const newVariants = [...variants];
+              newVariants[index].cpu = e.target.value;
+              setVariants(newVariants);
+            }}
+          />
+
+          {/* GPU */}
+          <input
+            className="
+              w-full h-10
+              rounded-xl
+              border border-[#DCDCDC]
+              px-3
+              text-sm
+            "
+            placeholder="GPU"
+            value={v.gpu}
+            onChange={(e) => {
+              const newVariants = [...variants];
+              newVariants[index].gpu = e.target.value;
+              setVariants(newVariants);
+            }}
+          />
+
+          {/* RAM + SSD */}
+          <div className="grid grid-cols-2 gap-3">
+               <div className="relative">
+            <select
+              className="
+                w-full h-10
+                rounded-xl
+                border border-[#DCDCDC]
+                px-3
+                appearance-none
+              "
+              value={v.ram}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, ram: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="8GB">8GB</option>
+              <option value="16GB">16GB</option>
+              <option value="32GB">32GB</option>
+              <option value="64GB">64GB</option>
+            </select>
+            <SelectIcon />
+  </div>
+                <div className="relative">   
+            <select
+              className="
+                w-full h-10
+                rounded-xl
+                border border-[#DCDCDC]
+                px-3
+                appearance-none
+              "
+              value={v.ssd}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, ssd: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="128GB">128GB</option>
+              <option value="256GB">256GB</option>
+              <option value="512GB">512GB</option>
+              <option value="1TB">1TB</option>
+            </select>
+              <SelectIcon />
+  </div>
+          </div>
+
+          {/* SIZE + REFRESH */}
+          <div className="grid grid-cols-2 gap-3">
+             <div className="relative">   
+            <select
+              className="
+                w-full h-10
+                rounded-xl
+                border border-[#DCDCDC]
+                px-3
+                appearance-none
+              "
+              value={v.screenSize}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, screenSize: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="13.3">13.3"</option>
+              <option value="14">14"</option>
+              <option value="15.6">15.6"</option>
+              <option value="16">16"</option>
+            </select>
+               <SelectIcon />
+  </div>
+<div className="relative">   
+            <select
+              className="
+                w-full h-10
+                rounded-xl
+                border border-[#DCDCDC]
+                px-3
+                 appearance-none
+              "
+              value={v.refreshRate}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, refreshRate: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="60">60Hz</option>
+              <option value="90">90Hz</option>
+              <option value="120">120Hz</option>
+              <option value="144">144Hz</option>
+            </select>
+             <SelectIcon />
+  </div>
+          </div>
+
+          {/* RESOLUTION + PRICE */}
+          <div className="grid grid-cols-2 gap-3">
+<div className="relative">   
+            <select
+              className="
+                w-full h-10
+                rounded-xl
+                border border-[#DCDCDC]
+                px-3
+                  appearance-none
+              "
+              value={v.resolution}
+              onChange={(e) =>
+                setVariants((prev) =>
+                  prev.map((item) =>
+                    item.id === v.id
+                      ? { ...item, resolution: e.target.value }
+                      : item
+                  )
+                )
+              }
+            >
+              <option value="FHD">FHD</option>
+              <option value="2K">2K</option>
+              <option value="4K">4K</option>
+            </select>
+<SelectIcon />
+  </div>
+            <div className="relative">
+              <input
+                className="
+                  w-full h-10
+                  rounded-xl
+                  border border-[#DCDCDC]
+                  px-3 pr-8
+                "
+                placeholder="Giá"
+                value={
+                  v.priceInput !== undefined
+                    ? new Intl.NumberFormat("vi-VN").format(
+                        Number(v.priceInput || 0)
+                      )
+                    : ""
+                }
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+
+                  setVariants((prev) =>
+                    prev.map((item) =>
+                      item.id === v.id
+                        ? {
+                            ...item,
+                            priceInput: raw,
+                            price: Number(raw || 0),
+                          }
+                        : item
+                    )
+                  );
+                }}
+              />
+
+              <span
+                className="
+                  absolute right-3 top-1/2
+                  -translate-y-1/2
+                  text-sm text-[#6B7280]
+                "
+              >
+                đ
+              </span>
+            </div>
+          </div>
+
+          {/* DELETE */}
+          {variants.length > 1 && (
+            <button
+              onClick={() => removeVariant(v.id)}
+              className="
+                w-full h-10
+                rounded-xl
+                border border-red-200
+                bg-red-50
+                text-red-500
+                hover:bg-red-500
+                hover:text-white
+                transition-all
+              "
+            >
+              Xóa cấu hình
+            </button>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
             </div>
           </div>
 
@@ -1366,44 +1638,324 @@ export default function AddProductDialog({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={openBrand} onOpenChange={setOpenBrand}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Thêm thương hiệu</DialogTitle>
-          </DialogHeader>
+     <Dialog open={openBrand} onOpenChange={setOpenBrand}>
+  <DialogContent
+    className="
+      sm:max-w-md
+      rounded-3xl
+      border border-[#F3E8DF]
+      bg-[#FFFDFB]
+      p-0
+      overflow-hidden
+      shadow-2xl
+    "
+  >
 
-          <input
-            className="w-full border rounded p-2"
-            placeholder="Nhập tên thương hiệu"
-            value={newBrand}
-            onChange={(e) => setNewBrand(e.target.value)}
-          />
+    {/* HEADER */}
+    <DialogHeader
+      className="
+        px-6 py-5
+        border-b border-[#F3E8DF]
+        bg-white
+      "
+    >
+      <div className="flex items-center gap-4">
 
-          <DialogFooter className="mt-3">
-            <Button
-              onClick={async () => {
-                const res = await fetch("/api/brands", {
-                  method: "POST",
-                  body: JSON.stringify({ name: newBrand }),
-                });
+        {/* ICON */}
+        <div
+          className="
+            w-14 h-14
+            rounded-2xl
+            bg-[#FFF1E7]
+            flex items-center justify-center
+          "
+        >
+          <i className="fas fa-tags text-[22px] text-[#ff7a00]" />
+        </div>
 
-                const data = await res.json();
+        {/* TEXT */}
+        <div>
+          <DialogTitle
+            className="
+              text-[22px]
+              font-bold
+              text-[#111827]
+            "
+          >
+            Thêm thương hiệu
+          </DialogTitle>
 
-                // 🔥 thêm vào list luôn
-                setBrands((prev) => [...prev, data]);
+          <p className="text-sm text-[#6B7280] mt-1">
+            Tạo thương hiệu mới cho sản phẩm
+          </p>
+        </div>
+      </div>
+    </DialogHeader>
 
-                // 🔥 chọn luôn brand mới
-                setBrandId(data._id);
+    {/* BODY */}
+    <div className="px-6 py-5">
 
-                setNewBrand("");
-                setOpenBrand(false);
-              }}
-            >
-              Lưu
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <label className="text-sm font-semibold text-[#111827] mb-2 block">
+        Tên thương hiệu
+      </label>
+
+      <input
+        className="
+          w-full h-12
+          rounded-2xl
+          border border-[#E5E7EB]
+          bg-white
+          px-4
+          text-[15px]
+          outline-none
+          transition-all
+          focus:border-[#ff7a00]
+          focus:ring-4
+          focus:ring-[#FFF3E8]
+        "
+        placeholder="Ví dụ: Dell, Lenovo, ASUS..."
+        value={newBrand}
+        onChange={(e) => setNewBrand(e.target.value)}
+      />
+
+      {/* IMAGE */}
+<div>
+  <div className="flex items-center justify-between mb-3">
+    <label className="text-[15px] font-semibold text-[#111827]">
+      Logo thương hiệu
+    </label>
+
+    {mainImageUrl && (
+      <span className="text-xs text-[#9CA3AF]">
+        PNG, JPG tối đa 5MB
+      </span>
+    )}
+  </div>
+
+  <div
+    className="
+      relative
+      w-full
+      h-[220px]
+      rounded-3xl
+      border-2 border-dashed border-[#FED7AA]
+      bg-[#FFF9F5]
+      overflow-hidden
+      transition-all
+      hover:border-[#ffb066]
+    "
+  >
+
+    {/* IMAGE */}
+    {mainImageUrl ? (
+      <>
+        <img
+          src={mainImageUrl}
+          className="
+            w-full h-full
+            object-contain
+            p-6
+          "
+        />
+
+        {/* OVERLAY */}
+        <div
+          className="
+            absolute inset-0
+            bg-black/0
+            hover:bg-black/5
+            transition-all
+          "
+        />
+
+        {/* DELETE */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMainImage(null);
+          }}
+          className="
+            absolute top-4 right-4
+            w-10 h-10
+            rounded-xl
+            bg-white
+            border border-[#FECACA]
+            flex items-center justify-center
+            text-red-500
+            hover:bg-red-500
+            hover:text-white
+            transition-all
+            shadow-sm
+            z-20
+          "
+        >
+          <Trash className="w-4 h-4" />
+        </button>
+      </>
+    ) : (
+      <div
+        className="
+          w-full h-full
+          flex flex-col
+          items-center justify-center
+          px-5
+          text-center
+        "
+      >
+        {/* ICON */}
+        <div
+          className="
+            w-20 h-20
+            rounded-full
+            bg-[#FFF1E7]
+            flex items-center justify-center
+          "
+        >
+          <i className="fas fa-image text-3xl text-[#ff7a00]" />
+        </div>
+
+        <p className="mt-5 text-[#374151] font-medium">
+          Tải logo thương hiệu
+        </p>
+
+        <p className="text-sm text-[#9CA3AF] mt-1">
+          PNG, JPG hoặc WEBP
+        </p>
+      </div>
+    )}
+
+    {/* PICK BUTTON */}
+    <label
+      className="
+        absolute bottom-4 right-4
+        h-10 px-4
+        rounded-xl
+        bg-white
+        border border-[#E5E7EB]
+        flex items-center gap-2
+        cursor-pointer
+        hover:border-[#ff7a00]
+        hover:bg-[#FFF7ED]
+        transition-all
+        shadow-sm
+        z-20
+      "
+    >
+      <i className="fas fa-upload text-[#ff7a00]" />
+
+      {mainImageUrl ? "Đổi ảnh" : "Chọn ảnh"}
+
+      <input
+        type="file"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+
+          if (!file) return;
+
+          if (!file.type.startsWith("image/")) {
+            alert("Chỉ upload ảnh");
+            return;
+          }
+
+          if (file.size > 5 * 1024 * 1024) {
+            alert("Max 5MB");
+            return;
+          }
+
+          setMainImage(file);
+
+          // QUAN TRỌNG
+          e.target.value = "";
+        }}
+      />
+    </label>
+
+    {/* LOADING */}
+    {uploading && (
+      <div
+        className="
+          absolute inset-0
+          bg-white/80
+          backdrop-blur-sm
+          flex flex-col
+          items-center justify-center
+          z-30
+        "
+      >
+        <Loader2 className="w-7 h-7 animate-spin text-[#ff7a00]" />
+
+        <p className="mt-3 text-sm text-[#6B7280]">
+          Đang upload ảnh...
+        </p>
+      </div>
+    )}
+  </div>
+</div>
+    </div>
+    
+
+    {/* FOOTER */}
+    <DialogFooter
+      className="
+        px-6 py-7
+        border-t border-[#F3E8DF]
+        bg-white
+        flex-row justify-end gap-3
+      "
+    >
+
+      {/* CANCEL */}
+      <Button
+        variant="outline"
+        onClick={() => setOpenBrand(false)}
+        className="
+          h-11 px-5
+          rounded-xl
+          border border-[#E5E7EB]
+          bg-white
+          text-[#6B7280]
+          hover:bg-[#FFF4EC]
+          hover:border-[#FED7AA]
+          hover:text-[#111827]
+          transition-all
+        "
+      >
+        Huỷ
+      </Button>
+
+      {/* SAVE */}
+      <Button
+  disabled={loadingBrand}
+  onClick={handleCreateBrand}
+  className="
+    h-11 px-6
+    rounded-xl
+    bg-[#ff7a00]
+    hover:bg-[#eb6f00]
+    text-white
+    shadow-lg shadow-orange-200
+    transition-all
+    disabled:opacity-60
+  "
+>
+  {loadingBrand ? (
+    <>
+      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+      Đang lưu...
+    </>
+  ) : (
+    <>
+      <i className="fas fa-plus text-sm mr-2" />
+      Lưu thương hiệu
+    </>
+  )}
+</Button>
+
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
       <ImageCropDialog
         open={cropOpen}

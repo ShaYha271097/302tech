@@ -80,8 +80,7 @@ export default function BannerSlider() {
                       className="block w-full h-full"
                     >
                       <img
-                        // src={item.image}
-                        src="/assets/images/banner2.png"
+                        src={item.image}
                         className="w-full h-full object-cover hover:scale-105 transition"
                         alt={`banner-${index}`}
                       />

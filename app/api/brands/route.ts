@@ -34,42 +34,88 @@ function toSlug(str: string) {
     .trim()
     .replace(/\s+/g, "-"); // space -> -
 }
-export async function GET(req:Request) {
+export async function GET(req: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("laptop-shop");
 
-    // query
     const { searchParams } = new URL(req.url);
 
     const page = Number(searchParams.get("page")) || 1;
     const limit = Number(searchParams.get("limit")) || 10;
 
+    // search
+    const search = searchParams.get("search") || "";
+
+    // sort
+    const sort = searchParams.get("sort") || "name_asc";
+
     const skip = (page - 1) * limit;
 
-    // total
-    const total = await db.collection("brands").countDocuments();
+    // FILTER
+    const filter: any = {};
 
-    // data
+    if (search.trim()) {
+      filter.name = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    // SORT OPTION
+    let sortOption: any = {};
+
+    switch (sort) {
+
+      // NAME
+      case "name_asc":
+        sortOption = { name: 1 };
+        break;
+
+      case "name_desc":
+        sortOption = { name: -1 };
+        break;
+
+      // DATE
+      case "date_desc":
+        sortOption = { createdAt: -1 };
+        break;
+
+      case "date_asc":
+        sortOption = { createdAt: 1 };
+        break;
+
+      default:
+        sortOption = { name: 1 };
+    }
+
+    // TOTAL
+    const total = await db
+      .collection("brands")
+      .countDocuments(filter);
+
+    // DATA
     const brands = await db
       .collection("brands")
-      .find()
+      .find(filter)
+      .sort(sortOption)
       .skip(skip)
       .limit(limit)
       .toArray();
 
-    // total pages
     const totalPages = Math.ceil(total / limit);
 
     return NextResponse.json({
       brands,
       total,
+      totalPages,
       page,
       limit,
-      totalPages,
     });
 
   } catch (error) {
+    console.error(error);
+
     return NextResponse.json(
       {
         message: "Server Error",
@@ -80,7 +126,6 @@ export async function GET(req:Request) {
     );
   }
 }
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
