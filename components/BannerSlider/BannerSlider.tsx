@@ -60,17 +60,17 @@ export default function BannerSlider() {
                 Không có banner
               </div>
             ) : (
-              <Swiper
-                modules={[Navigation, Pagination, Autoplay]}
-                navigation
-                pagination={{ clickable: true }}
-                autoplay={{
-                  delay: 3000,
-                  disableOnInteraction: false,
-                }}
-                loop={slider.length > 1}
-                className="w-full h-full rounded-[10px] overflow-hidden"
-              >
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+              loop={slider.length > 1}
+              className="home-swiper w-full h-full rounded-[10px] overflow-hidden"
+            >
                 {slider.map((item, index) => (
                   <SwiperSlide key={index}>
                     <a
@@ -81,7 +81,7 @@ export default function BannerSlider() {
                     >
                       <img
                         src={item.image}
-                        className="w-full h-full object-cover hover:scale-105 transition"
+                        className="w-full h-full object-cover transition"
                         alt={`banner-${index}`}
                       />
                     </a>

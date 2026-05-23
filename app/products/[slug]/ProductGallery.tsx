@@ -104,27 +104,67 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
         )}
       </div>
 
-      {/* Thumbnail */}
-     <div className="grid grid-cols-4 sm:grid-cols-4 gap-2 mt-3">
-  {images.map((img, index) => (
+     {/* Thumbnail */}
+<div className="grid grid-cols-4 gap-3 mt-4">
+
+  {images.slice(0, 4).map((img, index) => (
     <button
       key={index}
       onClick={() => setCurrentImage(img)}
       className={`
-        relative aspect-square overflow-hidden rounded border
-        transition
-        ${currentImage === img
-          ? "border-red-500 ring-2 ring-red-300"
-          : "border-gray-200 hover:border-gray-400"
+        group
+        relative
+        aspect-square
+        overflow-hidden
+        rounded-xl
+        border
+        bg-white
+        transition-all duration-300
+
+        ${
+          currentImage === img
+            ? `
+              border-[#ff7a00]
+              ring-4 ring-orange-100
+              shadow-[0_4px_20px_rgba(255,122,0,0.15)]
+            `
+            : `
+              border-orange-100
+              hover:border-orange-300
+              hover:shadow-[0_4px_20px_rgba(255,122,0,0.08)]
+            `
         }
       `}
     >
+
+    
+      {/* IMAGE */}
       <img
         src={img}
-        className="w-full h-full object-cover transition-transform duration-200 hover:scale-110"
+        className="
+          w-full h-full
+          object-cover
+          transition-transform duration-300
+          group-hover:scale-105
+        "
       />
+
+      {/* OVERLAY */}
+      <div
+        className="
+          absolute inset-0
+          bg-gradient-to-t
+          from-black/5
+          to-transparent
+          opacity-0
+          group-hover:opacity-100
+          transition
+        "
+      />
+
     </button>
   ))}
+
 </div>
     </div>
   );

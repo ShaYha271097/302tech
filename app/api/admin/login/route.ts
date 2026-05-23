@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     // ✅ check password hash
     const isMatch = await bcrypt.compare(
       password,
-      "$2b$10$3KsnFyejDt8Fdfi3zYxjj.U9KS9T.9rrJP71PKGiRkBzv4BiOFbXG"
+      process.env.ADMIN_PASSWORD_HASH!
     );
  console.log("qua day ko=>>>>",isMatch)
     if (!isMatch) {

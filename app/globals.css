@@ -1235,6 +1235,53 @@ ins.highlight {
      transition: opacity 2s ease, visibility 0s ease, transform 2s ease;
 }
 
+/* ===== SWIPER NAVIGATION ===== */
+
+.home-swiper .swiper-button-prev,
+.home-swiper .swiper-button-next {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 999px;
+
+    /* background: rgba(255,255,255,0.82); */
+
+
+
+    transition: all 0.2s ease;
+}
+
+
+/* ICON */
+.home-swiper .swiper-button-prev::after,
+.home-swiper .swiper-button-next::after {
+    font-size: 11px !important;
+    font-weight: 700;
+    color: #374151;
+}
+
+/* vị trí */
+.home-swiper .swiper-button-prev {
+    left: 8px;
+}
+
+.home-swiper .swiper-button-next {
+    right: 8px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .home-swiper .swiper-button-prev,
+    .home-swiper .swiper-button-next {
+        width: 24px;
+        height: 24px;
+    }
+
+    .home-swiper .swiper-button-prev::after,
+    .home-swiper .swiper-button-next::after {
+        font-size: 9px !important;
+    }
+}
 
 @keyframes devvn_zoom {
     0% {
