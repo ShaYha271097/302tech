@@ -1,6 +1,7 @@
 
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import Link from "next/link";
+import ProductCard from "../ProductCard/ProductCard";
 
 
 
@@ -29,52 +30,7 @@ export default function ProductSection({ title, slug, products }: any) {
                             const cheapest = getCheapestVariant(p.variants);
                               console.log("ssss=>>>",p)      
                             return (
-                                <div key={p._id} className="border rounded-lg p-2 sm:p-3 hover:shadow transition bg-white">
-
-                                    {/* IMAGE */}
-                                    <div className="img_sp_bc">
-                                        <Link href={`/products/${p.slug}-${p._id}`}>
-                                            <div>
-                                                <img
-                                                    loading="lazy"
-                                                    src={p.mainImage}
-                                                    alt={p.name}
-                                                />
-                                            </div>
-
-                                            {/* {p.mainImage && (
-                                            <div className="img_sp_2">
-                                            <img
-                                                loading="lazy"
-                                                src={p.mainImage}
-                                                alt={p.mainImage}
-                                            />
-                                            </div>
-                                        )} */}
-                                        </Link>
-                                    </div>
-
-                                    {/* CONTENT */}
-                                    <div className="all_content_sp">
-                                        <Link href={`/products/${p.slug}-${p._id}`}>
-                                            <div className="name_sp text-split">
-                                                {p.name} - {getVariantText(cheapest)}
-                                            </div>
-                                        </Link>
-
-                                        <div className="gia_sp">
-                                            <span>
-                                                {formatPrice(cheapest?.price)}
-                                            </span>
-                                        </div>
-
-                                        <div className="cart-product">
-                                            <Link href={`/products/${p.slug}-${p._id}`} className="muangay_sp">
-                                                Mua ngay
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
+                                 <ProductCard    key={p._id} product={p} />
                             );
                         })}
                     </div>

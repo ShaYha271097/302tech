@@ -5,6 +5,7 @@ import { Autoplay } from "swiper/modules";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
+import ProductCard from "../ProductCard/ProductCard";
 
 // import "swiper/css";
 
@@ -55,10 +56,24 @@ export default function TopSellingSlider() {
     <div className="wrap_bottom wrap_flashsale">
       <div className="fixwidth">
         <div className="box-deal">
-          <div className="all_time_box">
-            <h2 className="title_flash">
-              TOP SẢN PHẨM BÁN CHẠY
+           {/* TITLE */}
+          <div className="flex items-center justify-center mb-6">
+
+            <h2
+              className="
+                text-[24px]
+                md:text-[28px]
+                font-black
+                tracking-tight
+                text-[#111827]
+              "
+            >
+              TOP SẢN PHẨM{" "}
+              <span className="text-[#ff7a00]">
+                BÁN CHẠY
+              </span>
             </h2>
+
           </div>
           <Swiper
             modules={[Autoplay]}
@@ -76,42 +91,7 @@ export default function TopSellingSlider() {
               const cheapest = getCheapestVariant(p.variants);
               return (
                 <SwiperSlide key={index}>
-                  <div className="all_sp_banchay_index">
-
-                    <div className="all_img_sp_bc">
-                        <Link href={`/products/${p.slug}-${p._id}`}>
-                        <div className="img_sp_bc">
-                          <div>
-                            <img src={p.mainImage} className="w-full h-auto" />
-                          </div>
-                          {/* <div className="img_sp_2">
-                <img src={p.img2} className="w-full h-auto" />
-              </div> */}
-                        </div>
-                      </Link>
-                    </div>
-
-                    <div className="all_content_sp">
-                      <Link href={`/products/${p.slug}-${p._id}`}>
-                        <div className="name_sp text-split">
-                          {p.name} - {getVariantText(cheapest)}
-                        </div>
-                      </Link>
-
-                      <div className="gia_sp">
-                        <span>
-                          {formatPrice(cheapest?.price)}
-                        </span>
-                      </div>
-
-                      <div className="cart-product">
-                        <Link href={`/products/${p.slug}-${p._id}`} className="muangay_sp">
-                          Mua ngay
-                        </Link>
-                      </div>
-                    </div>
-
-                  </div>
+                    <ProductCard   key={p._id} product={p} />
                 </SwiperSlide>
               )
             })}

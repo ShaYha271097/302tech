@@ -189,7 +189,7 @@ export default function AddPBrandDialog({
                 <DialogTitle
                   className="
                 text-[22px]
-                font-bold
+                font-semibold
                 text-[#111827]
               "
                 >
@@ -198,7 +198,7 @@ export default function AddPBrandDialog({
                     : "Sửa thương hiệu"}
                 </DialogTitle>
 
-                <p className="text-sm text-[#6B7280] mt-1">
+                <p className="text-sm leading-7 text-[#6B7280] mt-1">
                   Quản lý logo và thông tin thương hiệu
                 </p>
               </div>
@@ -277,7 +277,7 @@ export default function AddPBrandDialog({
 
             <div className="h-[20px] mt-1">
               {errorName && (
-                <p className="text-sm text-red-500">{errorName}</p>
+                <p className="text-sm leading-7 text-red-500">{errorName}</p>
               )}
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function AddPBrandDialog({
                     <i className="fas fa-image text-3xl text-[#ff7a00]" />
                   </div>
 
-                  <p className="mt-4 text-[#6B7280] text-sm">
+                  <p className="mt-4 text-[#6B7280] text-sm leading-7">
                     Click để tải logo thương hiệu
                   </p>
                 </div>
@@ -493,7 +493,7 @@ export default function AddPBrandDialog({
               <p
                 className="
           mt-1
-          text-sm
+          text-sm leading-7
           text-[#6B7280]
           text-center
         "

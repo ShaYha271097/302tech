@@ -46,7 +46,7 @@ export default function AboutPage() {
         rounded-full
         bg-[#FFF7ED]
         text-[#ff7a00]
-        text-sm
+        text-sm leading-7
         font-semibold
         border border-[#FED7AA]
         mb-5
@@ -181,7 +181,7 @@ export default function AboutPage() {
                   bg-[#ff7a00]
                   text-white
                   flex items-center justify-center
-                  text-sm
+                  text-sm leading-7
                 "
               >
                 ✓
@@ -268,7 +268,7 @@ export default function AboutPage() {
 
                 <h3
                   className="
-                    font-bold
+                    font-semibold
                     text-[#111827]
                     mb-1
                   "

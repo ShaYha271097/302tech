@@ -66,7 +66,7 @@ export default function WarrantyPage() {
           border border-orange-200
           text-[#ff7a00]
           font-semibold
-          text-sm
+          text-sm leading-7
           mb-5
         "
                                         >

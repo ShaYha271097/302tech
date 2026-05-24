@@ -34,13 +34,13 @@ export default function ProductDescription({ selected }: any) {
         text-[#ff7a00]
       "
     >
-      <i className="fas fa-microchip text-sm" />
+      <i className="fas fa-microchip text-sm leading-7" />
     </div>
 
     <h3
       className="
         text-[16px]
-        font-bold
+        font-semibold
         text-[#111827]
       "
     >
@@ -69,9 +69,15 @@ export default function ProductDescription({ selected }: any) {
         label: "VGA",
         value: selected?.gpu,
       },
-      {
-        label: "Màn hình",
-        value: selected?.screen,
+     {
+      label: "Màn hình",
+        value: [
+          selected?.screenSize && `${selected.screenSize}"`,
+          selected?.resolution,
+          selected?.refreshRate && `${selected.refreshRate}Hz`,
+        ]
+          .filter(Boolean)
+          .join(" "),
       },
     ].map((item, index) => (
       <div
@@ -95,7 +101,7 @@ export default function ProductDescription({ selected }: any) {
 
           <span
             className="
-              text-sm
+              text-sm leading-7
               font-semibold
               text-[#111827]
             "
@@ -108,7 +114,7 @@ export default function ProductDescription({ selected }: any) {
         {/* RIGHT */}
         <span
           className="
-            text-sm
+            text-sm leading-7
             font-medium
             text-[#4B5563]
             text-right

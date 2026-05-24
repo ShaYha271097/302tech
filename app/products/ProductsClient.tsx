@@ -127,7 +127,7 @@ export default function ProductsClient() {
                                         </div>
                                     ) : products.length === 0 ? (
                                         <div className="w-full ">
-                                            <div className="w-full bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-center">
+                                            <div className="w-full bg-gray-100 border border-gray-300 text-[#6B7280] px-4 py-3 text-center">
                                                 <strong>Không tìm thấy kết quả</strong>
                                             </div>
                                         </div>

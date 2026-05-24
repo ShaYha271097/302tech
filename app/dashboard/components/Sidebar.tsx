@@ -45,7 +45,7 @@ export default function Sidebar() {
             flex items-center justify-start gap-3
             px-3 py-3
             rounded-lg
-            text-sm
+            text-sm leading-7
             transition-all duration-300
             w-full overflow-hidden
 

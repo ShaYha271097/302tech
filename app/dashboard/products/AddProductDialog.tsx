@@ -44,7 +44,7 @@ const inputClass = `
   border border-[#DCDCDC]
   bg-white
   px-2
-  text-sm
+  text-sm leading-7
   outline-none
   transition-all
   focus:border-[#ff7a00]
@@ -58,7 +58,7 @@ const selectClass = `
   border border-[#DCDCDC]
   bg-white
   px-2
-  text-sm
+  text-sm leading-7
   outline-none
   focus:border-[#ff7a00]
 `;
@@ -479,14 +479,14 @@ sm:h-[90vh]
                   <DialogTitle
                     className="
                                text-[22px] sm:text-[28px]
-                                font-bold
+                                font-semibold
                                 text-[#111827]
                             "
                   >
                     {mode === "create" ? "Thêm Sản Phẩm" : "Sửa Sản Phẩm"}
                   </DialogTitle>
 
-                  <p className="text-sm text-[#6B7280] mt-1">
+                  <p className="text-sm leading-7 text-[#6B7280] mt-1">
                     Quản lý thông tin laptop, cấu hình và hình ảnh sản phẩm
                   </p>
                 </div>
@@ -546,7 +546,7 @@ sm:h-[90vh]
                     onClick={() => setOpenBrand(true)}
                     className="
                                         text-[#ff7a00]
-                                        text-sm
+                                        text-sm leading-7
                                         font-semibold
                                         hover:underline
                                     "
@@ -644,7 +644,7 @@ sm:h-[90vh]
                 {/* FIX HEIGHT */}
                 <div className="h-[20px] mt-1">
                   {errorName && (
-                    <p className="text-red-500 text-sm">{errorName}</p>
+                    <p className="text-red-500 text-sm leading-7">{errorName}</p>
                   )}
                 </div>
               </div>
@@ -762,7 +762,7 @@ sm:h-[90vh]
             bg-[#DCFCE7]
             flex items-center justify-center
             text-[12px]
-            font-bold
+            font-semibold
             text-[#16A34A]
         "
                     >
@@ -801,7 +801,7 @@ sm:h-[90vh]
                     Sản phẩm hoạt động
                   </label>
 
-                  <p className="text-sm text-[#6B7280] mt-1">
+                  <p className="text-sm leading-7 text-[#6B7280] mt-1">
                     Tắt để ẩn sản phẩm khỏi cửa hàng
                   </p>
                 </div>
@@ -839,7 +839,7 @@ sm:h-[90vh]
               <div className="flex items-center justify-between mb-3">
                 <label className="text-[15px] font-semibold text-[#111827] text-lg">
                   Ảnh sản phẩm
-                  <span className="text-[#6B7280] font-normal text-sm">
+                  <span className="text-[#6B7280] font-normal text-sm leading-7">
                     {" "}
                     (tối thiểu 2 ảnh)
                   </span>
@@ -1072,7 +1072,7 @@ sm:h-[90vh]
         Cấu hình sản phẩm
       </h2>
 
-      <p className="text-sm text-[#6B7280] mt-1">
+      <p className="text-sm leading-7 text-[#6B7280] mt-1">
         Quản lý nhiều phiên bản cấu hình
       </p>
     </div>
@@ -1316,7 +1316,7 @@ sm:h-[90vh]
               className="
                 absolute right-3 top-1/2
                 -translate-y-1/2
-                text-sm text-[#6B7280]
+                text-sm leading-7 text-[#6B7280]
               "
             >
               đ
@@ -1357,7 +1357,7 @@ sm:h-[90vh]
               rounded-xl
               border border-[#DCDCDC]
               px-3
-              text-sm
+              text-sm leading-7
                
             "
             placeholder="CPU"
@@ -1376,7 +1376,7 @@ sm:h-[90vh]
               rounded-xl
               border border-[#DCDCDC]
               px-3
-              text-sm
+              text-sm leading-7
             "
             placeholder="GPU"
             value={v.gpu}
@@ -1568,7 +1568,7 @@ sm:h-[90vh]
                 className="
                   absolute right-3 top-1/2
                   -translate-y-1/2
-                  text-sm text-[#6B7280]
+                  text-sm leading-7 text-[#6B7280]
                 "
               >
                 đ
@@ -1678,14 +1678,14 @@ sm:h-[90vh]
           <DialogTitle
             className="
               text-[22px]
-              font-bold
+              font-semibold
               text-[#111827]
             "
           >
             Thêm thương hiệu
           </DialogTitle>
 
-          <p className="text-sm text-[#6B7280] mt-1">
+          <p className="text-sm leading-7 text-[#6B7280] mt-1">
             Tạo thương hiệu mới cho sản phẩm
           </p>
         </div>
@@ -1695,7 +1695,7 @@ sm:h-[90vh]
     {/* BODY */}
     <div className="px-6 py-5">
 
-      <label className="text-sm font-semibold text-[#111827] mb-2 block">
+      <label className="text-sm leading-7 font-semibold text-[#111827] mb-2 block">
         Tên thương hiệu
       </label>
 
@@ -1819,7 +1819,7 @@ sm:h-[90vh]
           Tải logo thương hiệu
         </p>
 
-        <p className="text-sm text-[#9CA3AF] mt-1">
+        <p className="text-sm leading-7 text-[#9CA3AF] mt-1">
           PNG, JPG hoặc WEBP
         </p>
       </div>
@@ -1886,7 +1886,7 @@ sm:h-[90vh]
       >
         <Loader2 className="w-7 h-7 animate-spin text-[#ff7a00]" />
 
-        <p className="mt-3 text-sm text-[#6B7280]">
+        <p className="mt-3 text-sm leading-7 text-[#6B7280]">
           Đang upload ảnh...
         </p>
       </div>
@@ -1947,7 +1947,7 @@ sm:h-[90vh]
     </>
   ) : (
     <>
-      <i className="fas fa-plus text-sm mr-2" />
+      <i className="fas fa-plus text-sm leading-7 mr-2" />
       Lưu thương hiệu
     </>
   )}

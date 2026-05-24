@@ -69,13 +69,8 @@ export default function HomePageBanner() {
 
   return (
     <>
-      {/* HEADER */}
-      <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
-
       <Topbar title="Tổng quan" />
-
       <div className="flex min-h-screen bg-[#F9FAFB]">
-
         {/* SIDEBAR */}
         <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
           <Sidebar />
@@ -126,7 +121,7 @@ export default function HomePageBanner() {
                       {item.title}
                     </p>
 
-                    <h2 className="text-[24px] font-bold text-[#111111] leading-tight">
+                    <h2 className="text-[24px] font-semibold text-[#111111] leading-tight">
                       {item.value}
                     </h2>
                   </div>
@@ -134,7 +129,7 @@ export default function HomePageBanner() {
                 </div>
 
                 {/* RIGHT */}
-                <i className="fas fa-arrow-up text-[#22C55E] text-sm" />
+                <i className="fas fa-arrow-up text-[#22C55E] text-sm leading-7" />
               </div>
             ))}
 

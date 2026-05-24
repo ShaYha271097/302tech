@@ -22,8 +22,8 @@ export default function ProductFilter({
 
             {/* PRICE */}
             <div>
-                <p className="text-sm font-medium mb-2">Giá</p>
-                <div className="space-y-3 text-sm">
+                <p className="text-sm leading-7 font-medium mb-2">Giá</p>
+                <div className="space-y-3 text-sm leading-7">
                     {[
                         { label: "Dưới 10 triệu", value: "0-10000000" },
                         { label: "10 - 20 triệu", value: "10000000-20000000" },
@@ -49,8 +49,8 @@ export default function ProductFilter({
 
             {/* BRAND */}
             <div>
-                <p className="text-sm font-medium mb-2">Hãng</p>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <p className="text-sm leading-7 font-medium mb-2">Hãng</p>
+                <div className="grid grid-cols-2 gap-2 text-sm leading-7">
                     {["Dell", "Lenovo", "HP", "Asus", "Acer", "MSI", "Macbook"].map((b) => {
                         const slug = b.toLowerCase();
 
@@ -87,7 +87,7 @@ export default function ProductFilter({
 
             {/* RAM */}
             <div>
-                <p className="text-sm font-medium mb-2">RAM</p>
+                <p className="text-sm leading-7 font-medium mb-2">RAM</p>
                 <div className="flex flex-wrap gap-2">
                     {["8GB", "16GB", "32GB"].map((ram) => {
                         const active = ramSelected.includes(ram);
@@ -113,7 +113,7 @@ export default function ProductFilter({
 
             {/* SSD */}
             <div>
-                <p className="text-sm font-medium mb-2">SSD</p>
+                <p className="text-sm leading-7 font-medium mb-2">SSD</p>
                 <div className="flex flex-wrap gap-2">
                     {["256GB", "512GB", "1TB"].map((ssd) => {
                         const active = ssdSelected.includes(ssd);

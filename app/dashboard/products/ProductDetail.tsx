@@ -136,8 +136,6 @@ export default function ProductDetail() {
 
   return (
     <>
-      {/* ================= HEADER TOP ================= */}
-      <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
       {/* ================= TOPBAR ================= */}
       <Topbar title="Quản lý sản phẩm" showSearch showAdd onAdd={() => {
         setEditingProduct(null);
@@ -182,7 +180,7 @@ export default function ProductDetail() {
                   }}
                 />
 
-                <span className="text-sm font-medium text-[#111111]">
+                <span className="text-sm leading-7 font-medium text-[#111111]">
                   Chọn tất cả
                 </span>
               </div>
@@ -250,7 +248,7 @@ export default function ProductDetail() {
                         {p.name}
                       </h3>
 
-                      <p className="text-[#ff7a00] font-semibold text-sm mt-1">
+                      <p className="text-[#ff7a00] font-semibold text-sm leading-7 mt-1">
                         {first?.price?.toLocaleString() || 0} đ
                       </p>
 
@@ -360,7 +358,7 @@ export default function ProductDetail() {
                     <button
                       onClick={() => toggleExpand(p._id)}
                       className="
-                                text-sm
+                                text-sm leading-7
                                 text-[#ff7a00]
                                 font-medium
                             "
@@ -377,7 +375,7 @@ export default function ProductDetail() {
                                 bg-[#FFF3E8]
                                 text-[#ff7a00]
                                 font-medium
-                                text-sm
+                                text-sm leading-7
                                 hover:bg-[#ff7a00]
                                 hover:text-white
                                 transition-all duration-300
@@ -433,7 +431,7 @@ export default function ProductDetail() {
                               {v.cpu} / {v.ram} / {v.ssd}
                             </div>
 
-                            <div className="text-[#ff7a00] text-sm font-semibold">
+                            <div className="text-[#ff7a00] text-sm leading-7 font-semibold">
                               {v.price.toLocaleString()} đ
                             </div>
                           </div>
@@ -451,7 +449,7 @@ export default function ProductDetail() {
           {/* ================= DESKTOP TABLE ================= */}
           <div className="hidden md:block bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
 
-            <table className="w-full text-sm border-collapse">
+            <table className="w-full text-sm leading-7 border-collapse">
 
               {/* HEADER */}
               <thead className="border-b border-[#E5E7EB]">
@@ -731,7 +729,7 @@ export default function ProductDetail() {
                                 </h2>
 
                                 <div className="mb-4">
-                                  <span className="text-sm text-[#6B7280]">
+                                  <span className="text-sm leading-7 text-[#6B7280]">
                                     Thương hiệu:
                                   </span>
 
@@ -742,7 +740,7 @@ export default function ProductDetail() {
                                                             px-2 py-1
                                                             rounded-lg
                                                             bg-[#F9FAFB]
-                                                            text-sm
+                                                            text-sm leading-7
                                                             font-medium
                                                         "
                                   >

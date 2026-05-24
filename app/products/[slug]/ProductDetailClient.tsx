@@ -66,7 +66,7 @@ export default function ProductDetailClient({ product }: any) {
 
             </div>
           </div>
-          <div className="title_sp_cungloai text-2xl font-bold text-center mt-8 mb-4">
+          <div className="title_sp_cungloai text-2xl font-semibold text-center mt-8 mb-4">
             🔥 Sản phẩm tương tự
           </div>
           {loading ? (
@@ -77,7 +77,7 @@ export default function ProductDetailClient({ product }: any) {
             <div className="content-main w-clear">
               {similarProducts.length === 0 ? (
                 <div className="w-full ">
-                  <div className="w-full bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-center">
+                  <div className="w-full bg-gray-100 border border-gray-300 text-[#6B7280] px-4 py-3 text-center">
                     <strong>Không tìm thấy kết quả</strong>
                   </div>
                 </div>

@@ -4,26 +4,33 @@ import { ObjectId } from "mongodb";
 import ProductDetailClient from "./ProductDetailClient";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+
 export default async function ProductDetail({ params }: any) {
-    const { slug } = await params;
 
-    const id = slug.split("-").pop();
+  const { slug } = await params;
 
-    if (!ObjectId.isValid(id)) {
-        return notFound();
-    }
+  const id = slug.split("-").pop();
 
-    const product = await getProductById(id);
+  if (!ObjectId.isValid(id)) {
+    return notFound();
+  }
 
-    if (!product) {
-        return notFound();
-    }
+  const product = await getProductById(id);
 
-    return (
-        <>
-            <Header />
-            <ProductDetailClient product={product} />
-             <Footer /> 
-        </>);
+  if (!product) {
+    return notFound();
+  }
+
+  // ✅ convert Mongo object
+  const plainProduct = JSON.parse(JSON.stringify(product));
+
+  return (
+    <>
+      <Header />
+
+      <ProductDetailClient product={plainProduct} />
+
+      <Footer />
+    </>
+  );
 }
-

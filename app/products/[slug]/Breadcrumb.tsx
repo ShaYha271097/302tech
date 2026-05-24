@@ -14,11 +14,11 @@ export default function Breadcrumb({ product, selected, brand }: any) {
 const currentPageTitle = pageTitles[pathname];
 
   return (
-    <ol className="flex items-center flex-wrap text-sm text-gray-500 gap-1">
+    <ol className="flex items-center flex-wrap text-sm leading-7 text-gray-500 gap-1">
 
       {/* HOME */}
       <li>
-        <Link href="/" className="hover:text-black">
+        <Link href="/" className="hover:text-[#111827]">
           Trang chủ
         </Link>
       </li>
@@ -27,12 +27,12 @@ const currentPageTitle = pageTitles[pathname];
 
       {/* CATEGORY */}
       {currentPageTitle  ? (
-        <li className="text-black font-medium">
+        <li className="text-[#111827] font-medium">
           {currentPageTitle}
         </li>
       ) : (
         <li>
-          <Link href="/products?category=laptop" className="hover:text-black">
+          <Link href="/products?category=laptop" className="hover:text-[#111827]">
             Laptop
           </Link>
         </li>
@@ -48,14 +48,14 @@ const currentPageTitle = pageTitles[pathname];
             <li>
               <Link
                 href={`/products?category=laptop&brand=${product.brand.slug}`}
-                className="hover:text-black"
+                className="hover:text-[#111827]"
               >
                 {product.brand.name}
               </Link>
             </li>
           ) : (
             // 👉 nếu đang ở trang brand → KHÔNG click
-            <li className="text-black font-medium">
+            <li className="text-[#111827] font-medium">
               {brand}
             </li>
           )}
@@ -66,7 +66,7 @@ const currentPageTitle = pageTitles[pathname];
       {isDetail && (
         <>
           <ChevronRight className="w-4 h-4" />
-          <li className="text-black font-medium">
+          <li className="text-[#111827] font-medium">
             {product.name} - {selected.cpu} / {selected.ram} / {selected.ssd}
           </li>
         </>

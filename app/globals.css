@@ -669,14 +669,7 @@ textarea {
     line-height: 1.3;
 }
 
-.boxfooter_container {
-    color: #000;
-    background-color: #fff;
-    position: relative;
-    padding-top: 30px;
-    font-size: 15px;
-    box-shadow: 0 8px 15px 0 #000;
-}
+
 
 .boxfooter_bottom {
     padding: 15px 0;
@@ -1222,9 +1215,7 @@ ins.highlight {
 }
 .all_sp_banchay_index {
     background: #fff;
-    /* text-align: center; */
     transition: transform 0.3s ease;
-    /* margin: 2% 0; */
     border: 1px solid #e8e8e8;
     padding: 15px;
     height: inherit;

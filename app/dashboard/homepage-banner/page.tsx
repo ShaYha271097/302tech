@@ -10,7 +10,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Sidebar from "../components/Sidebar";
-import DashboardHeader from "../components/DashboardHeader";
 import Topbar from "../components/TopBar";
 import MobileSidebar from "../components/MobileSidebar";
 import { uploadImage } from "@/lib/uploadImage";
@@ -169,15 +168,18 @@ export default function HomePageBanner() {
     setSlider(initialData.slider);
     setBanners(initialData.banners);
   };
-  const getImageSrc = (img: string | File) => {
-    if (!img) return "";
+const getImageSrc = (img: string | File) => {
 
-    if (img instanceof File) {
-      return URL.createObjectURL(img);
-    }
+  if (!img) {
+    return "/no-image.png";
+  }
 
-    return img;
-  };
+  if (img instanceof File) {
+    return URL.createObjectURL(img);
+  }
+
+  return img;
+}
   const isValid =
     slider.length > 0 &&
     slider.every((s) => s.image) &&
@@ -186,8 +188,6 @@ export default function HomePageBanner() {
   console.log('slider', slider)
   return (
     <>
-      {/* ================= HEADER TOP ================= */}
-      <DashboardHeader onOpenSidebar={() => setOpenSidebar(true)} />
       <Topbar title="Quản lý banner" />
       <div className="flex min-h-screen bg-gray-50">
         {/* SIDEBAR */}
@@ -231,7 +231,7 @@ export default function HomePageBanner() {
                         Slider Banners
                       </h4>
 
-                      <p className="text-sm text-[#6B7280] mt-1">
+                      <p className="text-sm leading-7 text-[#6B7280] mt-1">
                         Quản lý banner slider trang chủ
                       </p>
                     </div>
@@ -373,7 +373,7 @@ export default function HomePageBanner() {
                   transition-all
                 "
                         >
-                          <i className="fas fa-trash text-sm" />
+                          <i className="fas fa-trash text-sm leading-7" />
                         </button>
                       </div>
                     ))}
@@ -395,7 +395,7 @@ export default function HomePageBanner() {
                       Side Banners
                     </h4>
 
-                    <p className="text-sm text-[#6B7280] mt-1">
+                    <p className="text-sm leading-7 text-[#6B7280] mt-1">
                       Banner hiển thị bên phải slider
                     </p>
                   </div>
@@ -403,7 +403,7 @@ export default function HomePageBanner() {
                   {/* TOP */}
                   <div className="flex items-center justify-between gap-3 mb-5">
                     <div>
-                      <p className="text-sm font-medium text-[#374151]">
+                      <p className="text-sm leading-7 font-medium text-[#374151]">
                         Top Banner
                       </p>
                     </div>
@@ -442,7 +442,7 @@ export default function HomePageBanner() {
                 bg-[#FFF9F5]
                 flex flex-col items-center justify-center
                 cursor-pointer
-                text-sm text-[#6B7280]
+                text-sm leading-7 text-[#6B7280]
                 hover:bg-[#FFF1E7]
                 transition-all
               "
@@ -476,7 +476,7 @@ export default function HomePageBanner() {
                   {/* BOTTOM */}
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-medium text-[#374151]">
+                      <p className="text-sm leading-7 font-medium text-[#374151]">
                         Bottom Banner
                       </p>
                     </div>
@@ -515,7 +515,7 @@ export default function HomePageBanner() {
                 bg-[#FFF9F5]
                 flex flex-col items-center justify-center
                 cursor-pointer
-                text-sm text-[#6B7280]
+                text-sm leading-7 text-[#6B7280]
                 hover:bg-[#FFF1E7]
                 transition-all
               "
@@ -608,7 +608,7 @@ export default function HomePageBanner() {
                     Preview
                   </h4>
 
-                  <p className="text-xs sm:text-sm text-[#6B7280] mt-1">
+                  <p className="text-xs sm:text-sm leading-7 text-[#6B7280] mt-1">
                     Xem trước giao diện banner
                   </p>
                 </div>
@@ -680,7 +680,7 @@ export default function HomePageBanner() {
                           <i className="fas fa-images text-[#ff7a00] text-lg" />
                         </div>
 
-                        <span className="text-sm">
+                        <span className="text-sm leading-7">
                           Chưa có ảnh slider
                         </span>
                       </div>
@@ -735,7 +735,7 @@ export default function HomePageBanner() {
                         <i className="fas fa-image text-[#ff7a00] text-xs" />
                       </div>
 
-                      <span className="text-xs sm:text-sm">
+                      <span className="text-xs sm:text-sm leading-7">
                         Banner trên
                       </span>
                     </div>
@@ -789,7 +789,7 @@ export default function HomePageBanner() {
                         <i className="fas fa-image text-[#ff7a00] text-xs" />
                       </div>
 
-                      <span className="text-xs sm:text-sm">
+                      <span className="text-xs sm:text-sm leading-7">
                         Banner dưới
                       </span>
                     </div>
@@ -831,7 +831,7 @@ export default function HomePageBanner() {
                 />
 
                 <div>
-                  <p className="text-sm font-semibold text-[#111827]">
+                  <p className="text-sm leading-7 font-semibold text-[#111827]">
                     Đang lưu homepage...
                   </p>
 

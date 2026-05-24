@@ -60,13 +60,14 @@ export async function POST(req: Request) {
 
     switch (type) {
       case "product":
-        transformation = [
-          {
-            width: 800,
-            height: 800,
-            crop: "fill",
-          },
-        ];
+          transformation = [];
+        // transformation = [
+        //   {
+        //     width: 800,
+        //     height: 800,
+        //     crop: "fill",
+        //   },
+        // ];
         break;
 
       case "slider":
@@ -88,19 +89,6 @@ export async function POST(req: Request) {
           },
         ];
         break;
-
-      // 🔥 THÊM BRAND
-      case "brand":
-        transformation = [
-          {
-            width: 300,
-            height: 300,
-            crop: "fit", // 👈 cực quan trọng cho logo
-            background: "white", // 👈 tránh logo nền trong suốt bị xấu
-          },
-        ];
-        break;
-
       default:
         transformation = [];
     }

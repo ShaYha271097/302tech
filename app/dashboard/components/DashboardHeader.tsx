@@ -122,7 +122,7 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
                     w-full
                     flex items-center gap-3
                     px-4 py-3
-                    text-sm
+                    text-sm leading-7
                     text-[#111111]
                     hover:bg-[#FFF3E8]
                     hover:text-[#ff7a00]

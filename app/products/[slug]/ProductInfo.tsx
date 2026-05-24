@@ -12,7 +12,7 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
     <h4
       className="
         text-xl
-        font-bold
+        font-semibold
         leading-snug
         text-[#111827]
       "
@@ -21,7 +21,7 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
     </h4>
 
   {/* STATUS */}
-  <div className="flex flex-wrap items-center gap-2 text-sm">
+  <div className="flex flex-wrap items-center gap-2 text-sm leading-7">
 
     <div
       className="
@@ -67,7 +67,7 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
     "
   >
 
-    <p className="text-sm text-[#6B7280] mb-1">
+    <p className="text-sm leading-7 text-[#6B7280] mb-1">
       Giá bán
     </p>
 
@@ -147,7 +147,7 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
 
             <p
               className={`
-                text-sm font-semibold
+                text-sm leading-7 font-semibold
                 ${
                   isActive
                     ? "text-[#ff7a00]"
@@ -204,7 +204,7 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
       px-3 py-1.5
 
       text-white
-      text-sm
+      text-sm leading-7
       font-semibold
 
       shadow-md shadow-orange-200
@@ -272,7 +272,7 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
 
           <p
             className="
-              text-sm
+              text-sm leading-7
               leading-6
               text-[#374151]
             "

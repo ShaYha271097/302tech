@@ -97,7 +97,7 @@ export default function ProductGallery({ mainImage, gallery }: Props) {
 
         {!isZoomActive && (
           <div className="absolute inset-0 flex items-end justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition">
-            <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded mb-3">
+            <span className="text-white text-sm leading-7 font-medium bg-black/50 px-3 py-1 rounded mb-3">
               Click to zoom
             </span>
           </div>

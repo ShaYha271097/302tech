@@ -67,7 +67,7 @@ export default function ContactPage() {
           border border-orange-200
           bg-orange-50
           text-orange-600
-          text-sm font-semibold
+          text-sm leading-7 font-semibold
           mb-5
         "
       >
@@ -226,7 +226,7 @@ export default function ContactPage() {
                   p-5
                 "
               >
-                <p className="font-bold text-[#111827] mb-2">
+                <p className="font-semibold text-[#111827] mb-2">
                   📞 Hotline
                 </p>
 
@@ -243,7 +243,7 @@ export default function ContactPage() {
                   p-5
                 "
               >
-                <p className="font-bold text-[#111827] mb-2">
+                <p className="font-semibold text-[#111827] mb-2">
                   🕒 Làm việc
                 </p>
 
@@ -263,7 +263,7 @@ export default function ContactPage() {
                 p-5
               "
             >
-              <p className="font-bold text-[#111827] mb-2">
+              <p className="font-semibold text-[#111827] mb-2">
                 📧 Email
               </p>
 

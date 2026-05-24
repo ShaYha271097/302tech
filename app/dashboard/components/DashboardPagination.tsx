@@ -32,7 +32,7 @@ export default function DashboardPagination({
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-3">
 
             {/* LEFT */}
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2 text-sm leading-7">
 
                 <span className="text-[#6B7280]">
                     Hiển thị:
@@ -112,7 +112,7 @@ export default function DashboardPagination({
         w-9 h-9
         rounded-lg
         border
-        text-sm
+        text-sm leading-7
         transition-all duration-300
 
         ${page === item
@@ -179,7 +179,7 @@ export default function DashboardPagination({
             </div>
 
             {/* RIGHT */}
-            <div className="text-sm text-[#6B7280]">
+            <div className="text-sm leading-7 text-[#6B7280]">
                 {start}-{end} trong {total} sản phẩm
             </div>
 

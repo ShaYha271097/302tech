@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { beVietnam } from "./fonts";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,10 +36,15 @@ export default function RootLayout({
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
         /> */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        {/* <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" /> */}
       </head>
-      <body className="min-h-full flex flex-col"   suppressHydrationWarning>{children}</body>
+       <body
+        className={`${beVietnam.className} min-h-full flex flex-col`}
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   );
 }

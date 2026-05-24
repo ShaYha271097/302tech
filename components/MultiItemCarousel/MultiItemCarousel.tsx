@@ -30,51 +30,104 @@ export default function MultiItemCarousel() {
 
 
   return (
-    <div className="all_list_noibat">
-      <div className="wrap_bottom ">
-        <div className="fixwidth">
-          <Swiper
-            modules={[Autoplay]}
-            spaceBetween={16}
-            loop={true}
-            autoplay={{
-              delay: 2000, // 👈 2s
-              disableOnInteraction: false,
-            }}
-            speed={500}
-            breakpoints={{
-              0: {
-                slidesPerView: 3, // mobile
-              },
-              640: {
-                slidesPerView: 5, // tablet
-              },
-              1024: {
-                slidesPerView: 8, // desktop
-              },
-            }}
-          >
-            {loopBrands.map((item, index) => {
-              return (
-              <SwiperSlide key={index}>
-                <Link href={`/products?brand=${item.slug}`}>
-                  <div className="list_noibat">
+  <div className="all_list_noibat">
+  <div className="wrap_bottom">
+    <div className="fixwidth">
+
+      <Swiper
+        modules={[Autoplay]}
+        spaceBetween={16}
+        loop={true}
+        autoplay={{
+          delay: 2000,
+          disableOnInteraction: false,
+        }}
+        speed={500}
+        breakpoints={{
+          0: {
+            slidesPerView: 3,
+          },
+          640: {
+            slidesPerView: 5,
+          },
+          1024: {
+            slidesPerView: 8,
+          },
+        }}
+      >
+
+        {loopBrands.map((item, index) => {
+          return (
+            <SwiperSlide key={index}>
+
+              <Link href={`/products?brand=${item.slug}`}>
+
+                <div
+                  className="
+                    group
+                    bg-white
+                    border border-[#E8E8E8]
+                    rounded-2xl
+                    p-3
+                    flex flex-col items-center justify-center
+                    transition-all duration-300
+                    hover:border-[#FED7AA]
+                    hover:shadow-[0_8px_25px_rgba(255,122,0,0.08)]
+                  "
+                >
+
+                  {/* IMAGE */}
+                  <div
+                    className="
+                      w-[72px]
+                      h-[72px]
+                      rounded-2xl
+                      flex items-center justify-center
+                      overflow-hidden
+                    "
+                  >
+
                     <img
                       src={item.img}
                       alt={item.name}
-                      className="w-[70px] h-[70px] "
+                      className="
+                        w-[58px]
+                        h-[58px]
+                        object-contain
+                        transition-transform duration-300
+                        group-hover:scale-110
+                      "
                     />
-                    <div className="mt-2 text-sm font-medium text-gray-700">
-                      {item.name}
-                    </div>
+
                   </div>
-                </Link>
-              </SwiperSlide>
-            )
-            })}
-          </Swiper>
-        </div>
-      </div>
-    </div >
+
+                  {/* NAME */}
+                  <div
+                    className="
+                      mt-3
+                      text-[14px]
+                      font-semibold
+                      text-[#374151]
+                      text-center
+                      transition-colors duration-300
+                      group-hover:text-[#ff7a00]
+                    "
+                  >
+                    {item.name}
+                  </div>
+
+                </div>
+
+              </Link>
+
+            </SwiperSlide>
+          );
+        })}
+
+      </Swiper>
+
+    </div>
+  </div>
+</div>
   );
 }

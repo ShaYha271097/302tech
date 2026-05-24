@@ -44,7 +44,7 @@ export default function Topbar({
               type="text"
               value={value}
               placeholder="Tìm kiếm sản phẩm..."
-              className="px-2 sm:px-3 py-1 text-xs sm:text-sm text-black outline-none w-full"
+              className="px-2 sm:px-3 py-1 text-xs sm:text-sm leading-7 text-[#111827] outline-none w-full"
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSearch();
@@ -53,7 +53,7 @@ export default function Topbar({
 
             <button
               onClick={handleSearch}
-              className="px-2 sm:px-3 text-black hover:text-gray-700"
+              className="px-2 sm:px-3 text-[#111827] hover:text-[#6B7280]"
             >
               <i className="fas fa-search" />
             </button>
@@ -74,7 +74,7 @@ export default function Topbar({
     px-2 sm:px-3
     py-1
     rounded
-    text-xs sm:text-sm
+    text-xs sm:text-sm leading-7
     hover:bg-[#ea6d00]
     transition-all duration-300
   "
@@ -88,7 +88,7 @@ export default function Topbar({
         {selectedCount > 0 && (
           <button
             onClick={onDelete}
-            className="bg-[#ff7a00] text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm hover:bg-red-600"
+            className="bg-[#ff7a00] text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm leading-7 hover:bg-red-600"
           >
             Xóa ({selectedCount})
           </button>
