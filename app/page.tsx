@@ -9,9 +9,12 @@ export default async function Home() {
 
 
 
-  const res = await fetch("http://localhost:3000/api/home", {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/home`,
+    {
+      cache: "no-store",
+    }
+  );
 
   const data = await res.json();
 
