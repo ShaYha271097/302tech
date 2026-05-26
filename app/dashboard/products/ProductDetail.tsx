@@ -1,6 +1,6 @@
 
 "use client";
-import React, { useState } from "react";
+import React, {useState } from "react";
 import Link from "next/link";
 import AddProductDialog from "./AddProductDialog";
 import { Pencil, Trash2 } from "lucide-react"
@@ -8,7 +8,7 @@ import { useEffect } from "react"
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import Topbar from "../components/TopBar";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import MobileSidebar from "../components/MobileSidebar";
 import DashboardPagination from "../components/DashboardPagination";
 type Variant = {
@@ -39,12 +39,9 @@ type Product = {
 }
 
 export default function ProductDetail() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [openSidebar, setOpenSidebar] = useState(false);
-  const [search, setSearch] = useState(
-    searchParams.get("search") || ""
-  );
+  const [search, setSearch] = useState("");
 
   const [open, setOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -153,7 +150,6 @@ export default function ProductDetail() {
 
         {/* MOBILE SIDEBAR */}
         <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
-
 
         <section className="flex-1 px-3 md:px-4 py-2.5 overflow-y-auto">
 

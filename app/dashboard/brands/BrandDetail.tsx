@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/TopBar";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import AddPBrandDialog from "./AddPBrandDialog";
 import DashboardPagination from "../components/DashboardPagination";
 import MobileSidebar from "../components/MobileSidebar";
@@ -17,13 +17,11 @@ type Brand = {
 };
 
 export default function BrandDetail() {
-    const searchParams = useSearchParams();
     const router = useRouter();
 
     const [openSidebar, setOpenSidebar] = useState(false);
-    const initialSearch = searchParams.get("search") || "";
 
-    const [search, setSearch] = useState(initialSearch);
+const [search, setSearch] = useState("");
     const [open, setOpen] = useState(false);
 
     const [page, setPage] = useState(1);

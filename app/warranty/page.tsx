@@ -2,7 +2,6 @@
 
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
-import { Suspense } from "react";
 import Breadcrumb from "../products/[slug]/Breadcrumb";
 
 export default function WarrantyPage() {
@@ -10,13 +9,6 @@ export default function WarrantyPage() {
         <>
             <Header />
 
-            <Suspense
-                fallback={
-                    <div className="min-h-[60vh] flex items-center justify-center text-gray-500">
-                        Đang tải...
-                    </div>
-                }
-            >
                 <div className="wrap-main w-clear">
                     <div className="fixwidth">
                         <div className="content-main w-clear">
@@ -320,7 +312,6 @@ export default function WarrantyPage() {
 
 
 
-            </Suspense>
 
             <Footer />
         </>

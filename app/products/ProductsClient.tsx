@@ -11,8 +11,7 @@ import ProductFilter from "./ProductFilter";
 
 export default function ProductsClient() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const {
+       const {
         products,
         loading,
         page,
@@ -22,6 +21,8 @@ export default function ProductsClient() {
         ramSelected,
         ssdSelected,
     } = useProducts();
+    const searchParams = useSearchParams();
+ 
     const [showFilter, setShowFilter] = useState(false);
     const handlePageChange = (newPage: number) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -32,57 +33,35 @@ export default function ProductsClient() {
 
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
-    const toggleSSD = (ssd: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+   const toggleQueryParam = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-        const current = params.getAll("ssd");
+    const currentValues = params.getAll(key);
 
-        if (current.includes(ssd)) {
-            const updated = current.filter(v => v !== ssd);
+    const updatedValues = currentValues.includes(value)
+        ? currentValues.filter((v) => v !== value)
+        : [...currentValues, value];
 
-            params.delete("ssd");
-            updated.forEach(v => params.append("ssd", v));
-        } else {
-            params.append("ssd", ssd);
-        }
+    params.delete(key);
 
-        router.push(`/products?${params.toString()}`);
-    };
+    updatedValues.forEach((v) => {
+        params.append(key, v);
+    });
 
-    const toggleRam = (ram: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+    router.push(`/products?${params.toString()}`);
+};
 
-        const current = params.getAll("ram");
+const toggleSSD = (ssd: string) => {
+    toggleQueryParam("ssd", ssd);
+};
 
-        if (current.includes(ram)) {
-            const updated = current.filter(v => v !== ram);
+const toggleRam = (ram: string) => {
+    toggleQueryParam("ram", ram);
+};
 
-            params.delete("ram");
-            updated.forEach(v => params.append("ram", v));
-        } else {
-            params.append("ram", ram);
-        }
-
-        router.push(`/products?${params.toString()}`);
-    };
-    const togglePrice = (value: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-
-        let prices = params.getAll("price");
-
-        if (prices.includes(value)) {
-            prices = prices.filter((p) => p !== value);
-        } else {
-            prices.push(value);
-        }
-
-        params.delete("price");
-        prices.forEach((p) => params.append("price", p));
-
-        router.push(`/products?${params.toString()}`);
-    };
-
-
+const togglePrice = (price: string) => {
+    toggleQueryParam("price", price);
+};
 
 
     return (

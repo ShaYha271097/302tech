@@ -81,7 +81,7 @@ export default function BannerSlider() {
                     >
                       <img
                         src={item.image}
-                        className="w-full h-full object-cover transition"
+                        className="w-full h-full object-fit transition"
                         alt={`banner-${index}`}
                       />
                     </a>
@@ -103,9 +103,8 @@ export default function BannerSlider() {
       className="flex-1 lg:w-full overflow-hidden rounded-[10px]"
     >
       <img
-        // src={banners.top.image}
-        src="/assets/images/banner2.png"
-        className="w-full h-full object-cover hover:scale-105 transition"
+        src={banners.top.image}
+        className="w-full h-full object-fit hover:scale-105 transition"
         alt="banner-top"
       />
     </a>
@@ -124,9 +123,8 @@ export default function BannerSlider() {
       className="flex-1 lg:w-full overflow-hidden rounded-[10px]"
     >
       <img
-        // src={banners.bottom.image}
-        src="/assets/images/banner-top.png"
-        className="w-full h-full object-cover hover:scale-105 transition"
+        src={banners.bottom.image}
+        className="w-full h-full object-fit hover:scale-105 transition"
         alt="banner-bottom"
       />
     </a>
