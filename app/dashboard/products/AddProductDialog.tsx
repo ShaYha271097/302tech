@@ -615,7 +615,7 @@ sm:h-[90vh]
                     // auto slug
                     setSlug(slugify(value));
 
-                    if (value.trim()) {
+                    if (!value.trim()) {
                       setErrorName("Không được để trống");
                     } else if (value.length < 5) {
                       setErrorName("Tên phải ít nhất 5 ký tự");

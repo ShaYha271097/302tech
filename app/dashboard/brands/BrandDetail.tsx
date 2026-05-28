@@ -14,6 +14,7 @@ type Brand = {
     slug: string;
     image: string;
     createdAt: string;
+    isActive: boolean;
 };
 
 export default function BrandDetail() {
@@ -21,7 +22,7 @@ export default function BrandDetail() {
 
     const [openSidebar, setOpenSidebar] = useState(false);
 
-const [search, setSearch] = useState("");
+    const [search, setSearch] = useState("");
     const [open, setOpen] = useState(false);
 
     const [page, setPage] = useState(1);
@@ -47,29 +48,30 @@ const [search, setSearch] = useState("");
         );
 
         const data = await res.json();
-
+        console.log("data.brands", data.brands)
         setBrands(data.brands || []);
         setTotal(data.total || 0);
     };
     useEffect(() => {
         fetchBrands();
     }, [page, limit, sort]);
-    const handleBulkDelete = async () => {
-        const ok = confirm(`Xóa ${selectedIds.length} thương hiệu ?`);
-        if (!ok) return;
+    const handleToggleActive = async (
+        id: string,
+    ) => {
+        try {
+            const res = await fetch(`/api/brands/${id}/toggle-active`, {
+                method: "PATCH",
+            });
 
-        await fetch("/api/brands/bulk-delete", {
-            method: "POST",
-            body: JSON.stringify({ ids: selectedIds }),
-        });
+            const data = await res.json();
 
-        setBrands((prev) =>
-            prev.filter((p) => !selectedIds.includes(p._id))
-        );
-
-        setSelectedIds([]);
+            if (data.success) {
+                fetchBrands();
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
-
     return (
         <>
             <Topbar
@@ -86,7 +88,7 @@ const [search, setSearch] = useState("");
                     fetchBrands(value);
                 }}
                 selectedCount={selectedIds.length}
-                onDelete={handleBulkDelete}
+            // onDelete={handleBulkDelete}
             />
 
             <div className="flex min-h-screen bg-gray-50">
@@ -108,26 +110,6 @@ const [search, setSearch] = useState("");
                             <thead className="!border-b border-[#E5E7EB]">
                                 <tr className="text-[#111111]">
 
-                                    <th className="px-4 py-2.5 w-[50px] text-center align-middle">
-                                        <input
-                                            type="checkbox"
-                                            className="accent-[#ff7a00] w-4 h-4 align-middle"
-                                            checked={
-                                                brands.length > 0 &&
-                                                selectedIds.length === brands.length
-                                            }
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedIds(
-                                                        brands.map((p) => p._id)
-                                                    );
-                                                } else {
-                                                    setSelectedIds([]);
-                                                }
-                                            }}
-                                        />
-                                    </th>
-
                                     <th className="px-4 py-2.5 text-left font-semibold">
                                         Hình ảnh
                                     </th>
@@ -147,8 +129,8 @@ const [search, setSearch] = useState("");
 
                                             <i
                                                 className={`fas ${sort === "name_asc"
-                                                        ? "fa-chevron-up"
-                                                        : "fa-chevron-down"
+                                                    ? "fa-chevron-up"
+                                                    : "fa-chevron-down"
                                                     } text-[11px]
       cursor-pointer
     `}
@@ -175,8 +157,8 @@ const [search, setSearch] = useState("");
                                             Ngày tạo
                                             <i
                                                 className={`fas ${sort === "date_desc"
-                                                        ? "fa-chevron-up"
-                                                        : "fa-chevron-down"
+                                                    ? "fa-chevron-up"
+                                                    : "fa-chevron-down"
                                                     } text-[11px]
                                   cursor-pointer
                                 `}
@@ -203,29 +185,6 @@ const [search, setSearch] = useState("");
                                 transition-all duration-200
                             "
                                     >
-                                        {/* CHECKBOX */}
-                                        <td className="px-4 py-2.5">
-                                            <input
-                                                type="checkbox"
-                                                className="accent-[#ff7a00] w-4 h-4"
-                                                checked={selectedIds.includes(p._id)}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedIds((prev) => [
-                                                            ...prev,
-                                                            p._id,
-                                                        ]);
-                                                    } else {
-                                                        setSelectedIds((prev) =>
-                                                            prev.filter(
-                                                                (id) => id !== p._id
-                                                            )
-                                                        );
-                                                    }
-                                                }}
-                                            />
-                                        </td>
-
                                         {/* IMAGE */}
                                         <td className="px-4 py-2.5">
                                             <img
@@ -263,24 +222,64 @@ const [search, setSearch] = useState("");
 
                                         {/* ACTION */}
                                         <td className="px-4 py-2.5">
-                                            <button
-                                                className="
-                                        px-3 py-2
-                                        rounded-lg
-                                        bg-[#FFF3E8]
-                                        text-[#ff7a00]
-                                        font-medium
-                                        hover:bg-[#ff7a00]
-                                        hover:text-white
-                                        transition-all duration-300
-                                    "
-                                                onClick={() => {
-                                                    setEditingBrand(p);
-                                                    setOpen(true);
-                                                }}
-                                            >
-                                                Sửa
-                                            </button>
+                                            <div className="flex items-center gap-2">
+
+                                                {/* EDIT */}
+                                                <button
+                                                    className="
+                            px-3 py-2
+                            rounded-lg
+                            bg-[#FFF3E8]
+                            text-[#ff7a00]
+                            font-medium
+                            hover:bg-[#ff7a00]
+                            hover:text-white
+                            transition-all duration-300
+                        "
+                                                    onClick={() => {
+                                                        setEditingBrand(p);
+                                                        setOpen(true);
+                                                    }}
+                                                >
+                                                    Sửa
+                                                </button>
+
+                                                {/* HIDE / SHOW */}
+                                                <button
+                                                    className={`
+    px-3 py-2
+    rounded-lg
+    font-medium
+    flex items-center gap-2
+    transition-all duration-300
+    ${p.isActive
+                                                            ? `
+          bg-red-50
+          text-red-500
+          hover:bg-red-500
+          hover:text-white
+        `
+                                                            : `
+          bg-green-50
+          text-green-600
+          hover:bg-green-600
+          hover:text-white
+        `
+                                                        }
+  `}
+                                                    onClick={() => handleToggleActive(p._id)}
+                                                >
+                                                    <i
+                                                        className={`fas ${p.isActive
+                                                                ? "fa-eye-slash"
+                                                                : "fa-eye"
+                                                            } text-[13px]`}
+                                                    />
+
+                                                    {p.isActive ? "Ẩn" : "Hiện"}
+                                                </button>
+
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -291,32 +290,7 @@ const [search, setSearch] = useState("");
                     {/* ================= MOBILE LIST ================= */}
                     <div className="md:hidden space-y-3">
 
-                        {/* SELECT ALL */}
-                        {brands.length > 0 && (
-                            <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex items-center gap-3">
-                                <input
-                                    type="checkbox"
-                                    className="accent-[#ff7a00] w-4 h-4"
-                                    checked={
-                                        selectedIds.length === brands.length
-                                    }
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setSelectedIds(
-                                                brands.map((p) => p._id)
-                                            );
-                                        } else {
-                                            setSelectedIds([]);
-                                        }
-                                    }}
-                                />
-
-                                <span className="text-sm leading-7 font-medium text-[#111111]">
-                                    Chọn tất cả
-                                </span>
-                            </div>
-                        )}
-
+                       
                         {/* BRAND ITEM */}
                         {brands.map((p) => (
                             <div
@@ -331,27 +305,6 @@ const [search, setSearch] = useState("");
                             >
                                 {/* TOP */}
                                 <div className="flex items-start gap-3">
-
-                                    {/* CHECKBOX */}
-                                    <input
-                                        type="checkbox"
-                                        className="accent-[#ff7a00] w-4 h-4 mt-1"
-                                        checked={selectedIds.includes(p._id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedIds((prev) => [
-                                                    ...prev,
-                                                    p._id,
-                                                ]);
-                                            } else {
-                                                setSelectedIds((prev) =>
-                                                    prev.filter(
-                                                        (id) => id !== p._id
-                                                    )
-                                                );
-                                            }
-                                        }}
-                                    />
 
                                     {/* IMAGE */}
                                     <img
@@ -386,9 +339,9 @@ const [search, setSearch] = useState("");
 
                                     </div>
                                 </div>
-
+  
                                 {/* ACTION */}
-                                <div className="mt-3 flex justify-end">
+                                <div className="mt-3 flex justify-end gap-2">
                                     <button
                                         className="
                                 px-3 py-2
@@ -408,6 +361,40 @@ const [search, setSearch] = useState("");
                                     >
                                         Sửa
                                     </button>
+                                       {/* HIDE / SHOW */}
+                                                <button
+                                                    className={`
+    px-3 py-2
+    rounded-lg
+    font-medium
+    flex items-center gap-2
+    transition-all duration-300
+    ${p.isActive
+                                                            ? `
+          bg-red-50
+          text-red-500
+          hover:bg-red-500
+          hover:text-white
+        `
+                                                            : `
+          bg-green-50
+          text-green-600
+          hover:bg-green-600
+          hover:text-white
+        `
+                                                        }
+  `}
+                                                    onClick={() => handleToggleActive(p._id)}
+                                                >
+                                                    <i
+                                                        className={`fas ${p.isActive
+                                                                ? "fa-eye-slash"
+                                                                : "fa-eye"
+                                                            } text-[13px]`}
+                                                    />
+
+                                                    {p.isActive ? "Ẩn" : "Hiện"}
+                                                </button>
                                 </div>
                             </div>
                         ))}

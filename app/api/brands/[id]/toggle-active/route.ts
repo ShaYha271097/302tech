@@ -16,6 +16,7 @@ export async function PATCH(
     _id: new ObjectId(id),
   });
 
+  console.log("1111")
   if (!brand) {
     return NextResponse.json(
       {
@@ -26,7 +27,7 @@ export async function PATCH(
       }
     );
   }
-
+ console.log("2222")
   const newStatus = !brand.isActive;
 
   await db.collection("brands").updateOne(
