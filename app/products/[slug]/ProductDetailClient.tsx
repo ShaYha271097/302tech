@@ -9,6 +9,8 @@ import Link from "next/link";
 import { useSimilarProducts } from "@/hooks/useSimilarProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductDescription from "./ProductDescription";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton/ProductCardSkeleton";
+import ProductDetailSkeleton from "@/components/ProductDetailSkeleton/ProductDetailSkeleton";
 
 
 
@@ -34,44 +36,48 @@ export default function ProductDetailClient({ product }: any) {
             </div>
           </div>
           <div className="clearfix">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+            {loading ? <ProductDetailSkeleton /> :
+              (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
 
-              {/* IMAGE */}
-              <div className="md:col-span-1 lg:col-span-4">
-                <div className="bg-white p-1 h-full">
-                  <ProductGallery
-                    mainImage={product.mainImage}
-                    gallery={product.gallery}
-                  />
+                {/* IMAGE */}
+                <div className="md:col-span-1 lg:col-span-4">
+                  <div className="bg-white p-1 h-full">
+                    <ProductGallery
+                      mainImage={product.mainImage}
+                      gallery={product.gallery}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* INFO */}
-              <div className="md:col-span-1 lg:col-span-4">
-                <div className="bg-white p-1 h-full sticky top-4">
+                {/* INFO */}
+                <div className="md:col-span-1 lg:col-span-4">
+                  <div className="bg-white p-1 h-full sticky top-4">
 
-                  <ProductInfo
-                    product={product}
-                    selected={selected}
-                    setSelected={setSelected}
-                  />
+                    <ProductInfo
+                      product={product}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
 
+                  </div>
                 </div>
-              </div>
 
-              {/* DESCRIPTION */}
-              <div className="md:col-span-2 lg:col-span-4">
-                <ProductDescription selected={selected} />
-              </div>
+                {/* DESCRIPTION */}
+                <div className="md:col-span-2 lg:col-span-4">
+                  <ProductDescription selected={selected} />
+                </div>
 
-            </div>
+              </div>)
+          }
           </div>
-          <div className="title_sp_cungloai text-2xl font-semibold text-center mt-8 mb-4">
+          <div className="title_sp_cungloai text-2xl font-semibold text-center mt-8 mb-7">
             🔥 Sản phẩm tương tự
           </div>
           {loading ? (
-            <div className="w-full py-6 text-center text-gray-500">
-              Đang tải sản phẩm...
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {Array.from({ length:4 }).map((_, i) => (
+                      <ProductCardSkeleton key={i} />
+                  ))}
             </div>
           ) : (
             <div className="content-main w-clear">

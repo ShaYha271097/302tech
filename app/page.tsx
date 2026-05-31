@@ -6,27 +6,29 @@ import MultiItemCarousel from "@/components/MultiItemCarousel/MultiItemCarousel"
 import TopSellingSlider from "@/components/TopSellingSlider/TopSellingSlider";
 import ProductSection from "@/components/ProductSection/ProductSection";
 import { useEffect, useState } from "react";
+import ProductSectionSkeleton from "@/components/ProductSectionSkeleton/ProductSectionSkeleton";
 
 export default  function Home() {
 
- const [data, setData] = useState<any>(null);
+const [data, setData] = useState<any>(null);
+const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchHome = async () => {
-      try {
-        const res = await fetch("/api/home");
+useEffect(() => {
+  const fetchHome = async () => {
+    try {
+      const res = await fetch("/api/home");
+      const result = await res.json();
 
-        const result = await res.json();
+      setData(result);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setData(result);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchHome();
-  }, []);
-
+  fetchHome();
+}, []);
   return (
   <>
     <Header />
@@ -37,12 +39,12 @@ export default  function Home() {
       <MultiItemCarousel />
 
       <TopSellingSlider />
-
-      {!data ? (
-        <div className="py-10 text-center">
-          Loading...
-        </div>
-      ) : (
+{loading ? (
+  <>
+    <ProductSectionSkeleton />
+    <ProductSectionSkeleton />
+  </>
+) : (
         <>
           <ProductSection
             title="Dell"

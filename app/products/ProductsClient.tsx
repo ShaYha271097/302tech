@@ -8,6 +8,7 @@ import Breadcrumb from "./[slug]/Breadcrumb";
 import { useProducts } from "@/hooks/useProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductFilter from "./ProductFilter";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton/ProductCardSkeleton";
 
 export default function ProductsClient() {
     const router = useRouter();
@@ -101,9 +102,11 @@ const togglePrice = (price: string) => {
                                 <div className="all_sp_search">
 
                                     {loading ? (
-                                        <div className="w-full py-6 text-center text-gray-500">
-                                            Đang tải sản phẩm...
-                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                                        {Array.from({ length: 8 }).map((_, i) => (
+                                             <ProductCardSkeleton key={i} />
+                                        ))}
+                                    </div>
                                     ) : products.length === 0 ? (
                                         <div className="w-full ">
                                             <div className="w-full bg-gray-100 border border-gray-300 text-[#6B7280] px-4 py-3 text-center">

@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BrandCarouselSkeleton from "../BrandCarouselSkeleton/BrandCarouselSkeleton";
 // import "swiper/css";
 
 const brands = [
@@ -26,7 +27,9 @@ export default function MultiItemCarousel() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) {
+  return <BrandCarouselSkeleton />;
+}
 
 
   return (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import SearchBox from "../SearchBox/SearchBox";
+import MenuSkeleton from "../MenuSkeleton/MenuSkeleton";
 
 
 export default function BannerSlider() {
@@ -162,45 +163,46 @@ export default function BannerSlider() {
 
                 </div>
             </div>
-            <div className="hidden lg:block  header-height">
-                <div id="menu_top">
-                    <div className="clearfix fixwidth">
-                        <div className="menu">
-                            <ul className="menu_cap_cha d-flex justify-content-between p-0">
-                                {brands.map((brand) => {
-                                    const isLaptopMenu = brand.slug === "laptop";
-                                    return (
-                                        <li key={brand.slug} className="menulicha">
-                                            <Link
-                                                href={{
-                                                    pathname: "/products",
-                                                    // query: isLaptopMenu
-                                                    //     ? { category: "laptop" }
-                                                    //     : { category: "laptop", brand: brand.slug },
-                                                    query: isLaptopMenu
-                                                        ? { category: "laptop" }
-                                                        : { category: "laptop", brand: brand.slug },
-                                                }}
-                                            >
-                                                <img
-                                                    loading="lazy"
-                                                    width={32}
-                                                    height={32}
-                                                    src={brand.image}
-                                                    alt={brand.name}
-                                                />
-                                                {' '}
-                                                {brand.name}
-                                            </Link>
-                                        </li>
-                                    )
-                                })}
-                            </ul>
+            {loadingBrands ? <MenuSkeleton /> : 
+                    <div className="hidden lg:block  header-height">
+                        <div id="menu_top">
+                            <div className="clearfix fixwidth">
+                                <div className="menu">
+                                    <ul className="menu_cap_cha d-flex justify-content-between p-0">
+                                        {brands.map((brand) => {
+                                            const isLaptopMenu = brand.slug === "laptop";
+                                            return (
+                                                <li key={brand.slug} className="menulicha">
+                                                    <Link
+                                                        href={{
+                                                            pathname: "/products",
+                                                            // query: isLaptopMenu
+                                                            //     ? { category: "laptop" }
+                                                            //     : { category: "laptop", brand: brand.slug },
+                                                            query: isLaptopMenu
+                                                                ? { category: "laptop" }
+                                                                : { category: "laptop", brand: brand.slug },
+                                                        }}
+                                                    >
+                                                        <img
+                                                            loading="lazy"
+                                                            width={32}
+                                                            height={32}
+                                                            src={brand.image}
+                                                            alt={brand.name}
+                                                        />
+                                                        {' '}
+                                                        {brand.name}
+                                                    </Link>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
+             }   
             {/* OVERLAY */}
             <div
                 className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${openMenu ? "opacity-100 visible" : "opacity-0 invisible"

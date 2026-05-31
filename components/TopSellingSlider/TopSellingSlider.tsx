@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductCard from "../ProductCard/ProductCard";
+import TopSellingSkeleton from "../TopSellingSkeleton/TopSellingSkeleton";
 
 // import "swiper/css";
 
@@ -34,22 +35,23 @@ type Product = {
 export default function TopSellingSlider() {
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    fetch("/api/products?isHot=true&limit=18")
-      .then(res => res.json())
-      .then(data => {
-        console.log("data?.products",data?.products)
-        setProducts(data?.products)
-      });
-  }, []);
+  const [loading, setLoading] = useState(true);
+useEffect(() => {
+  fetch("/api/products?isHot=true&limit=18")
+    .then((res) => res.json())
+    .then((data) => {
+      setProducts(data?.products || []);
+    })
+    .finally(() => setLoading(false));
+}, []);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
-
+if (!mounted || loading) {
+  return <TopSellingSkeleton />;
+}
 
 
   return (
@@ -88,7 +90,6 @@ export default function TopSellingSlider() {
             }}
           >
             {products?.map((p, index) => {
-              const cheapest = getCheapestVariant(p.variants);
               return (
                 <SwiperSlide key={index}>
                     <ProductCard   key={p._id} product={p} />
