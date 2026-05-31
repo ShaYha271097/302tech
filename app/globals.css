@@ -508,9 +508,7 @@ textarea {
     font-size: 12px;
 }
 
-.wrap_bottom {
-    padding: 30px 0;
-}
+
 
 .row {
     display: -ms-flexbox;
@@ -1054,9 +1052,7 @@ a:hover {
     background: #f7f7f7;
     margin-bottom: 20px;
 }
-.wrap_bottom {
-    padding: 30px 0;
-}
+
 .list_noibat {
     border-radius: 10%;
     width: 100%;

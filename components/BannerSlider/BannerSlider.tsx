@@ -70,7 +70,7 @@ export default function BannerSlider() {
   }
 
   return (
-    <div className="wrap_slider">
+    <div className="wrap_slider mt-3 mb-3">
       <div className="fixwidth">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* LEFT SLIDER */}
