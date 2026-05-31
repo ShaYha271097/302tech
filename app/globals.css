@@ -272,7 +272,7 @@ a:active {
     display: flex !important;
 }
 
-.menu ul.menu_cap_cha li.menulicha>a {
+.menu ul.menu_cap_cha li.menulicha > a {
     color: #000;
     display: block;
     cursor: pointer;

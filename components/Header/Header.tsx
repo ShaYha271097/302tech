@@ -27,7 +27,21 @@ export default function BannerSlider() {
 
         fetchBrands();
     }, []);
+    const activeBrands = brands.filter((b) => !b.isActive);
 
+    const visibleBrands =
+        activeBrands.length > 7
+            ? activeBrands.slice(0, 7)
+            : activeBrands;
+
+    const hiddenBrands =
+        activeBrands.length > 7
+            ? activeBrands.slice(7)
+            : [];
+
+
+    console.log("visibleBrands", visibleBrands)
+    console.log("hiddenBrands", hiddenBrands)
     return (
         <>
             <div className="header-cachtop">
@@ -37,7 +51,7 @@ export default function BannerSlider() {
                             loading="lazy"
                             width={1920}
                             height={127}
-                              src="/assets/images/header-top.png"
+                            src="/assets/images/header-top.png"
                             className={'1'}
                             alt="302 Tech"
                             decoding="async"
@@ -51,8 +65,8 @@ export default function BannerSlider() {
                             <Link href="/" className="header_logo">
                                 <img
                                     loading="lazy"
-                                   
-                                       src="/assets/images/logoB.png"
+
+                                    src="/assets/images/logoB.png"
                                     alt="302 Tech"
                                     decoding="async"
                                 />
@@ -163,46 +177,107 @@ export default function BannerSlider() {
 
                 </div>
             </div>
-            {loadingBrands ? <MenuSkeleton /> : 
-                    <div className="hidden lg:block  header-height">
-                        <div id="menu_top">
-                            <div className="clearfix fixwidth">
-                                <div className="menu">
-                                    <ul className="menu_cap_cha d-flex justify-content-between p-0">
-                                        {brands.map((brand) => {
-                                            const isLaptopMenu = brand.slug === "laptop";
-                                            return (
-                                                <li key={brand.slug} className="menulicha">
-                                                    <Link
-                                                        href={{
-                                                            pathname: "/products",
-                                                            // query: isLaptopMenu
-                                                            //     ? { category: "laptop" }
-                                                            //     : { category: "laptop", brand: brand.slug },
-                                                            query: isLaptopMenu
-                                                                ? { category: "laptop" }
-                                                                : { category: "laptop", brand: brand.slug },
-                                                        }}
-                                                    >
-                                                        <img
-                                                            loading="lazy"
-                                                            width={32}
-                                                            height={32}
-                                                            src={brand.image}
-                                                            alt={brand.name}
-                                                        />
-                                                        {' '}
-                                                        {brand.name}
-                                                    </Link>
-                                                </li>
-                                            )
-                                        })}
-                                    </ul>
-                                </div>
+            {loadingBrands ? <MenuSkeleton /> :
+                <div className="hidden lg:block  header-height">
+                    <div id="menu_top">
+                        <div className="clearfix fixwidth">
+                            <div className="menu">
+                                <ul className="menu_cap_cha d-flex justify-content-between p-0">
+                                    {visibleBrands.map((brand) => {
+                                        const isLaptopMenu = brand.slug === "laptop";
+
+                                        return (
+                                            <li key={brand.slug} className="menulicha">
+                                                <Link
+                                                    href={{
+                                                        pathname: "/products",
+                                                        query: isLaptopMenu
+                                                            ? { category: "laptop" }
+                                                            : { category: "laptop", brand: brand.slug },
+                                                    }}
+                                                >
+                                                    <img
+                                                        loading="lazy"
+                                                        src={brand.image}
+                                                        alt={brand.name}
+                                                         className="!w-8 !h-8 "
+                                                    />{" "}
+                                                    {brand.name}
+                                                </Link>
+                                            </li>
+                                        );
+                                    })}
+
+                                    {hiddenBrands.length > 0 && (
+                                        <li className="menulicha relative group">
+                                       <span
+  className="
+    flex items-center gap-1
+    h-[50px] px-5
+    text-[14px] font-semibold uppercase
+    cursor-pointer
+  "
+>
+  Khác
+  <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180" />
+</span>
+
+                                            <ul
+                                                className="
+      absolute
+      top-full
+      left-0
+      min-w-[180px]
+      bg-white
+      shadow-lg
+      z-50
+
+      opacity-0
+      invisible
+      translate-y-2
+
+      transition-all
+      duration-200
+
+      group-hover:opacity-100
+      group-hover:visible
+      group-hover:translate-y-0
+    "
+                                            >
+                                                {hiddenBrands.map((brand) => (
+                                                    <li key={brand.slug}>
+                                                        <Link
+                                                            href={{
+                                                                pathname: "/products",
+                                                                query: {
+                                                                    category: "laptop",
+                                                                    brand: brand.slug,
+                                                                },
+                                                            }}
+                                                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                                                        >
+                                                            <img
+                                                                loading="lazy"
+                                                                width={24}
+                                                                height={24}
+                                                                src={brand.image}
+                                                                alt={brand.name}
+                                                                className="w-6 h-6 object-contain"
+                                                            />
+
+                                                            <span>{brand.name}</span>
+                                                        </Link>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </li>
+                                    )}
+                                </ul>
                             </div>
                         </div>
                     </div>
-             }   
+                </div>
+            }
             {/* OVERLAY */}
             <div
                 className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${openMenu ? "opacity-100 visible" : "opacity-0 invisible"

@@ -55,7 +55,7 @@ if (!mounted || loading) {
 
 
   return (
-    <div className="wrap_bottom wrap_flashsale">
+    <div className="wrap_bottom wrap_flashsale ">
       <div className="fixwidth">
         <div className="box-deal">
            {/* TITLE */}
