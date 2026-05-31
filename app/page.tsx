@@ -18,7 +18,7 @@ useEffect(() => {
     try {
       const res = await fetch("/api/home");
       const result = await res.json();
-
+      console.log("result=>>>>",result)
       setData(result);
     } catch (err) {
       console.error(err);

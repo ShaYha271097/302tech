@@ -105,7 +105,7 @@ export default function BannerSlider() {
                         fill
                         priority={index === 0}
                         sizes="(max-width: 1024px) 100vw, 66vw"
-                        className="object-cover"
+                        className="object-fill"
                       />
                     </a>
                   </SwiperSlide>
@@ -129,7 +129,7 @@ export default function BannerSlider() {
                   alt="banner-top"
                   fill
                   sizes="(max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition duration-300 hover:scale-105"
+                  className="object-fill transition duration-300 "
                 />
               </a>
             ) : (
@@ -151,7 +151,7 @@ export default function BannerSlider() {
                   alt="banner-bottom"
                   fill
                   sizes="(max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition duration-300 hover:scale-105"
+                  className="object-fill transition duration-300 "
                 />
               </a>
             ) : (
