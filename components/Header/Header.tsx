@@ -17,7 +17,7 @@ export default function Header({
     const [openMenu, setOpenMenu] = useState(false);
 
 
-  const activeBrands = (brands || []).filter(
+   const activeBrands = (brands || []).filter(
   (b) => !b.isActive
 );
 
@@ -295,7 +295,26 @@ export default function Header({
                     </button>
                 </div>
 
-              
+                {/* MENU LIST */}
+                <div className="p-3 space-y-3">
+                  {brands.map((brand) => (
+                        <Link
+                            key={brand.slug}
+                            href={{
+                                pathname: "/products",
+                                query: { brand: brand.slug },
+                            }}
+                            onClick={() => setOpenMenu(false)}
+                            className="flex items-center gap-3 py-2 border-b"
+                        >
+                            <img
+                                src={brand.image}
+                                className="w-6 h-6 object-contain"
+                            />
+                            <span>{brand.name}</span>
+                        </Link>
+                    ))}
+                </div>
 
             </div>
 
