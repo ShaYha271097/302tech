@@ -7,9 +7,6 @@ import Breadcrumb from "../products/[slug]/Breadcrumb";
 export default function ContactPage() {
     return (
         <>
-            <Header />
-
-       
                 <div className="wrap-main w-clear">
                     <div className="fixwidth">
                         <div className="content-main w-clear">
@@ -394,7 +391,6 @@ export default function ContactPage() {
 
 
 
-            <Footer />
         </>
     );
 }

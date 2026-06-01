@@ -26,11 +26,9 @@ export default async function ProductDetail({ params }: any) {
 
   return (
     <>
-      <Header />
 
       <ProductDetailClient product={plainProduct} />
 
-      <Footer />
     </>
   );
 }

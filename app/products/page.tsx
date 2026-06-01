@@ -8,11 +8,9 @@ import { Suspense } from "react";
 export default function ProductsPage() {
   return (
     <>
-      <Header />
        <Suspense fallback={<div>Loading...</div>}>
         <ProductsClient />
       </Suspense>
-      <Footer />
 
     </>
   );

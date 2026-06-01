@@ -1,67 +1,63 @@
-"use client";
 import BannerSlider from "@/components/BannerSlider/BannerSlider";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import MultiItemCarousel from "@/components/MultiItemCarousel/MultiItemCarousel";
 import TopSellingSlider from "@/components/TopSellingSlider/TopSellingSlider";
 import ProductSection from "@/components/ProductSection/ProductSection";
-import { useEffect, useState } from "react";
 import ProductSectionSkeleton from "@/components/ProductSectionSkeleton/ProductSectionSkeleton";
+import clientPromise from "@/lib/mongodb";
 
-export default  function Home() {
+export default async function Home() {
+  const client = await clientPromise;
+  const db = client.db("laptop-shop");
 
-const [data, setData] = useState<any>(null);
-const [loading, setLoading] = useState(true);
+  const brands = await db
+    .collection("brands")
+    .find({ isActive: false })
+    .toArray();
 
-useEffect(() => {
-  const fetchHome = async () => {
-    try {
-      const res = await fetch("/api/home");
-      const result = await res.json();
-      console.log("result=>>>>",result)
-      setData(result);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+const sections = (
+  await Promise.all(
+    brands.map(async (brand) => {
+      const products = await db
+        .collection("products")
+        .find({
+          brandId: brand._id,
+        })
+        .limit(4)
+        .toArray();
 
-  fetchHome();
-}, []);
+      return {
+        brand,
+        products,
+      };
+    })
+  )
+).filter((section) => section.products.length > 0);
   return (
-  <>
-    <Header />
+    <>
 
-    <BannerSlider />
 
-    <div className="wrap-home w-clear">
-      <MultiItemCarousel />
+      <BannerSlider
 
-      <TopSellingSlider />
-{loading ? (
-  <>
-    <ProductSectionSkeleton />
-    <ProductSectionSkeleton />
-  </>
-) : (
-        <>
+      />
+
+      <div className="wrap-home w-clear">
+        <MultiItemCarousel/>
+       
+        
+
+        <TopSellingSlider />
+         {sections.map((section) => (
           <ProductSection
-            title="Dell"
-            slug="dell"
-            products={data.dell.products}
+            key={section.brand._id.toString()}
+            title={section.brand.name}
+            slug={section.brand.slug}
+            products={section.products}
           />
+        ))}
+      </div>
 
-          <ProductSection
-            title="Lenovo"
-            slug="lenovo"
-            products={data.lenovo.products}
-          />
-        </>
-      )}
-    </div>
-
-    <Footer />
-  </>
-);
+    </>
+  );
 }

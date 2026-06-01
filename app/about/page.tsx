@@ -7,8 +7,6 @@ import Breadcrumb from "../products/[slug]/Breadcrumb";
 export default function AboutPage() {
     return (
         <>
-            <Header />
-
             <div className="wrap-main w-clear">
                 <div className="fixwidth">
 
@@ -399,7 +397,6 @@ export default function AboutPage() {
                 </div>
             </div>
 
-            <Footer />
         </>
     );
 }

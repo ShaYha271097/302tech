@@ -7,8 +7,6 @@ import Breadcrumb from "../products/[slug]/Breadcrumb";
 export default function WarrantyPage() {
     return (
         <>
-            <Header />
-
                 <div className="wrap-main w-clear">
                     <div className="fixwidth">
                         <div className="content-main w-clear">
@@ -313,7 +311,6 @@ export default function WarrantyPage() {
 
 
 
-            <Footer />
         </>
     );
 }

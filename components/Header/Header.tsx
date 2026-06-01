@@ -5,29 +5,21 @@ import { useEffect, useState } from "react";
 import SearchBox from "../SearchBox/SearchBox";
 import MenuSkeleton from "../MenuSkeleton/MenuSkeleton";
 
+type Props = {
+  brands: any[];
+//   loadingBrands: boolean;
+};
 
-export default function BannerSlider() {
+export default function Header({
+  brands,
+//   loadingBrands,
+}: Props) {
     const [openMenu, setOpenMenu] = useState(false);
-    const [brands, setBrands] = useState<any[]>([]);
-    const [loadingBrands, setLoadingBrands] = useState(true);
 
-    useEffect(() => {
-        const fetchBrands = async () => {
-            try {
-                const res = await fetch("/api/brands");
-                const dataBranchs = await res.json();
 
-                setBrands(dataBranchs?.brands);
-            } catch (err) {
-                console.error("Fetch brands error:", err);
-            } finally {
-                setLoadingBrands(false);
-            }
-        };
-
-        fetchBrands();
-    }, []);
-    const activeBrands = brands.filter((b) => !b.isActive);
+  const activeBrands = (brands || []).filter(
+  (b) => !b.isActive
+);
 
     const visibleBrands =
         activeBrands.length > 7
@@ -177,7 +169,7 @@ export default function BannerSlider() {
 
                 </div>
             </div>
-            {loadingBrands ? <MenuSkeleton /> :
+            {/* {loadingBrands ? <MenuSkeleton /> : */}
                 <div className="hidden lg:block  header-height">
                     <div id="menu_top">
                         <div className="clearfix fixwidth">
@@ -277,7 +269,7 @@ export default function BannerSlider() {
                         </div>
                     </div>
                 </div>
-            }
+       
             {/* OVERLAY */}
             <div
                 className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${openMenu ? "opacity-100 visible" : "opacity-0 invisible"
@@ -303,28 +295,7 @@ export default function BannerSlider() {
                     </button>
                 </div>
 
-                {/* MENU LIST */}
-                <div className="p-3 space-y-3">
-                    {loadingBrands ? (
-                        <div className="p-3 text-gray-400">Đang tải brand...</div>
-                    ) : (brands.map((brand) => (
-                        <Link
-                            key={brand.slug}
-                            href={{
-                                pathname: "/products",
-                                query: { brand: brand.slug },
-                            }}
-                            onClick={() => setOpenMenu(false)}
-                            className="flex items-center gap-3 py-2 border-b"
-                        >
-                            <img
-                                src={brand.image}
-                                className="w-6 h-6 object-contain"
-                            />
-                            <span>{brand.name}</span>
-                        </Link>
-                    )))}
-                </div>
+              
 
             </div>
 
