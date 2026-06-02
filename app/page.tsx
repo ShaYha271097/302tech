@@ -11,29 +11,29 @@ export default async function Home() {
   const client = await clientPromise;
   const db = client.db("laptop-shop");
 
-  const brands = await db
-    .collection("brands")
-    .find({ isActive: false })
-    .toArray();
+  // const brands = await db
+  //   .collection("brands")
+  //   .find({ isActive: false })
+  //   .toArray();
 
-const sections = (
-  await Promise.all(
-    brands.map(async (brand) => {
-      const products = await db
-        .collection("products")
-        .find({
-          brandId: brand._id,
-        })
-        .limit(4)
-        .toArray();
+// const sections = (
+//   await Promise.all(
+//     brands.map(async (brand) => {
+//       const products = await db
+//         .collection("products")
+//         .find({
+//           brandId: brand._id,
+//         })
+//         .limit(4)
+//         .toArray();
 
-      return {
-        brand,
-        products,
-      };
-    })
-  )
-).filter((section) => section.products.length > 0);
+//       return {
+//         brand,
+//         products,
+//       };
+//     })
+//   )
+// ).filter((section) => section.products.length > 0);
   return (
     <>
 
@@ -43,11 +43,11 @@ const sections = (
       />
 
       <div className="wrap-home w-clear">
-        <MultiItemCarousel/>
+        {/* <MultiItemCarousel/> */}
        
         
 
-        <TopSellingSlider />
+        {/* <TopSellingSlider />
          {sections.map((section) => (
           <ProductSection
             key={section.brand._id.toString()}
@@ -55,7 +55,7 @@ const sections = (
             slug={section.brand.slug}
             products={section.products}
           />
-        ))}
+        ))} */}
       </div>
 
     </>
