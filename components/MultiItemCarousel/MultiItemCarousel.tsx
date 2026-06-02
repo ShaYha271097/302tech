@@ -15,9 +15,9 @@ type Brand = {
 };
 
 const brandImages = [
-  "/assets/images/anh1.jpg",
-  "/assets/images/anh2.jpg",
-  "/assets/images/anh3.jpg",
+  "/assets/images/anh1.webp",
+  "/assets/images/anh2.webp",
+  "/assets/images/anh3.webp",
 ];
 
 export default function MultiItemCarousel() {
