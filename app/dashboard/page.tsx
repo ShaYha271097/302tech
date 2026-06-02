@@ -41,7 +41,6 @@ export default function HomePageBanner() {
         ]);
         const productsData = await productsRes.json();
         const brandsData = await brandsRes.json();
-        console.log("brandsData",brandsData,productsData)
         setStats([
           {
             title: "Tổng sản phẩm",

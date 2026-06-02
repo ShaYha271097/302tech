@@ -67,7 +67,6 @@ export default function HomePageBanner() {
             bottom: { image: "", link: "" },
           },
         };
-        console.log("formatted", formatted)
         setSlider(formatted.slider);
         setBanners(formatted.banners);
         setInitialData(formatted);
@@ -83,7 +82,6 @@ export default function HomePageBanner() {
     });
 
     const data = await res.json();
-    console.log("data.url", data.url)
     return data.url;
   };
 
@@ -158,7 +156,6 @@ export default function HomePageBanner() {
       });
 
     } catch (err) {
-      console.error(err);
       alert("Lỗi upload");
     } finally {
       setLoadingSave(false);
@@ -185,7 +182,6 @@ const getImageSrc = (img: string | File) => {
     slider.every((s) => s.image) &&
     banners.top.image &&
     banners.bottom.image;
-  console.log('slider', slider)
   return (
     <>
       <Topbar title="Quản lý banner" />

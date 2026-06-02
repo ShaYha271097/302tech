@@ -48,7 +48,6 @@ export default function BrandDetail() {
         );
 
         const data = await res.json();
-        console.log("data.brands", data.brands)
         setBrands(data.brands || []);
         setTotal(data.total || 0);
     };

@@ -95,7 +95,6 @@ export default function AddProductDialog({
   product,
   onSuccess,
 }: Props) {
-  console.log("product", product);
   // const variantsRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 const [loadingBrand, setLoadingBrand] = useState(false);
@@ -218,7 +217,6 @@ const [loadingBrand, setLoadingBrand] = useState(false);
         slug
       };
 
-      console.log("payload", mode, payload);
 
       const res = await fetch(
         mode === "create" ? "/api/products" : `/api/products/${product._id}`,
@@ -233,7 +231,6 @@ const [loadingBrand, setLoadingBrand] = useState(false);
 
       if (!res.ok) {
         const data = await res.json();
-        console.log("ERROR:", data);
         alert(data.error || "Lỗi lưu sản phẩm");
         return;
       }
@@ -241,7 +238,6 @@ const [loadingBrand, setLoadingBrand] = useState(false);
       setOpen(false);
       onSuccess?.();
     } catch (err) {
-      console.error("UPLOAD ERROR:", err);
       alert("Upload thất bại");
     } finally {
       setLoading(false);
@@ -405,7 +401,6 @@ setBrandId(String(brand._id));
     setOpenBrand(false);
 
   } catch (err) {
-    console.error(err);
     alert("Upload thất bại");
   } finally {
     setLoadingBrand(false);

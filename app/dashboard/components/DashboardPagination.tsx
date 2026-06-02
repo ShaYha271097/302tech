@@ -27,7 +27,6 @@ export default function DashboardPagination({
     total,
     label = "dữ liệu",
 }: Props) {
-    console.log("totalPages",totalPages)
     return (
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mt-3">
 

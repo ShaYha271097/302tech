@@ -22,7 +22,6 @@ export default function ProductDetailClient({ product }: any) {
     product._id,
     selected.price
   );
-  console.log("similarProducts", similarProducts)
 
   return (
     <>

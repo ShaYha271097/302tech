@@ -32,8 +32,7 @@ export default function Header({
             : [];
 
 
-    console.log("visibleBrands", visibleBrands)
-    console.log("hiddenBrands", hiddenBrands)
+
     return (
         <>
             <div className="header-cachtop">

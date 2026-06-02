@@ -40,7 +40,6 @@ export default function BannerSlider() {
         const res = await fetch("/api/homepage-banner");
 
         const data = await res.json();
-        console.log("data?.slider",data?.slider)
         setSlider(data?.slider || []);
 
         setBanners(

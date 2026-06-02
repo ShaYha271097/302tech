@@ -26,7 +26,6 @@ export default function AdminLogin() {
             });
 
             const data = await res.json();
-            console.log("data>>>>>>>>>>>", data)
             // ❌ login fail
             if (!res.ok) {
                 setErrors({
@@ -36,11 +35,8 @@ export default function AdminLogin() {
             }
 
             // ✅ login success
-            console.log("=>>>>>")
             router.push("/dashboard");
-            console.log("=>>>>>sss")
         } catch (err) {
-            console.error(err);
             alert("Lỗi kết nối server");
         }
     };
