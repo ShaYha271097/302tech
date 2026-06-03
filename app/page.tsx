@@ -11,6 +11,26 @@ import clientPromise from "@/lib/mongodb";
   image: string;
   isActive: boolean;
 }
+type Variant = {
+  cpu: string
+  ram: string
+  ssd: string
+  price: number
+  screenSize: string;
+  resolution: string;
+  refreshRate: string;
+}
+type Product = {
+  _id: string
+  name: string
+  slug: string
+  mainImage: string
+  gallery: string[]
+  variants: Variant[]
+  createdAt: Date
+  isHot: boolean;
+  isNew: boolean;
+}
 async function getHomeData() {
   const client = await clientPromise;
   const db = client.db("laptop-shop");
@@ -24,7 +44,7 @@ const [bannerData, brands, hotProducts] =
       .find({ isActive: false })
       .toArray(),
 
-    db.collection("products")
+    db.collection<Product>("products")
       .find({ isHot: true })
       .limit(18)
       .toArray(),
