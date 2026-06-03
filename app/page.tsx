@@ -23,40 +23,34 @@ import clientPromise from "@/lib/mongodb";
 export default async function Home() {
    const bannerData = await getHomepageBanner();
   
-  // const client = await clientPromise;
-  // const db = client.db("laptop-shop");
+  const client = await clientPromise;
+  const db = client.db("laptop-shop");
 
-//   const brands = await db
-//     .collection("brands")
-//     .find({ isActive: false })
-//     .toArray();
+  const brands = await db
+    .collection("brands")
+    .find({ isActive: false })
+    .toArray();
 
-// const sections = (
-//   await Promise.all(
-//     brands.map(async (brand) => {
-//       const products = await db
-//         .collection("products")
-//         .find({
-//           brandId: brand._id,
-//         })
-//         .limit(4)
-//         .toArray();
+const sections = (
+  await Promise.all(
+    brands.map(async (brand) => {
+      const products = await db
+        .collection("products")
+        .find({
+          brandId: brand._id,
+        })
+        .limit(4)
+        .toArray();
 
-//       return {
-//         brand,
-//         products,
-//       };
-//     })
-//   )
-// ).filter((section) => section.products.length > 0);
+      return {
+        brand,
+        products,
+      };
+    })
+  )
+).filter((section) => section.products.length > 0);
   return (
     <>
-
-{/* 
-      <BannerSlider
-
-      /> */}
-
     <BannerSlider
       slider={bannerData?.slider || []}
       banners={
@@ -66,7 +60,7 @@ export default async function Home() {
         }
       }
     />
-      {/* <div className="wrap-home w-clear">
+      <div className="wrap-home w-clear">
         <MultiItemCarousel/>
        
         
@@ -80,7 +74,7 @@ export default async function Home() {
             products={section.products}
           />
         ))}
-      </div> */}
+      </div>
 
     </>
   );
