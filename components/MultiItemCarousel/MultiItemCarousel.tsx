@@ -5,56 +5,27 @@ import { Autoplay } from "swiper/modules";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import BrandCarouselSkeleton from "../BrandCarouselSkeleton/BrandCarouselSkeleton";
-
-type Brand = {
-  _id: string;
+import { ObjectId } from "mongodb";
+ interface Brand {
+  _id: ObjectId;
   name: string;
   slug: string;
   image: string;
   isActive: boolean;
-};
+}
 
 const brandImages = [
   "/assets/images/anh1.webp",
   "/assets/images/anh2.webp",
   "/assets/images/anh3.webp",
 ];
+type Props = {
+  brands: Brand[];
+};
+export default function MultiItemCarousel({
+  brands,
+}: Props) {
 
-export default function MultiItemCarousel() {
-  const [mounted, setMounted] = useState(false);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const res = await fetch("/api/brands");
-        const data = await res.json();
-
-        setBrands(
-          (data?.brands || []).filter(
-            (brand: Brand) => !brand.isActive
-          )
-        );
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBrands();
-  }, []);
-
-  if (!mounted || loading) {
-    return <BrandCarouselSkeleton />;
-  }
-
-  const loopBrands = [...brands, ...brands];
 
   return (
     <div className="all_list_noibat">
@@ -81,7 +52,7 @@ export default function MultiItemCarousel() {
               },
             }}
           >
-            {loopBrands.map((brand, index) => {
+            {brands.map((brand, index) => {
               const image =
                 brandImages[index % brandImages.length];
 

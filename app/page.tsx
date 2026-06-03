@@ -1,72 +1,90 @@
 import BannerSlider from "@/components/BannerSlider/BannerSlider";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
 import MultiItemCarousel from "@/components/MultiItemCarousel/MultiItemCarousel";
 import TopSellingSlider from "@/components/TopSellingSlider/TopSellingSlider";
 import ProductSection from "@/components/ProductSection/ProductSection";
-import ProductSectionSkeleton from "@/components/ProductSectionSkeleton/ProductSectionSkeleton";
+import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
-
-
- async function getHomepageBanner() {
+ interface Brand {
+  _id: ObjectId;
+  name: string;
+  slug: string;
+  image: string;
+  isActive: boolean;
+}
+async function getHomeData() {
   const client = await clientPromise;
-
   const db = client.db("laptop-shop");
 
-   const bannerData = await db
-    .collection("homepage_banner")
-    .findOne({ key: "main" });
+const [bannerData, brands, hotProducts] =
+  await Promise.all([
+    db.collection("homepage_banner")
+      .findOne({ key: "main" }),
 
-  return bannerData;
+    db.collection<Brand>("brands")
+      .find({ isActive: false })
+      .toArray(),
+
+    db.collection("products")
+      .find({ isHot: true })
+      .limit(18)
+      .toArray(),
+  ]);
+
+  const sections = (
+    await Promise.all(
+      brands.map(async (brand) => {
+        const products = await db
+          .collection("products")
+          .find({
+            brandId: brand._id,
+          })
+          .limit(4)
+          .toArray();
+
+        return {
+          brand,
+          products,
+        };
+      })
+    )
+  ).filter((section) => section.products.length > 0);
+  return {
+    bannerData,
+    brands,
+    sections,
+    hotProducts,
+  };
 }
 
 export default async function Home() {
-   const bannerData = await getHomepageBanner();
+ const {
+  bannerData,
+  brands,
+  sections,
+  hotProducts,
+} = await getHomeData();
   
-  const client = await clientPromise;
-  const db = client.db("laptop-shop");
-
-  const brands = await db
-    .collection("brands")
-    .find({ isActive: false })
-    .toArray();
-
-const sections = (
-  await Promise.all(
-    brands.map(async (brand) => {
-      const products = await db
-        .collection("products")
-        .find({
-          brandId: brand._id,
-        })
-        .limit(4)
-        .toArray();
-
-      return {
-        brand,
-        products,
-      };
-    })
-  )
-).filter((section) => section.products.length > 0);
+  console.log("brands111",brands)
   return (
     <>
-    <BannerSlider
-      slider={bannerData?.slider || []}
-      banners={
-        bannerData?.banners || {
-          top: { image: "", link: "" },
-          bottom: { image: "", link: "" },
+      <BannerSlider
+        slider={bannerData?.slider || []}
+        banners={
+          bannerData?.banners || {
+            top: { image: "", link: "" },
+            bottom: { image: "", link: "" },
+          }
         }
-      }
-    />
-      <div className="wrap-home w-clear">
-        <MultiItemCarousel/>
-       
-        
+      />
 
-        <TopSellingSlider />
-         {sections.map((section) => (
+      <div className="wrap-home w-clear">
+       <MultiItemCarousel brands={brands} />
+
+       <TopSellingSlider
+        products={hotProducts}
+      />
+
+        {sections.map((section) => (
           <ProductSection
             key={section.brand._id.toString()}
             title={section.brand.name}
@@ -75,7 +93,6 @@ const sections = (
           />
         ))}
       </div>
-
     </>
   );
 }

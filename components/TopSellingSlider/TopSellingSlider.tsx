@@ -31,27 +31,13 @@ type Product = {
   isHot: boolean;
   isNew: boolean;
 }
+type Props = {
+  products: Product[];
+};
 
-export default function TopSellingSlider() {
-  const [mounted, setMounted] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-useEffect(() => {
-  fetch("/api/products?isHot=true&limit=18")
-    .then((res) => res.json())
-    .then((data) => {
-      setProducts(data?.products || []);
-    })
-    .finally(() => setLoading(false));
-}, []);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-if (!mounted || loading) {
-  return <TopSellingSkeleton />;
-}
+export default function TopSellingSlider({
+  products,
+}: Props) {
 
 
   return (
