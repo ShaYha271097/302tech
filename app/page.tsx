@@ -8,32 +8,32 @@ import ProductSectionSkeleton from "@/components/ProductSectionSkeleton/ProductS
 import clientPromise from "@/lib/mongodb";
 
 export default async function Home() {
-  const client = await clientPromise;
-  const db = client.db("laptop-shop");
+  // const client = await clientPromise;
+  // const db = client.db("laptop-shop");
 
-  const brands = await db
-    .collection("brands")
-    .find({ isActive: false })
-    .toArray();
+//   const brands = await db
+//     .collection("brands")
+//     .find({ isActive: false })
+//     .toArray();
 
-const sections = (
-  await Promise.all(
-    brands.map(async (brand) => {
-      const products = await db
-        .collection("products")
-        .find({
-          brandId: brand._id,
-        })
-        .limit(4)
-        .toArray();
+// const sections = (
+//   await Promise.all(
+//     brands.map(async (brand) => {
+//       const products = await db
+//         .collection("products")
+//         .find({
+//           brandId: brand._id,
+//         })
+//         .limit(4)
+//         .toArray();
 
-      return {
-        brand,
-        products,
-      };
-    })
-  )
-).filter((section) => section.products.length > 0);
+//       return {
+//         brand,
+//         products,
+//       };
+//     })
+//   )
+// ).filter((section) => section.products.length > 0);
   return (
     <>
 
