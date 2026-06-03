@@ -7,7 +7,22 @@ import ProductSection from "@/components/ProductSection/ProductSection";
 import ProductSectionSkeleton from "@/components/ProductSectionSkeleton/ProductSectionSkeleton";
 import clientPromise from "@/lib/mongodb";
 
+
+ async function getHomepageBanner() {
+  const client = await clientPromise;
+
+  const db = client.db("laptop-shop");
+
+   const bannerData = await db
+    .collection("homepage_banner")
+    .findOne({ key: "main" });
+
+  return bannerData;
+}
+
 export default async function Home() {
+   const bannerData = await getHomepageBanner();
+  
   // const client = await clientPromise;
   // const db = client.db("laptop-shop");
 
@@ -37,11 +52,20 @@ export default async function Home() {
   return (
     <>
 
-
+{/* 
       <BannerSlider
 
-      />
+      /> */}
 
+    <BannerSlider
+      slider={bannerData?.slider || []}
+      banners={
+        bannerData?.banners || {
+          top: { image: "", link: "" },
+          bottom: { image: "", link: "" },
+        }
+      }
+    />
       {/* <div className="wrap-home w-clear">
         <MultiItemCarousel/>
        
