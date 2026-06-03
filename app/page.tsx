@@ -42,7 +42,7 @@ const sections = (
 
       />
 
-      <div className="wrap-home w-clear">
+      {/* <div className="wrap-home w-clear">
         <MultiItemCarousel/>
        
         
@@ -56,7 +56,7 @@ const sections = (
             products={section.products}
           />
         ))}
-      </div>
+      </div> */}
 
     </>
   );

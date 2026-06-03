@@ -41,7 +41,7 @@ export default function BannerSlider() {
 
         const data = await res.json();
         setSlider(data?.slider || []);
-
+        console.log("data?.slider",data?.slider)
         setBanners(
           data?.banners || {
             top: { image: "", link: "" },
