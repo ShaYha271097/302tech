@@ -8,7 +8,11 @@ import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductCard from "../ProductCard/ProductCard";
 import TopSellingSkeleton from "../TopSellingSkeleton/TopSellingSkeleton";
 
-// import "swiper/css";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+
 
 
 type Variant = {
@@ -38,7 +42,15 @@ type Props = {
 export default function TopSellingSlider({
   products,
 }: Props) {
+const [mounted, setMounted] = useState(false);
 
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+if (!mounted) {
+  return <TopSellingSkeleton />;
+}
 
   return (
     <div className="wrap_bottom wrap_flashsale ">
