@@ -4,8 +4,16 @@ import TopSellingSlider from "@/components/TopSellingSlider/TopSellingSlider";
 import ProductSection from "@/components/ProductSection/ProductSection";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
- interface Brand {
+
+export interface Brand {
   _id: ObjectId;
+  name: string;
+  slug: string;
+  image: string;
+  isActive: boolean;
+}
+export interface BrandDTO {
+  _id: string;
   name: string;
   slug: string;
   image: string;
@@ -21,7 +29,8 @@ type Variant = {
   refreshRate: string;
 }
 type Product = {
-  _id: string
+  _id: ObjectId
+   brandId:ObjectId,
   name: string
   slug: string
   mainImage: string
@@ -31,6 +40,38 @@ type Product = {
   isHot: boolean;
   isNew: boolean;
 }
+type ProductDTO = {
+  _id: string;
+   brandId:string,
+  name: string;
+  slug: string;
+  mainImage: string;
+  gallery: string[];
+  variants: Variant[];
+  createdAt: string;
+  isHot: boolean;
+  isNew: boolean;
+};
+function toProductDTO(
+  product: Product
+): ProductDTO {
+  return {
+    ...product,
+    _id: product._id.toString(),
+     brandId: product.brandId.toString(),
+    createdAt: product.createdAt.toISOString(),
+  };
+}
+function toBrandDTO(brand: Brand): BrandDTO {
+  return {
+    _id: brand._id.toString(),
+    name: brand.name,
+    slug: brand.slug,
+    image: brand.image,
+    isActive: brand.isActive,
+  };
+}
+
 async function getHomeData() {
   const client = await clientPromise;
   const db = client.db("laptop-shop");
@@ -50,6 +91,9 @@ const [bannerData, brands, hotProducts] =
       .toArray(),
   ]);
 
+  const brandDTOs = brands.map(toBrandDTO);
+  const hotProductDTOs =hotProducts.map(toProductDTO);
+  
   const sections = (
     await Promise.all(
       brands.map(async (brand) => {
@@ -70,9 +114,9 @@ const [bannerData, brands, hotProducts] =
   ).filter((section) => section.products.length > 0);
   return {
     bannerData,
-    brands,
+    brands:brandDTOs,
     sections,
-    hotProducts,
+    hotProducts:hotProductDTOs,
   };
 }
 
@@ -84,6 +128,7 @@ export default async function Home() {
   hotProducts,
 } = await getHomeData();
   
+
   console.log("brands111",brands)
   return (
     <>

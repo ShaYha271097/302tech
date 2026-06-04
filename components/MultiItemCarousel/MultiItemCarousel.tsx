@@ -7,7 +7,7 @@ import Link from "next/link";
 import BrandCarouselSkeleton from "../BrandCarouselSkeleton/BrandCarouselSkeleton";
 import { ObjectId } from "mongodb";
  interface Brand {
-  _id: ObjectId;
+  _id: string;
   name: string;
   slug: string;
   image: string;
@@ -25,7 +25,15 @@ type Props = {
 export default function MultiItemCarousel({
   brands,
 }: Props) {
+const [mounted, setMounted] = useState(false);
 
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+if (!mounted) {
+  return <BrandCarouselSkeleton />;
+}
 
   return (
     <div className="all_list_noibat">

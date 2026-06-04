@@ -25,13 +25,14 @@ type Variant = {
   refreshRate: string;
 }
 type Product = {
-  _id: string
-  name: string
-  slug: string
-  mainImage: string
-  gallery: string[]
-  variants: Variant[]
-  createdAt: Date
+   _id: string;
+    brandId:string,
+  name: string;
+  slug: string;
+  mainImage: string;
+  gallery: string[];
+  variants: Variant[];
+  createdAt: string;
   isHot: boolean;
   isNew: boolean;
 }
