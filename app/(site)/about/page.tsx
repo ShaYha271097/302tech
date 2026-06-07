@@ -2,7 +2,7 @@
 
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
-import Breadcrumb from "../products/[slug]/Breadcrumb";
+import Breadcrumb from "@/app/products/[slug]/Breadcrumb";
 
 export default function AboutPage() {
     return (

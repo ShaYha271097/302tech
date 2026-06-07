@@ -14,13 +14,12 @@ import ProductDetailSkeleton from "@/components/ProductDetailSkeleton/ProductDet
 
 
 
-export default function ProductDetailClient({ product }: any) {
-  const [selected, setSelected] = useState(
+export default function ProductDetailClient({
+  product,
+  similarProducts,
+}: any) {
+ const [selected, setSelected] = useState(
     getCheapestVariant(product.variants)
-  );
-  const { data: similarProducts, loading } = useSimilarProducts(
-    product._id,
-    selected.price
   );
 
   return (
@@ -35,8 +34,9 @@ export default function ProductDetailClient({ product }: any) {
             </div>
           </div>
           <div className="clearfix">
-            {loading ? <ProductDetailSkeleton /> :
-              (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+            {/* {loading ? <ProductDetailSkeleton /> : */}
+              {/* ( */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
 
                 {/* IMAGE */}
                 <div className="md:col-span-1 lg:col-span-4">
@@ -66,19 +66,20 @@ export default function ProductDetailClient({ product }: any) {
                   <ProductDescription selected={selected} />
                 </div>
 
-              </div>)
-          }
+              </div>
+              {/* ) */}
+          {/* } */}
           </div>
           <div className="title_sp_cungloai text-2xl font-semibold text-center mt-8 mb-7">
             🔥 Sản phẩm tương tự
           </div>
-          {loading ? (
+          {/* {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                   {Array.from({ length:4 }).map((_, i) => (
                       <ProductCardSkeleton key={i} />
                   ))}
             </div>
-          ) : (
+          ) : ( */}
             <div className="content-main w-clear">
               {similarProducts.length === 0 ? (
                 <div className="w-full ">
@@ -148,7 +149,7 @@ export default function ProductDetailClient({ product }: any) {
 
               <div className="mb-6"></div>
             </div>
-          )}
+          {/* )} */}
         </div>
 
       </div>

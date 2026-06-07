@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { beVietnam } from "./fonts";
-import clientPromise from "@/lib/mongodb";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,14 +23,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-  const client = await clientPromise;
-  const db = client.db("laptop-shop");
-
-  const brands = await db
-    .collection("brands")
-    .find({ isActive: false })
-    .toArray();
 
 
   return (
@@ -56,9 +46,7 @@ export default async function RootLayout({
         className={`${beVietnam.className} min-h-full flex flex-col`}
         suppressHydrationWarning
       >
-        <Header brands={JSON.parse(JSON.stringify(brands))} />
         {children}
-        <Footer />
       </body>
     </html>
   );
