@@ -63,7 +63,7 @@ export default function ProductDetailClient({
 
                 {/* DESCRIPTION */}
                 <div className="md:col-span-2 lg:col-span-4">
-                  <ProductDescription selected={selected} />
+                  {/* <ProductDescription selected={selected} /> */}
                 </div>
 
               </div>
@@ -80,7 +80,7 @@ export default function ProductDetailClient({
                   ))}
             </div>
           ) : ( */}
-            <div className="content-main w-clear">
+            {/* <div className="content-main w-clear">
               {similarProducts.length === 0 ? (
                 <div className="w-full ">
                   <div className="w-full bg-gray-100 border border-gray-300 text-[#6B7280] px-4 py-3 text-center">
@@ -148,7 +148,7 @@ export default function ProductDetailClient({
               )}
 
               <div className="mb-6"></div>
-            </div>
+            </div> */}
           {/* )} */}
         </div>
 
