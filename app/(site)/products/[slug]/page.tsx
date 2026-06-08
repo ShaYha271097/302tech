@@ -8,17 +8,15 @@ import { getSimilarProducts } from "@/lib/getSimilarProducts";
 export default async function ProductDetail({
   params,
 }: any) {
-//   const { slug } = await params;
+  const { slug } = await params;
 
-//   const id = slug.split("-").pop();
-// console.time("product");
-//   const product = await getProductById(id);
-// console.timeEnd("product");
+  const id = slug.split("-").pop();
+console.time("TOTAL");
+  const product = await getProductById(id);
 
-// console.time("similar");
-//   if (!product) {
-//     return notFound();
-//   }
+  if (!product) {
+    return notFound();
+  }
 
 //  const selected =
 //   getCheapestVariant(product.variants);
@@ -29,16 +27,10 @@ export default async function ProductDetail({
 //       selected.price
 //     );
 
-// console.timeEnd("similar");
+console.timeEnd("TOTAL");
   return (
-    <>hello</>
-    //  <ProductDetailClient
-    //   product={JSON.parse(
-    //     JSON.stringify(product)
-    //   )}
-    //   similarProducts={JSON.parse(
-    //     JSON.stringify(similarProducts)
-    //   )}
-    // />
+     <ProductDetailClient
+      product={JSON.parse(JSON.stringify(product))}
+    />
   );
 }
