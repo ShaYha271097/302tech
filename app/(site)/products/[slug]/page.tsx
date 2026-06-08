@@ -11,9 +11,11 @@ export default async function ProductDetail({
   const { slug } = await params;
 
   const id = slug.split("-").pop();
-
+console.time("product");
   const product = await getProductById(id);
+console.timeEnd("product");
 
+console.time("similar");
   if (!product) {
     return notFound();
   }
@@ -27,6 +29,7 @@ export default async function ProductDetail({
       selected.price
     );
 
+console.timeEnd("similar");
   return (
      <ProductDetailClient
       product={JSON.parse(
