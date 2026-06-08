@@ -42,29 +42,29 @@ export default function ProductDetailClient({
                 {/* IMAGE */}
                 <div className="md:col-span-1 lg:col-span-4">
                   <div className="bg-white p-1 h-full">
-                    <ProductGallery
+                    {/* <ProductGallery
                       mainImage={product.mainImage}
                       gallery={product.gallery}
-                    />
+                    /> */}
                   </div>
                 </div>
 
                 {/* INFO */}
                 <div className="md:col-span-1 lg:col-span-4">
                   <div className="bg-white p-1 h-full sticky top-4">
-
+{/* 
                     <ProductInfo
                       product={product}
                       selected={selected}
                       setSelected={setSelected}
-                    />
+                    /> */}
 
                   </div>
                 </div>
 
                 {/* DESCRIPTION */}
                 <div className="md:col-span-2 lg:col-span-4">
-                  <ProductDescription selected={selected} />
+                  {/* <ProductDescription selected={selected} /> */}
                 </div>
 
               </div>
