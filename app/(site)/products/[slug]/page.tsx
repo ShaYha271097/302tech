@@ -8,36 +8,37 @@ import { getSimilarProducts } from "@/lib/getSimilarProducts";
 export default async function ProductDetail({
   params,
 }: any) {
-  const { slug } = await params;
+//   const { slug } = await params;
 
-  const id = slug.split("-").pop();
-console.time("product");
-  const product = await getProductById(id);
-console.timeEnd("product");
+//   const id = slug.split("-").pop();
+// console.time("product");
+//   const product = await getProductById(id);
+// console.timeEnd("product");
 
-console.time("similar");
-  if (!product) {
-    return notFound();
-  }
+// console.time("similar");
+//   if (!product) {
+//     return notFound();
+//   }
 
- const selected =
-  getCheapestVariant(product.variants);
+//  const selected =
+//   getCheapestVariant(product.variants);
 
- const similarProducts =
-    await getSimilarProducts(
-      product._id.toString(),
-      selected.price
-    );
+//  const similarProducts =
+//     await getSimilarProducts(
+//       product._id.toString(),
+//       selected.price
+//     );
 
-console.timeEnd("similar");
+// console.timeEnd("similar");
   return (
-     <ProductDetailClient
-      product={JSON.parse(
-        JSON.stringify(product)
-      )}
-      similarProducts={JSON.parse(
-        JSON.stringify(similarProducts)
-      )}
-    />
+    <>hello</>
+    //  <ProductDetailClient
+    //   product={JSON.parse(
+    //     JSON.stringify(product)
+    //   )}
+    //   similarProducts={JSON.parse(
+    //     JSON.stringify(similarProducts)
+    //   )}
+    // />
   );
 }
