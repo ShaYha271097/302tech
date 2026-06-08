@@ -45,6 +45,7 @@ export default function SimilarProducts({
     };
 
     fetchSimilar();
+    
   }, [productId, price]);
 
   return (
