@@ -19,7 +19,7 @@ export default function SearchBox() {
   return (
     <form
       onSubmit={handleSearch}
-      className="frm_timkiem timkiem_header "
+      className="frm_timkiem timkiem_header_mobile  timkiem_header_des "
     >
       <input
         type="text"

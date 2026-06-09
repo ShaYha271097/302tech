@@ -63,10 +63,17 @@ if (!mounted) {
             {brands.map((brand, index) => {
               const image =
                 brandImages[index % brandImages.length];
-
+               const isLaptopMenu = brand.slug === "laptop";
               return (
                 <SwiperSlide key={`${brand.slug}-${index}`}>
-                  <Link href={`/products?brand=${brand.slug}`}>
+                  <Link   href={{
+                                pathname: "/products",
+                                query: isLaptopMenu
+                                    ? { category: "laptop" }
+                                    : { category: "laptop", brand: brand.slug },
+                            }}>
+
+                  
                     <div
                       className="
                         group

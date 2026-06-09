@@ -170,7 +170,7 @@ export default function Header({
 
                     {/* ROW 2 - SEARCH */}
                     <div className="px-3 py-2 border-b">
-                        <div className="frm_timkiem timkiem_header_mobile  timkiem_header_des">
+                        {/* <div className="frm_timkiem timkiem_header_mobile  timkiem_header_des">
                             <input
                                 type="text"
                                 className="input"
@@ -184,10 +184,10 @@ export default function Header({
                             >
                                 <i className="fas fa-search" />
                             </button>
-                        </div>
-
-
-                    </div>
+                        </div> */}
+                           <SearchBox />
+                    </div> 
+                 
 
                 </div>
             </div>
@@ -225,38 +225,38 @@ export default function Header({
                                     {hiddenBrands.length > 0 && (
                                         <li className="menulicha relative group">
                                        <span
-  className="
-    flex items-center gap-1
-    h-[50px] px-5
-    text-[14px] font-semibold uppercase
-    cursor-pointer
-  "
->
-  Khác
-  <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180" />
-</span>
-
-                                            <ul
                                                 className="
-      absolute
-      top-full
-      left-0
-      min-w-[180px]
-      bg-white
-      shadow-lg
-      z-50
+                                                    flex items-center gap-1
+                                                    h-[50px] px-5
+                                                    text-[14px] font-semibold uppercase
+                                                    cursor-pointer
+                                                "
+                                                >
+                                                Khác
+                                                <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180" />
+                                                </span>
 
-      opacity-0
-      invisible
-      translate-y-2
+                                                                                            <ul
+                                                                                                className="
+                                                    absolute
+                                                    top-full
+                                                    left-0
+                                                    min-w-[180px]
+                                                    bg-white
+                                                    shadow-lg
+                                                    z-50
 
-      transition-all
-      duration-200
+                                                    opacity-0
+                                                    invisible
+                                                    translate-y-2
 
-      group-hover:opacity-100
-      group-hover:visible
-      group-hover:translate-y-0
-    "
+                                                    transition-all
+                                                    duration-200
+
+                                                    group-hover:opacity-100
+                                                    group-hover:visible
+                                                    group-hover:translate-y-0
+                                                    "
                                             >
                                                 {hiddenBrands.map((brand) => (
                                                     <li key={brand.slug}>
@@ -319,12 +319,19 @@ export default function Header({
 
                 {/* MENU LIST */}
                 <div className="p-3 space-y-3">
-                  {brands.map((brand) => (
+                
+
+                                       
+                  {brands.map((brand) => {
+                     const isLaptopMenu = brand.slug === "laptop";
+                    return(
                         <Link
                             key={brand.slug}
                             href={{
                                 pathname: "/products",
-                                query: { brand: brand.slug },
+                                query: isLaptopMenu
+                                    ? { category: "laptop" }
+                                    : { category: "laptop", brand: brand.slug },
                             }}
                             onClick={() => setOpenMenu(false)}
                             className="flex items-center gap-3 py-2 border-b"
@@ -335,7 +342,7 @@ export default function Header({
                             />
                             <span>{brand.name}</span>
                         </Link>
-                    ))}
+                    )})}
                 </div>
 
             </div>
