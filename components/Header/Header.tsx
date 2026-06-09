@@ -6,20 +6,20 @@ import SearchBox from "../SearchBox/SearchBox";
 import MenuSkeleton from "../MenuSkeleton/MenuSkeleton";
 
 type Props = {
-  brands: any[];
-//   loadingBrands: boolean;
+    brands: any[];
+    //   loadingBrands: boolean;
 };
 
 export default function Header({
-  brands,
-//   loadingBrands,
+    brands,
+    //   loadingBrands,
 }: Props) {
     const [openMenu, setOpenMenu] = useState(false);
 
 
-   const activeBrands = (brands || []).filter(
-  (b) => !b.isActive
-);
+    const activeBrands = (brands || []).filter(
+        (b) => !b.isActive
+    );
 
     const visibleBrands =
         activeBrands.length > 7
@@ -55,7 +55,7 @@ export default function Header({
 
                             <Link href="/" className="header_logo cursor-pointer">
                                 <img
-                                      
+
                                     loading="lazy"
 
                                     src="/assets/images/logoB.png"
@@ -119,40 +119,45 @@ export default function Header({
                         </button>
 
                         {/* LOGO */}
-                        <img
-                            src="/assets/images/logoB.png"
-                        className="  cursor-pointer"
-                        />
+                        <Link href="/" className="header_logo cursor-pointer">
+                            <img
 
+                                loading="lazy"
+
+                                src="/assets/images/logoB.png"
+                                alt="302 Tech"
+                                decoding="async"
+                            />
+                        </Link>
                         {/* RIGHT */}
                         <div className="flex items-center gap-3">
 
                             {/* HOTLINE */}
-                           <Link
+                            <Link
                                 href="tel:0946932067"
                                 title="Gọi ngay 0946 932 067"
                                 className="block"
-                                >
+                            >
                                 <div
                                     className="icon-box-img"
                                     style={{ width: 28 }}
                                 >
-                                       <div className="icon">
-                                                <div className="icon-inner">
-                                                    <img
-                                                        width={100}
-                                                        height={100}
-                                                        src="./assets/images/hotline_icon.png"
-                                                        className="attachment-medium size-medium ring_flas"
-                                                        alt="302 Tech"
-                                                        decoding="async"
-                                                        srcSet="https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100.png 100w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-24x24.png 24w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-36x36.png 36w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-48x48.png 48w"
-                                                        sizes="(max-width: 100px) 100vw, 100px"
-                                                    />
-                                                </div>
-                                            </div>
+                                    <div className="icon">
+                                        <div className="icon-inner">
+                                            <img
+                                                width={100}
+                                                height={100}
+                                                src="./assets/images/hotline_icon.png"
+                                                className="attachment-medium size-medium ring_flas"
+                                                alt="302 Tech"
+                                                decoding="async"
+                                                srcSet="https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100.png 100w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-24x24.png 24w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-36x36.png 36w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-48x48.png 48w"
+                                                sizes="(max-width: 100px) 100vw, 100px"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                </Link>
+                            </Link>
 
                             {/* CART */}
                             {/* <div className="relative">
@@ -170,74 +175,59 @@ export default function Header({
 
                     {/* ROW 2 - SEARCH */}
                     <div className="px-3 py-2 border-b">
-                        {/* <div className="frm_timkiem timkiem_header_mobile  timkiem_header_des">
-                            <input
-                                type="text"
-                                className="input"
-                                id="keyword2"
-                                placeholder="Nhập từ khóa cần tìm..."
-                            />
-                            <button
-                                type="submit"
-                                // value=""
-                                className="nut_tim focus:outline-none focus:ring-0"
-                            >
-                                <i className="fas fa-search" />
-                            </button>
-                        </div> */}
-                           <SearchBox />
-                    </div> 
-                 
+                        <SearchBox />
+                    </div>
+
 
                 </div>
             </div>
             {/* {loadingBrands ? <MenuSkeleton /> : */}
-                <div className="hidden lg:block  header-height">
-                    <div id="menu_top">
-                        <div className="clearfix fixwidth">
-                            <div className="menu">
-                                <ul className="menu_cap_cha d-flex justify-content-between p-0">
-                                    {visibleBrands.map((brand) => {
-                                        const isLaptopMenu = brand.slug === "laptop";
+            <div className="hidden lg:block  header-height">
+                <div id="menu_top">
+                    <div className="clearfix fixwidth">
+                        <div className="menu">
+                            <ul className="menu_cap_cha d-flex justify-content-between p-0">
+                                {visibleBrands.map((brand) => {
+                                    const isLaptopMenu = brand.slug === "laptop";
 
-                                        return (
-                                            <li key={brand.slug} className="menulicha">
-                                                <Link
-                                                    href={{
-                                                        pathname: "/products",
-                                                        query: isLaptopMenu
-                                                            ? { category: "laptop" }
-                                                            : { category: "laptop", brand: brand.slug },
-                                                    }}
-                                                >
-                                                    <img
-                                                        loading="lazy"
-                                                        src={brand.image}
-                                                        alt={brand.name}
-                                                         className="!w-8 !h-8 "
-                                                    />{" "}
-                                                    {brand.name}
-                                                </Link>
-                                            </li>
-                                        );
-                                    })}
+                                    return (
+                                        <li key={brand.slug} className="menulicha">
+                                            <Link
+                                                href={{
+                                                    pathname: "/products",
+                                                    query: isLaptopMenu
+                                                        ? { category: "laptop" }
+                                                        : { category: "laptop", brand: brand.slug },
+                                                }}
+                                            >
+                                                <img
+                                                    loading="lazy"
+                                                    src={brand.image}
+                                                    alt={brand.name}
+                                                    className="!w-8 !h-8 "
+                                                />{" "}
+                                                {brand.name}
+                                            </Link>
+                                        </li>
+                                    );
+                                })}
 
-                                    {hiddenBrands.length > 0 && (
-                                        <li className="menulicha relative group">
-                                       <span
-                                                className="
+                                {hiddenBrands.length > 0 && (
+                                    <li className="menulicha relative group">
+                                        <span
+                                            className="
                                                     flex items-center gap-1
                                                     h-[50px] px-5
                                                     text-[14px] font-semibold uppercase
                                                     cursor-pointer
                                                 "
-                                                >
-                                                Khác
-                                                <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180" />
-                                                </span>
+                                        >
+                                            Khác
+                                            <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180" />
+                                        </span>
 
-                                                                                            <ul
-                                                                                                className="
+                                        <ul
+                                            className="
                                                     absolute
                                                     top-full
                                                     left-0
@@ -257,41 +247,41 @@ export default function Header({
                                                     group-hover:visible
                                                     group-hover:translate-y-0
                                                     "
-                                            >
-                                                {hiddenBrands.map((brand) => (
-                                                    <li key={brand.slug}>
-                                                        <Link
-                                                            href={{
-                                                                pathname: "/products",
-                                                                query: {
-                                                                    category: "laptop",
-                                                                    brand: brand.slug,
-                                                                },
-                                                            }}
-                                                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                                                        >
-                                                            <img
-                                                                loading="lazy"
-                                                                width={24}
-                                                                height={24}
-                                                                src={brand.image}
-                                                                alt={brand.name}
-                                                                className="w-6 h-6 object-contain"
-                                                            />
+                                        >
+                                            {hiddenBrands.map((brand) => (
+                                                <li key={brand.slug}>
+                                                    <Link
+                                                        href={{
+                                                            pathname: "/products",
+                                                            query: {
+                                                                category: "laptop",
+                                                                brand: brand.slug,
+                                                            },
+                                                        }}
+                                                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                                                    >
+                                                        <img
+                                                            loading="lazy"
+                                                            width={24}
+                                                            height={24}
+                                                            src={brand.image}
+                                                            alt={brand.name}
+                                                            className="w-6 h-6 object-contain"
+                                                        />
 
-                                                            <span>{brand.name}</span>
-                                                        </Link>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </li>
-                                    )}
-                                </ul>
-                            </div>
+                                                        <span>{brand.name}</span>
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </li>
+                                )}
+                            </ul>
                         </div>
                     </div>
                 </div>
-       
+            </div>
+
             {/* OVERLAY */}
             <div
                 className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300 ${openMenu ? "opacity-100 visible" : "opacity-0 invisible"
@@ -319,30 +309,31 @@ export default function Header({
 
                 {/* MENU LIST */}
                 <div className="p-3 space-y-3">
-                
 
-                                       
-                  {brands.map((brand) => {
-                     const isLaptopMenu = brand.slug === "laptop";
-                    return(
-                        <Link
-                            key={brand.slug}
-                            href={{
-                                pathname: "/products",
-                                query: isLaptopMenu
-                                    ? { category: "laptop" }
-                                    : { category: "laptop", brand: brand.slug },
-                            }}
-                            onClick={() => setOpenMenu(false)}
-                            className="flex items-center gap-3 py-2 border-b"
-                        >
-                            <img
-                                src={brand.image}
-                                className="w-6 h-6 object-contain"
-                            />
-                            <span>{brand.name}</span>
-                        </Link>
-                    )})}
+
+
+                    {brands.map((brand) => {
+                        const isLaptopMenu = brand.slug === "laptop";
+                        return (
+                            <Link
+                                key={brand.slug}
+                                href={{
+                                    pathname: "/products",
+                                    query: isLaptopMenu
+                                        ? { category: "laptop" }
+                                        : { category: "laptop", brand: brand.slug },
+                                }}
+                                onClick={() => setOpenMenu(false)}
+                                className="flex items-center gap-3 py-2 border-b"
+                            >
+                                <img
+                                    src={brand.image}
+                                    className="w-6 h-6 object-contain"
+                                />
+                                <span>{brand.name}</span>
+                            </Link>
+                        )
+                    })}
                 </div>
 
             </div>
