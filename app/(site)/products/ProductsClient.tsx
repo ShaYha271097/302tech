@@ -40,15 +40,15 @@ export default function ProductsClient({
     const ssdSelected =
         searchParams.getAll("ssd");
 
-    const handlePageChange = (newPage: number) => {
-        const params = new URLSearchParams(searchParams.toString());
+  const handlePageChange = (newPage: number) => {
+  const params = new URLSearchParams(searchParams.toString());
 
-        params.set("page", String(newPage));
+  params.set("page", String(newPage));
 
-        router.push(`/products?${params.toString()}`);
-
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+  router.push(`/products?${params.toString()}`, {
+    scroll: true,
+  });
+};
    const toggleQueryParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -63,7 +63,7 @@ export default function ProductsClient({
     updatedValues.forEach((v) => {
         params.append(key, v);
     });
-
+    console.log("sssss!!!!!!!!!!!!!",`/products?${params.toString()}`)
     router.push(`/products?${params.toString()}`);
     };
 
@@ -168,7 +168,7 @@ export default function ProductsClient({
 
                                                         <div className="all_content_sp">
                                                             <Link href={`/products/${item.slug}-${item._id}`}>
-                                                                <div className="name_sp text-split">
+                                                                <div className="name_sp line-clamp-2 text-split">
                                                                     {item.name} - {getVariantText(cheapest)}
                                                                 </div>
                                                             </Link>

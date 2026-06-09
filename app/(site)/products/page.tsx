@@ -4,6 +4,23 @@ import Footer from "@/components/Footer/Footer";
 import { Suspense } from "react";
 import { getProducts } from "@/lib/getProduct";
 
+export function toProductDTO(product: any) {
+  return {
+    ...product,
+    _id: product._id.toString(),
+
+    brand: product.brand
+      ? {
+          ...product.brand,
+          _id: product.brand._id.toString(),
+        }
+      : null,
+
+    brandId: product.brandId?.toString(),
+    createdAt:
+      product.createdAt?.toISOString?.(),
+  };
+}
 export default async function ProductsPage({
   searchParams,
 }: {
@@ -13,6 +30,7 @@ export default async function ProductsPage({
     price?: string | string[];
     ram?: string | string[];
     ssd?: string | string[];
+    search?: string ;
   }>;
 }) {
   const params = await searchParams;
@@ -22,12 +40,19 @@ export default async function ProductsPage({
   const result = await getProducts({
     page,
     brand: params.brand || "",
-    // truyền thêm price, ram, ssd...
+    price: params.price || "",
+    ram: params.ram || "",
+    ssd: params.ssd || "",
+    search: params.search || "",
+    limit:12,
   });
 
+  const products = result.products.map(
+  toProductDTO
+);
   return (
   <ProductsClient
-  products={result.products}
+  products={products}
   totalPages={result.totalPages}
 />
   );

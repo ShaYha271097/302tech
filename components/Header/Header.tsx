@@ -53,9 +53,9 @@ export default function Header({
                     <div className="all_menu_top">
                         <div className="fixwidth menu_top d-flex justify-content-between flex-wrap align-items-center">
 
-                            <Link href="/" className="header_logo">
+                            <Link href="/" className="header_logo cursor-pointer">
                                 <img
-                                      cursor-pointer
+                                      
                                     loading="lazy"
 
                                     src="/assets/images/logoB.png"

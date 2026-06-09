@@ -5,6 +5,7 @@ import { NextResponse, NextRequest } from "next/server"
 
 import { ObjectId } from "mongodb"
 import { requireAdmin } from "@/lib/auth"
+import { getProducts } from "@/lib/getProduct";
 
 type Variant = {
   cpu: string;
@@ -154,188 +155,30 @@ export async function POST(req: Request) {
 
 export async function GET(req: NextRequest) {
   try {
-    const client = await clientPromise;
-    const db = client.db("laptop-shop");
+
 
     const { searchParams } = new URL(req.url);
-    const priceParams = searchParams.getAll("price"); // 👈 nhiều giá
+   const result = await getProducts({
+      page: Number(searchParams.get("page") || 1),
+      limit: Number(searchParams.get("limit") || 5),
 
-    const ramParams = searchParams.getAll("ram");
-    const ssdParams = searchParams.getAll("ssd");
-    // 👉 params
-    let page = Number(searchParams.get("page")) || 1;
-    let limit = Number(searchParams.get("limit")) || 5;
-    const brandParam = searchParams.get("brand") || "";
+      category:
+        searchParams.get("category") || "laptop",
 
-    const category = searchParams.get("category") || "laptop";
+      brand:
+        searchParams.get("brand") || "",
 
-    const search = searchParams.get("search") || "";
-    const isHot = searchParams.get("isHot");
-    // 👉 validate
-    if (page < 1) page = 1;
-    if (limit < 1) limit = 5;
-    if (limit > 50) limit = 50;
+      search:
+        searchParams.get("search") || "",
 
-    const skip = (page - 1) * limit;
+      isHot:
+        searchParams.get("isHot") === "true",
 
-    // 👉 parse brand multi
-    const brandSlugs = brandParam
-      ? brandParam.split(",").map((b) => b.trim())
-      : [];
-
-
-
-
-    // =========================
-    // PIPELINE BASE
-    // =========================
-    const pipeline: any[] = [
-      {
-        $lookup: {
-          from: "brands",
-          localField: "brandId",
-          foreignField: "_id",
-          as: "brand",
-        },
-      },
-      {
-        $unwind: {
-          path: "$brand",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-    ];
-
-    // =========================
-    // FILTER: BRAND
-    // =========================
-    if (brandSlugs.length > 0) {
-      pipeline.push({
-        $match: {
-          "brand.slug": { $in: brandSlugs },
-        },
-      });
-    }
-
-    // =========================
-    // FILTER: SEARCH
-    // =========================
-
-    if (search) {
-      pipeline.push({
-        $match: {
-          $or: [
-            {
-              name: {
-                $regex: search,
-                $options: "i",
-              },
-            },
-            {
-              "brand.name": {
-                $regex: search,
-                $options: "i",
-              },
-            },
-          ],
-        },
-      });
-    }
-
-
-    // =========================
-    // FILTER: PRICE
-    // =========================
-    if (priceParams.length > 0) {
-      pipeline.push({
-        $match: {
-          variants: {
-            $elemMatch: {
-              $or: priceParams.map((p) => {
-                const [min, max] = p.split("-").map(Number);
-
-                return {
-                  price: {
-                    $gte: min,
-                    $lte: max,
-                  },
-                };
-              }),
-            },
-          },
-        },
-      });
-    }
-
-    // =========================
-    // FILTER: RAM
-    // =========================
-    if (ramParams.length > 0) {
-      pipeline.push({
-        $match: {
-          "variants.ram": { $in: ramParams }
-        }
-      });
-    }
-    // =========================
-    // FILTER: SSD
-    // =========================
-    if (ssdParams.length > 0) {
-      pipeline.push({
-        $match: {
-          "variants.ssd": { $in: ssdParams }
-        }
-      });
-    }
-    // =========================
-    // FILTER: ISHOT
-    // =========================
-    if (isHot === "true") {
-      pipeline.push({
-        $match: {
-          isHot: true,
-        },
-      });
-    }
-    // =========================
-    // COUNT PIPELINE
-    // =========================
-    const countPipeline = [...pipeline, { $count: "total" }];
-
-    // =========================
-    // PAGINATION + SORT
-    // =========================
-    pipeline.push(
-      { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit }
-    );
-
-    // =========================
-    // EXECUTE
-    // =========================
-    const [products, totalResult] = await Promise.all([
-      db.collection("products").aggregate(pipeline).toArray(),
-      db.collection("products").aggregate(countPipeline).toArray(),
-    ]);
-
-    const total = totalResult[0]?.total || 0;
-    if (category !== "laptop") {
-      return NextResponse.json({
-        products: [],
-        total: 0,
-        page: 1,
-        limit: 5,
-        totalPages: 0,
-      });
-    }
-    return NextResponse.json({
-      products,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      price: searchParams.getAll("price"),
+      ram: searchParams.getAll("ram"),
+      ssd: searchParams.getAll("ssd"),
     });
+   return NextResponse.json(result);
 
   } catch (error) {
     return NextResponse.json(
