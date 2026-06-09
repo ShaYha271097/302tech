@@ -55,6 +55,7 @@ export default function Header({
 
                             <Link href="/" className="header_logo">
                                 <img
+                                      cursor-pointer
                                     loading="lazy"
 
                                     src="/assets/images/logoB.png"
@@ -85,9 +86,9 @@ export default function Header({
                                         </div>
                                         <div className="icon-box-text last-reset">
                                             <p>Hotline Bảo hành 24/7</p>
-                                            <a href="tel:0946932067" target="_blank" title="">
+                                            <Link href="tel:0946932067" target="_blank" title="">
                                                 0946932067{" "}
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
@@ -112,7 +113,7 @@ export default function Header({
                         {/* MENU ICON */}
                         <button
                             onClick={() => setOpenMenu(true)}
-                            className="text-2xl font-semibold tracking-wide"
+                            className="text-2xl font-semibold tracking-wide   cursor-pointer"
                         >
                             ☰
                         </button>
@@ -120,16 +121,38 @@ export default function Header({
                         {/* LOGO */}
                         <img
                             src="/assets/images/logoB.png"
-                        // className="h-8 object-contain"
+                        className="  cursor-pointer"
                         />
 
                         {/* RIGHT */}
                         <div className="flex items-center gap-3">
 
                             {/* HOTLINE */}
-                            <a href="tel:0946932067" className="text-xs">
-                                📞
-                            </a>
+                           <Link
+                                href="tel:0946932067"
+                                title="Gọi ngay 0946 932 067"
+                                className="block"
+                                >
+                                <div
+                                    className="icon-box-img"
+                                    style={{ width: 28 }}
+                                >
+                                       <div className="icon">
+                                                <div className="icon-inner">
+                                                    <img
+                                                        width={100}
+                                                        height={100}
+                                                        src="./assets/images/hotline_icon.png"
+                                                        className="attachment-medium size-medium ring_flas"
+                                                        alt="302 Tech"
+                                                        decoding="async"
+                                                        srcSet="https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100.png 100w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-24x24.png 24w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-36x36.png 36w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-48x48.png 48w"
+                                                        sizes="(max-width: 100px) 100vw, 100px"
+                                                    />
+                                                </div>
+                                            </div>
+                                </div>
+                                </Link>
 
                             {/* CART */}
                             {/* <div className="relative">

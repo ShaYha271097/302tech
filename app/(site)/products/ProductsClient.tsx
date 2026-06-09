@@ -10,21 +10,36 @@ import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductFilter from "./ProductFilter";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton/ProductCardSkeleton";
 
-export default function ProductsClient() {
+
+type Props = {
+  products: any[];
+  totalPages: number;
+};
+export default function ProductsClient({
+  products,
+  totalPages,
+}: Props) {
     const router = useRouter();
-       const {
-        products,
-        loading,
-        page,
-        totalPages,
-        brand,
-        selectedPrices,
-        ramSelected,
-        ssdSelected,
-    } = useProducts();
     const searchParams = useSearchParams();
  
     const [showFilter, setShowFilter] = useState(false);
+
+    const page = Number(
+    searchParams.get("page") || 1
+     );
+
+    const brand =
+        searchParams.get("brand") || "";
+
+    const selectedPrices =
+        searchParams.getAll("price");
+
+    const ramSelected =
+        searchParams.getAll("ram");
+
+    const ssdSelected =
+        searchParams.getAll("ssd");
+
     const handlePageChange = (newPage: number) => {
         const params = new URLSearchParams(searchParams.toString());
 
@@ -50,19 +65,19 @@ export default function ProductsClient() {
     });
 
     router.push(`/products?${params.toString()}`);
-};
+    };
 
-const toggleSSD = (ssd: string) => {
-    toggleQueryParam("ssd", ssd);
-};
+    const toggleSSD = (ssd: string) => {
+        toggleQueryParam("ssd", ssd);
+    };
 
-const toggleRam = (ram: string) => {
-    toggleQueryParam("ram", ram);
-};
+    const toggleRam = (ram: string) => {
+        toggleQueryParam("ram", ram);
+    };
 
-const togglePrice = (price: string) => {
-    toggleQueryParam("price", price);
-};
+    const togglePrice = (price: string) => {
+        toggleQueryParam("price", price);
+    };
 
 
     return (
@@ -101,13 +116,15 @@ const togglePrice = (price: string) => {
                             <div className="col-product-right">
                                 <div className="all_sp_search">
 
-                                    {loading ? (
-                                        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
-                                        {Array.from({ length: 8 }).map((_, i) => (
-                                             <ProductCardSkeleton key={i} />
-                                        ))}
-                                    </div>
-                                    ) : products.length === 0 ? (
+                                    {
+                                    // loading ? (
+                                    //     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                                    //     {Array.from({ length: 8 }).map((_, i) => (
+                                    //          <ProductCardSkeleton key={i} />
+                                    //     ))}
+                                    // </div>
+                                    // ) :
+                                     products.length === 0 ? (
                                         <div className="w-full ">
                                             <div className="w-full bg-gray-100 border border-gray-300 text-[#6B7280] px-4 py-3 text-center">
                                                 <strong>Không tìm thấy kết quả</strong>
@@ -176,7 +193,9 @@ const togglePrice = (price: string) => {
                                     )}
 
                                     {/* 👉 Pagination chỉ hiện khi có data */}
-                                    {!loading && products.length > 0 && (
+                                    {
+                                    // !loading &&
+                                     products.length > 0 && (
                                         <Pagination
                                             page={page}
                                             totalPages={totalPages}

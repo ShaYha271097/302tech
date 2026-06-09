@@ -18,14 +18,7 @@ console.time("TOTAL");
     return notFound();
   }
 
-//  const selected =
-//   getCheapestVariant(product.variants);
 
-//  const similarProducts =
-//     await getSimilarProducts(
-//       product._id.toString(),
-//       selected.price
-//     );
 
 console.timeEnd("TOTAL");
   return (
@@ -34,3 +27,12 @@ console.timeEnd("TOTAL");
     />
   );
 }
+
+//  const selected =
+//   getCheapestVariant(product.variants);
+
+//  const similarProducts =
+//     await getSimilarProducts(
+//       product._id.toString(),
+//       selected.price
+//     );

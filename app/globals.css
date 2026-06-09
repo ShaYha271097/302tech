@@ -196,7 +196,6 @@ a:active {
 
 .ring_flas {
   filter: invert(54%) sepia(97%) saturate(1700%) hue-rotate(360deg) brightness(101%) contrast(103%);
-    max-width: 40px;
     animation: zoom-in-out 1500ms infinite;
 }
 
