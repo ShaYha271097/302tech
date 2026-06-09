@@ -71,10 +71,10 @@ export default function ProductDetailClient({
               {/* ) */}
           {/* } */}
           </div>
-         {/* <SimilarProducts
+         <SimilarProducts
   productId={product._id}
   price={selected.price}
-/> */}
+/>
         </div>
 
       </div>

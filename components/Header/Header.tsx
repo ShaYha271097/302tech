@@ -119,7 +119,7 @@ export default function Header({
                         </button>
 
                         {/* LOGO */}
-                        {/* <Link href="/" className="header_logo cursor-pointer"> */}
+                        <Link href="/" className="header_logo cursor-pointer">
                             <img
 
                                 loading="lazy"
@@ -128,7 +128,7 @@ export default function Header({
                                 alt="302 Tech"
                                 decoding="async"
                             />
-                        {/* </Link> */}
+                        </Link>
                         {/* RIGHT */}
                         <div className="flex items-center gap-3">
 
