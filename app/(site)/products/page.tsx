@@ -4,6 +4,28 @@ import Footer from "@/components/Footer/Footer";
 import { Suspense } from "react";
 import { getProducts } from "@/lib/getProduct";
 
+
+export async function generateMetadata({
+  searchParams,
+}: any) {
+  const params = await searchParams;
+
+  const brand = params.brand;
+
+  if (brand) {
+    return {
+      title: `Laptop ${brand.toUpperCase()} Cũ Chính Hãng`,
+      description: `Các mẫu laptop ${brand.toUpperCase()} giá tốt tại 302 Tech`,
+    };
+  }
+
+  return {
+    title: "Laptop Cũ Chính Hãng",
+    description:
+      "ThinkPad, Dell Latitude, HP EliteBook, Laptop Gaming",
+  };
+}
+
 export function toProductDTO(product: any) {
   return {
     ...product,

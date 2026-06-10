@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import SearchBox from "../SearchBox/SearchBox";
 import MenuSkeleton from "../MenuSkeleton/MenuSkeleton";
+import { useAppSelector } from "@/hooks/useAppSelector";
+
 
 type Props = {
     brands: any[];
@@ -30,7 +32,13 @@ export default function Header({
         activeBrands.length > 7
             ? activeBrands.slice(7)
             : [];
-
+    const totalItems = useAppSelector(
+    (state) =>
+        state.cart.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+        )
+    );
 
 
     return (
@@ -93,12 +101,63 @@ export default function Header({
                                     </div>
                                 </div>
                                 <div className="cart">
-                                    {/* <a href="gio-hang">
-                                        <i className="fas fa-shopping-bag" />
-                                        <span className="cart-icon image-icon">
-                                            <strong className="total_cart">0 </strong>
+                                    <Link
+                                        href="/cart"
+                                        className="
+                                                relative
+                                                flex
+                                                items-center
+                                                justify-center
+
+                                                w-11 h-11
+
+                                                rounded-xl
+                                                border border-orange-100
+                                                bg-white
+
+                                                shadow-sm
+
+                                                transition-all
+                                                duration-300
+
+                                                hover:border-orange-300
+                                                hover:bg-orange-50
+                                                "
+                                    >
+                                        <i
+                                            className="
+                                                fas fa-shopping-bag
+                                                text-lg
+                                                text-[#ff7a00]
+                                            "
+                                        />
+
+                                        <span
+                                            className="
+                                                absolute
+                                                -top-2
+                                                -right-2
+
+                                                flex
+                                                items-center
+                                                justify-center
+
+                                                min-w-[20px]
+                                                h-5
+                                                px-1
+
+                                                rounded-full
+
+                                                bg-[#ff7a00]
+
+                                                text-[11px]
+                                                font-bold
+                                                text-white
+                                            "
+                                        >
+                                          {totalItems}
                                         </span>
-                                    </a> */}
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -133,7 +192,7 @@ export default function Header({
                         <div className="flex items-center gap-3">
 
                             {/* HOTLINE */}
-                            <Link
+                            {/* <Link
                                 href="tel:0946932067"
                                 title="Gọi ngay 0946 932 067"
                                 className="block"
@@ -157,15 +216,68 @@ export default function Header({
                                         </div>
                                     </div>
                                 </div>
-                            </Link>
+                            </Link> */}
 
                             {/* CART */}
-                            {/* <div className="relative">
-                                🛒
-                                <span className="absolute -top-2 -right-2 text-[10px] bg-red-500 text-white rounded-full px-1">
-                                    0
-                                </span>
-                            </div> */}
+                                <div className="cart">
+                                    <Link
+                                        href="/cart"
+                                        className="
+                                                relative
+                                                flex
+                                                items-center
+                                                justify-center
+
+                                                w-11 h-11
+
+                                                rounded-xl
+                                                border border-orange-100
+                                                bg-white
+
+                                                shadow-sm
+
+                                                transition-all
+                                                duration-300
+
+                                                hover:border-orange-300
+                                                hover:bg-orange-50
+                                                "
+                                    >
+                                        <i
+                                            className="
+                                                fas fa-shopping-bag
+                                                text-lg
+                                                text-[#ff7a00]
+                                            "
+                                        />
+
+                                        <span
+                                            className="
+                                                absolute
+                                                -top-2
+                                                -right-2
+
+                                                flex
+                                                items-center
+                                                justify-center
+
+                                                min-w-[20px]
+                                                h-5
+                                                px-1
+
+                                                rounded-full
+
+                                                bg-[#ff7a00]
+
+                                                text-[11px]
+                                                font-bold
+                                                text-white
+                                            "
+                                        >
+                                          {totalItems}
+                                        </span>
+                                    </Link>
+                                </div>
 
 
 

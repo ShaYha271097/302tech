@@ -1,9 +1,42 @@
 "use client";
 
+import { useState } from "react";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { addToCart } from "@/store/slices/cartSlice";
+import Link from "next/link";
+
 export default function ProductInfo({ product, selected, setSelected }: any) {
+  const [quantity, setQuantity] = useState(1);
+  const dispatch = useAppDispatch();
   const formatPrice = (price: number) =>
     price.toLocaleString("vi-VN") + "đ";
+const increaseQuantity = () => {
+  setQuantity((prev) => prev + 1);
+};
 
+const decreaseQuantity = () => {
+  setQuantity((prev) => Math.max(1, prev - 1));
+};
+
+const handleAddToCart = () => {
+  dispatch(
+    addToCart({
+      productId: product._id,
+      name: product.name,
+      slug: product.slug,
+      image: product.mainImage,
+
+      variant: {
+        cpu: selected.cpu,
+        ram: selected.ram,
+        ssd: selected.ssd,
+        price: selected.price,
+      },
+
+      quantity,
+    })
+  );
+};
   return (
    <div className="space-y-4">
 
@@ -286,7 +319,116 @@ export default function ProductInfo({ product, selected, setSelected }: any) {
     </div>
 
   </div>
+      <div className="space-y-3">
 
+  {/* QUANTITY + ADD CART */}
+  <div className="flex gap-3">
+
+    <div
+      className="
+        flex items-center
+        overflow-hidden
+        rounded-xl
+        border border-orange-200
+        bg-white
+      "
+    >
+      <button
+      onClick={decreaseQuantity}
+        className="
+          h-12 w-12
+          text-lg
+          text-[#6B7280]
+          hover:bg-orange-50
+          cursor-pointer
+        "
+      >
+        -
+      </button>
+
+      <div
+        className="
+          flex h-12 w-12
+          items-center justify-center
+          font-semibold
+        "
+      >
+       {quantity}
+      </div>
+
+      <button
+      onClick={increaseQuantity}
+        className="
+          h-12 w-12
+          text-lg
+          text-[#6B7280]
+          hover:bg-orange-50
+          cursor-pointer
+        "
+      >
+        +
+      </button>
+    </div>
+
+    <button
+     onClick={handleAddToCart}
+      className="
+        flex-1
+        rounded-xl
+        bg-[#ff7a00]
+        px-4
+        font-semibold
+        text-white
+        shadow-md
+        transition
+        hover:brightness-110
+        cursor-pointer
+      "
+    >
+      🛒 THÊM VÀO GIỎ
+    </button>
+
+  </div>
+
+  {/* BUY NOW */}
+<Link
+  href="/cart"
+  className="
+    block
+    w-full
+
+    rounded-xl
+
+    bg-[#ff7a00]
+
+    px-4
+    py-3
+
+    text-center
+    text-white
+
+    shadow-md
+
+    transition-all
+    duration-200
+
+    hover:bg-[#ff8c1a]
+    hover:shadow-lg
+
+    cursor-pointer
+  "
+>
+  <div className="font-bold text-lg">
+    Thanh toán ngay
+  </div>
+
+  <div className="text-sm opacity-90">
+   Giao hàng tận nơi, lắp đặt miễn phí
+  </div>
+</Link>
+
+
+</div>
 </div>
   );
 }

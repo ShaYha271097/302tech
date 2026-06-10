@@ -5,6 +5,44 @@ import ProductDetailClient from "./ProductDetailClient";
 import { getCheapestVariant } from "@/lib/format";
 import { getSimilarProducts } from "@/lib/getSimilarProducts";
 
+
+export async function generateMetadata({
+  params,
+}: any) {
+  const { slug } = await params;
+
+  const id = slug.split("-").pop();
+
+  const product =
+    await getProductById(id);
+
+  if (!product) {
+    return {
+      title: "Không tìm thấy sản phẩm",
+    };
+  }
+
+  return {
+    title: product.name,
+
+    description:
+      `${product.name} giá tốt tại 302 Tech. Bảo hành uy tín, giao hàng toàn quốc.`,
+
+    openGraph: {
+      title: product.name,
+
+      description:
+        `${product.name} giá tốt tại 302 Tech.`,
+
+      images: [
+        {
+          url: product.mainImage,
+        },
+      ],
+    },
+  };
+}
+
 export default async function ProductDetail({
   params,
 }: any) {
