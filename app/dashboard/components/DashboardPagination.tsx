@@ -43,16 +43,17 @@ export default function DashboardPagination({
                         setLimit(Number(e.target.value));
                         setPage(1);
                     }}
-                    className="
-        h-9
-        px-3
-        border border-[#E5E7EB]
-        rounded-lg
-        bg-white
-        text-[#111111]
-        outline-none
-        focus:border-[#ff7a00]
-      "
+                                    className="
+                                    cursor-pointer
+                        h-9
+                        px-3
+                        border border-[#E5E7EB]
+                        rounded-lg
+                        bg-white
+                        text-[#111111]
+                        outline-none
+                        focus:border-[#ff7a00]
+                    "
                 >
                     <option value={10}>10</option>
                     <option value={15}>15</option>
@@ -69,16 +70,17 @@ export default function DashboardPagination({
                     onClick={() => setPage(1)}
                     disabled={page === 1}
                     className="
-      w-9 h-9
-      border border-[#E5E7EB]
-      rounded-lg
-      bg-white
-      text-[#9CA3AF]
-      hover:border-[#ff7a00]
-      hover:text-[#ff7a00]
-      disabled:opacity-40
-      transition-all duration-300
-    "
+                    w-9 h-9
+                    border border-[#E5E7EB]
+                    rounded-lg
+                    bg-white
+                    text-[#9CA3AF]
+                    hover:border-[#ff7a00]
+                    hover:text-[#ff7a00]
+                    disabled:opacity-40
+                    transition-all duration-300
+                    cursor-pointer
+                    "
                 >
                     «
                 </button>
@@ -97,6 +99,7 @@ export default function DashboardPagination({
       hover:text-[#ff7a00]
       disabled:opacity-40
       transition-all duration-300
+      cursor-pointer
     "
                 >
                     ‹
@@ -127,6 +130,7 @@ export default function DashboardPagination({
               text-[#6B7280]
               hover:border-[#ff7a00]
               hover:text-[#ff7a00]
+              cursor-pointer
             `
                             }
       `}
@@ -151,6 +155,7 @@ export default function DashboardPagination({
       hover:text-[#ff7a00]
       disabled:opacity-40
       transition-all duration-300
+      cursor-pointer
     "
                 >
                     ›
@@ -170,6 +175,7 @@ export default function DashboardPagination({
                 hover:text-[#ff7a00]
                 disabled:opacity-40
                 transition-all duration-300
+                cursor-pointer
                 "
                 >
                     »

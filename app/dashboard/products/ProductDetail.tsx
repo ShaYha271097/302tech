@@ -1,6 +1,6 @@
 
 "use client";
-import React, {useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import AddProductDialog from "./AddProductDialog";
 import { Pencil, Trash2 } from "lucide-react"
@@ -40,6 +40,7 @@ type Product = {
 
 export default function ProductDetail() {
   const router = useRouter();
+    const [sort, setSort] = useState("name_asc");
   const [openSidebar, setOpenSidebar] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -452,7 +453,7 @@ export default function ProductDetail() {
                   <th className="px-4 py-2.5 w-[50px] text-center align-middle">
                     <input
                       type="checkbox"
-                      className="accent-[#ff7a00] w-4 h-4 align-middle"
+                      className="accent-[#ff7a00] w-4 h-4 align-middle  cursor-pointer"
                       checked={
                         products.length > 0 &&
                         selectedIds.length === products.length
@@ -478,7 +479,29 @@ export default function ProductDetail() {
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
-                    Tên sản phẩm
+                      <button
+                                            onClick={() =>
+                                                setSort((prev) =>
+                                                    prev === "name_asc"
+                                                        ? "name_desc"
+                                                        : "name_asc"
+                                                )
+                                            }
+                                            className="flex items-center gap-1 "
+                                        >
+                                            Tên sản phẩm
+
+                                            <i
+                                                className={`fas ${sort === "name_asc"
+                                                    ? "fa-chevron-up"
+                                                    : "fa-chevron-down"
+                                                    } text-[11px]
+      cursor-pointer
+    `}
+
+                                            />
+                                        </button>
+                    
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
@@ -521,7 +544,7 @@ export default function ProductDetail() {
                         <td className="px-4 py-2.5">
                           <input
                             type="checkbox"
-                            className="accent-[#ff7a00] w-4 h-4"
+                            className="accent-[#ff7a00] w-4 h-4  cursor-pointer"
                             checked={selectedIds.includes(p._id)}
                             onChange={(e) => {
                               if (e.target.checked) {
@@ -571,6 +594,7 @@ export default function ProductDetail() {
                     bg-white
                     shadow-sm
                     transition-all duration-300
+                     cursor-pointer
                     ${p.isActive
                                     ? "left-[22px]"
                                     : "left-[2px]"
@@ -588,6 +612,7 @@ export default function ProductDetail() {
                 border
                 flex items-center justify-center
                 transition-all duration-300
+                 cursor-pointer
                 ${p.isHot
                                   ? "bg-[#FFF7ED] border-[#FED7AA] text-[#ff7a00]"
                                   : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#FED7AA] hover:text-[#ff7a00]"
@@ -607,10 +632,13 @@ export default function ProductDetail() {
                 border
                 flex items-center justify-center
                 transition-all duration-300
+                                cursor-pointer
+
                 ${p.isNew
                                   ? "bg-[#ECFDF3] border-[#BBF7D0] text-[#16A34A]"
                                   : "bg-white border-[#E5E7EB] text-[#9CA3AF] hover:border-[#BBF7D0] hover:text-[#16A34A]"
                                 }
+                                
             `}
                               title="Hàng mới về"
                             >
@@ -679,6 +707,8 @@ export default function ProductDetail() {
                                             hover:bg-[#ff7a00]
                                             hover:text-white
                                             transition-all duration-300
+                                cursor-pointer
+
                                         "
                             onClick={() => {
                               setEditingProduct(p);

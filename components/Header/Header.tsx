@@ -167,7 +167,23 @@ export default function Header({
                 <div className="lg:hidden header_mobile">
 
                     {/* ROW 1 */}
-                    <div className="flex items-center justify-between px-3 py-2 border-b">
+                    <div className="
+                       fixed
+    top-0
+    left-0
+    right-0
+    z-50
+
+    flex
+    items-center
+    justify-between
+
+    px-3
+    py-2
+
+    border-b
+    bg-white
+                    ">
 
                         {/* MENU ICON */}
                         <button
@@ -190,34 +206,6 @@ export default function Header({
                         </Link>
                         {/* RIGHT */}
                         <div className="flex items-center gap-3">
-
-                            {/* HOTLINE */}
-                            {/* <Link
-                                href="tel:0946932067"
-                                title="Gọi ngay 0946 932 067"
-                                className="block"
-                            >
-                                <div
-                                    className="icon-box-img"
-                                    style={{ width: 28 }}
-                                >
-                                    <div className="icon">
-                                        <div className="icon-inner">
-                                            <img
-                                                width={100}
-                                                height={100}
-                                                src="./assets/images/hotline_icon.png"
-                                                className="attachment-medium size-medium ring_flas"
-                                                alt="302 Tech"
-                                                decoding="async"
-                                                srcSet="https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100.png 100w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-24x24.png 24w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-36x36.png 36w, https://dienmaygiakho.com.vn/wp-content/uploads/2022/05/24x7-service1-100-48x48.png 48w"
-                                                sizes="(max-width: 100px) 100vw, 100px"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link> */}
-
                             {/* CART */}
                                 <div className="cart">
                                     <Link
@@ -278,10 +266,6 @@ export default function Header({
                                         </span>
                                     </Link>
                                 </div>
-
-
-
-
                         </div>
                     </div>
 

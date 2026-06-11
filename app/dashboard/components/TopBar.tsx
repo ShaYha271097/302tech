@@ -53,7 +53,7 @@ export default function Topbar({
 
             <button
               onClick={handleSearch}
-              className="px-2 sm:px-3 text-[#111827] hover:text-[#6B7280]"
+              className="px-2 sm:px-3 text-[#111827] hover:text-[#6B7280]  cursor-pointer"
             >
               <i className="fas fa-search" />
             </button>
@@ -80,7 +80,7 @@ export default function Topbar({
   "
           >
             <span className="sm:hidden">+</span>
-            <span className="hidden sm:inline">+ Thêm</span>
+            <span className="hidden sm:inline  cursor-pointer">+ Thêm</span>
           </button>
         )}
 

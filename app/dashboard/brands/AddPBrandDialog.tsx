@@ -324,7 +324,7 @@ export default function AddPBrandDialog({
           transition-all
         "
                   >
-                    <Trash className="w-4 h-4" />
+                    <Trash className="w-4 h-4 cursor-pointer" />
                   </button>
                 </>
               ) : (
@@ -416,6 +416,7 @@ export default function AddPBrandDialog({
             hover:bg-[#F9FAFB]
             hover:text-[#111111]
             transition-all
+            cursor-pointer
           "
             >
               Huỷ
@@ -435,6 +436,7 @@ export default function AddPBrandDialog({
           shadow-lg shadow-orange-200
           transition-all
           disabled:opacity-60
+          cursor-pointer
         "
           >
             {(loading || uploading) && (

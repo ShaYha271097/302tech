@@ -47,11 +47,11 @@ export default function HomePageBanner() {
             value:productsData?.total || 0,
             icon: "fas fa-laptop",
           },
-          {
-            title: "Tổng banner",
-            value: 5,
-            icon: "fas fa-images",
-          },
+          // {
+          //   title: "Tổng banner",
+          //   value: 5,
+          //   icon: "fas fa-images",
+          // },
           {
             title: "Thương hiệu",
             value: brandsData?.total || 0,

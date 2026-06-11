@@ -1031,7 +1031,7 @@ sm:h-[90vh]
             cursor-pointer
           "
         >
-          <Trash className="w-3 h-3" />
+          <Trash className="w-3 h-3  cursor-pointer" />
         </button>
 
                     </div>
@@ -1084,6 +1084,7 @@ sm:h-[90vh]
         hover:bg-[#FFE7D6]
         transition-all
         w-full sm:w-auto
+         cursor-pointer
       "
     >
       + Thêm cấu hình
@@ -1605,10 +1606,11 @@ sm:h-[90vh]
                 border-t border-[#ECECEC]
                 flex justify-end gap-3
                 mb-0
+               
             "
           >
             <DialogClose asChild>
-              <Button variant="outline" className="h-8 px-7 rounded-xl">
+              <Button variant="outline" className="h-8 px-7 rounded-xl  cursor-pointer">
                 Huỷ
               </Button>
             </DialogClose>
@@ -1623,6 +1625,7 @@ sm:h-[90vh]
                     hover:bg-[#eb6f00]
                     text-white
                     shadow-lg shadow-orange-200
+                    cursor-pointer
                 "
             >
               {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -1915,6 +1918,7 @@ sm:h-[90vh]
           hover:border-[#FED7AA]
           hover:text-[#111827]
           transition-all
+           cursor-pointer
         "
       >
         Huỷ
@@ -1933,6 +1937,7 @@ sm:h-[90vh]
     shadow-lg shadow-orange-200
     transition-all
     disabled:opacity-60
+     cursor-pointer
   "
 >
   {loadingBrand ? (

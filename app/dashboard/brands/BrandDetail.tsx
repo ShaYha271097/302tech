@@ -54,6 +54,8 @@ export default function BrandDetail() {
     useEffect(() => {
         fetchBrands();
     }, [page, limit, sort]);
+
+    
     const handleToggleActive = async (
         id: string,
     ) => {
@@ -122,7 +124,7 @@ export default function BrandDetail() {
                                                         : "name_asc"
                                                 )
                                             }
-                                            className="flex items-center gap-1"
+                                            className="flex items-center gap-1 "
                                         >
                                             Tên thương hiệu
 
@@ -226,6 +228,7 @@ export default function BrandDetail() {
                                                 {/* EDIT */}
                                                 <button
                                                     className="
+                                                    cursor-pointer
                             px-3 py-2
                             rounded-lg
                             bg-[#FFF3E8]
@@ -246,6 +249,7 @@ export default function BrandDetail() {
                                                 {/* HIDE / SHOW */}
                                                 <button
                                                     className={`
+                                                        cursor-pointer
     px-3 py-2
     rounded-lg
     font-medium

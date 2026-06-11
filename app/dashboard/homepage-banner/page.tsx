@@ -245,6 +245,7 @@ const getImageSrc = (img: string | File) => {
               font-medium
               hover:bg-[#FFE7D6]
               transition-all
+              
             "
                     >
                       + Thêm
