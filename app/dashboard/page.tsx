@@ -76,10 +76,10 @@ export default function HomePageBanner() {
         </section>
 
         {/* MOBILE SIDEBAR */}
-        <MobileSidebar
+        {/* <MobileSidebar
           openSidebar={openSidebar}
           setOpenSidebar={setOpenSidebar}
-        />
+        /> */}
 
         {/* CONTENT */}
         <section className="flex-1 p-4 overflow-y-auto">

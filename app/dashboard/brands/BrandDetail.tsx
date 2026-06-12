@@ -94,12 +94,11 @@ export default function BrandDetail() {
 
             <div className="flex min-h-screen bg-gray-50">
                 {/* SIDEBAR DESKTOP */}
-                <section className="hidden md:block w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
-                    <Sidebar />
-                </section>
+                 <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
+                       <Sidebar />
+                     </section>
                 {/* MOBILE SIDEBAR */}
                 <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
-
                 {/* CONTENT */}
                 <section className="flex-1 px-3 md:px-4 py-2.5 overflow-y-auto">
 
@@ -133,8 +132,8 @@ export default function BrandDetail() {
                                                     ? "fa-chevron-up"
                                                     : "fa-chevron-down"
                                                     } text-[11px]
-      cursor-pointer
-    `}
+                                                    cursor-pointer
+                                                    `}
 
                                             />
                                         </button>
@@ -181,10 +180,10 @@ export default function BrandDetail() {
                                     <tr
                                         key={p._id}
                                         className="
-                                !border-b border-[#F3F4F6]
-                                hover:bg-[#FFF7ED]
-                                transition-all duration-200
-                            "
+                                        !border-b border-[#F3F4F6]
+                                        hover:bg-[#FFF7ED]
+                                        transition-all duration-200
+                                        "
                                     >
                                         {/* IMAGE */}
                                         <td className="px-4 py-2.5">
@@ -229,15 +228,15 @@ export default function BrandDetail() {
                                                 <button
                                                     className="
                                                     cursor-pointer
-                            px-3 py-2
-                            rounded-lg
-                            bg-[#FFF3E8]
-                            text-[#ff7a00]
-                            font-medium
-                            hover:bg-[#ff7a00]
-                            hover:text-white
-                            transition-all duration-300
-                        "
+                                                    px-3 py-2
+                                                    rounded-lg
+                                                    bg-[#FFF3E8]
+                                                    text-[#ff7a00]
+                                                    font-medium
+                                                    hover:bg-[#ff7a00]
+                                                    hover:text-white
+                                                    transition-all duration-300
+                                                "
                                                     onClick={() => {
                                                         setEditingBrand(p);
                                                         setOpen(true);
@@ -250,26 +249,25 @@ export default function BrandDetail() {
                                                 <button
                                                     className={`
                                                         cursor-pointer
-    px-3 py-2
-    rounded-lg
-    font-medium
-    flex items-center gap-2
-    transition-all duration-300
-    ${p.isActive
+                                                        px-3 py-2
+                                                        rounded-lg
+                                                        font-medium
+                                                        flex items-center gap-2
+                                                        transition-all duration-300
+                                                        hover:text-white
+                                                        ${p.isActive
                                                             ? `
-          bg-red-50
-          text-red-500
-          hover:bg-red-500
-          hover:text-white
-        `
+                                                                bg-red-50
+                                                                text-red-500
+                                                                hover:bg-red-500
+                                                            `
                                                             : `
-          bg-green-50
-          text-green-600
-          hover:bg-green-600
-          hover:text-white
-        `
-                                                        }
-  `}
+                                                                bg-green-50
+                                                                text-green-600
+                                                                hover:bg-green-600
+                                                            `
+                                                                                                            }
+                                                    `}
                                                     onClick={() => handleToggleActive(p._id)}
                                                 >
                                                     <i
@@ -292,19 +290,42 @@ export default function BrandDetail() {
 
                     {/* ================= MOBILE LIST ================= */}
                     <div className="md:hidden space-y-3">
+              <div className="flex items-center gap-2">
+    <span className="text-sm font-medium text-gray-600 whitespace-nowrap">
+      Sắp xếp:
+    </span>
 
-                       
+    <select
+      value={sort}
+      onChange={(e) => setSort(e.target.value)}
+      className="
+        flex-1
+        h-10
+        px-3
+        rounded-lg
+        border
+        border-gray-200
+        bg-white
+        text-sm
+      "
+    >
+      <option value="name_asc">Tên A → Z</option>
+      <option value="name_desc">Tên Z → A</option>
+      <option value="date_desc">Ngày tạo mới nhất</option>
+      <option value="date_asc">Ngày tạo cũ nhất</option>
+    </select>
+  </div>
                         {/* BRAND ITEM */}
                         {brands.map((p) => (
                             <div
                                 key={p._id}
                                 className="
-                        bg-white
-                        border border-[#E5E7EB]
-                        rounded-xl
-                        p-3
-                        shadow-sm
-                    "
+                                bg-white
+                                border border-[#E5E7EB]
+                                rounded-xl
+                                p-3
+                                shadow-sm
+                            "
                             >
                                 {/* TOP */}
                                 <div className="flex items-start gap-3">

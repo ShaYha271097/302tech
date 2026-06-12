@@ -38,6 +38,7 @@ type GetProductsParams = {
   price?: string | string[];
   ram?: string | string[];
   ssd?: string | string[];
+  sort?: string;
 };
 
 export async function getProducts({
@@ -53,9 +54,39 @@ export async function getProducts({
   price,
   ram,
   ssd,
+  sort ,
 }: GetProductsParams) {
   const client = await clientPromise;
   const db = client.db("laptop-shop");
+
+    // SORT OPTION
+    let sortOption: any = {};
+
+    switch (sort) {
+
+      // NAME
+      case "name_asc":
+        sortOption = { name: 1 };
+        break;
+
+      case "name_desc":
+        sortOption = { name: -1 };
+        break;
+
+      // DATE
+      case "date_desc":
+        sortOption = { createdAt: -1 };
+        break;
+
+      case "date_asc":
+        sortOption = { createdAt: 1 };
+        break;
+
+      default:
+        sortOption = { name: 1 };
+    }
+
+
 
   const priceParams = Array.isArray(price)
     ? price
@@ -210,7 +241,7 @@ export async function getProducts({
   // PAGINATION + SORT
   // =========================
   pipeline.push(
-    { $sort: { createdAt: -1 } },
+    { $sort: sortOption },
     { $skip: skip },
     { $limit: limit }
   );

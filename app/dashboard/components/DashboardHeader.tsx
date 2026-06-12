@@ -28,11 +28,11 @@ export default function DashboardHeader({ onOpenSidebar }: Props) {
             <div className="flex items-center gap-3">
 
                 {/* mobile menu */}
-                <button className="lg:hidden text-xl"
+                {/* <button className="lg:hidden text-xl"
                      onClick={()=>onOpenSidebar(true)}
                 >
                     ☰
-                </button>
+                </button> */}
 
                 {/* logo */}
                 <img

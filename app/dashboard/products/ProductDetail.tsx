@@ -60,37 +60,24 @@ export default function ProductDetail() {
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
 
-  const fetchProducts = async () => {
-    const params = new URLSearchParams();
+const fetchProducts = async (keyword = search) => {
+  const res = await fetch(
+    `/api/products?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
+  );
 
-    params.set("page", String(page));
-    params.set("limit", String(limit));
+  const data = await res.json();
 
-    if (search) {
-      params.set("search", search);
-    }
+  setProducts(data.products || []);
+  setTotal(data.total || 0);
+};
 
-    const res = await fetch(`/api/products?${params.toString()}`);
-    const data = await res.json();
-    setProducts(data.products || []);
-    setTotal(data.total || 0);
-  };
+useEffect(() => {
+  const timeout = setTimeout(() => {
+    fetchProducts();
+  }, 300);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const params = new URLSearchParams();
-
-      if (search) {
-        params.set("search", search);
-      }
-
-      router.push(`/dashboard/products?${params.toString()}`);
-
-      fetchProducts();
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [search, page, limit]);
+  return () => clearTimeout(timeout);
+}, [search, page, limit, sort]);
 
   const handleBulkDelete = async () => {
     const ok = confirm(`Xóa ${selectedIds.length} sản phẩm?`);
@@ -144,9 +131,9 @@ export default function ProductDetail() {
         onDelete={handleBulkDelete} />
 
       <div className="flex min-h-screen bg-gray-50">
-        <section className="hidden md:block w-[70px] lg:w-[240px] bg-white border-r transition-all duration-300">
-          <Sidebar />
-        </section>
+         <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
+               <Sidebar />
+             </section>
 
         {/* MOBILE SIDEBAR */}
         <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
@@ -155,7 +142,31 @@ export default function ProductDetail() {
 
           {/* ================= MOBILE CARD ================= */}
           <div className="md:hidden space-y-3">
+      <div className="flex items-center gap-2">
+    <span className="text-sm font-medium text-gray-600 whitespace-nowrap">
+      Sắp xếp:
+    </span>
 
+    <select
+      value={sort}
+      onChange={(e) => setSort(e.target.value)}
+      className="
+        flex-1
+        h-10
+        px-3
+        rounded-lg
+        border
+        border-gray-200
+        bg-white
+        text-sm
+      "
+    >
+      <option value="name_asc">Tên A → Z</option>
+      <option value="name_desc">Tên Z → A</option>
+      <option value="date_desc">Ngày tạo mới nhất</option>
+      <option value="date_asc">Ngày tạo cũ nhất</option>
+    </select>
+  </div>
             {/* SELECT ALL */}
             {products.length > 0 && (
               <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex items-center gap-3">
@@ -513,7 +524,27 @@ export default function ProductDetail() {
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
-                    Ngày tạo
+                       <button
+                                            onClick={() =>
+                                                setSort((prev) =>
+                                                    prev === "date_desc"
+                                                        ? "date_asc"
+                                                        : "date_desc"
+                                                )
+                                            }
+                                            className="flex items-center gap-1"
+                                        >
+                                            Ngày tạo
+                                            <i
+                                                className={`fas ${sort === "date_desc"
+                                                    ? "fa-chevron-up"
+                                                    : "fa-chevron-down"
+                                                    } text-[11px]
+                                  cursor-pointer
+                                `}
+
+                                            />
+                                        </button>
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">

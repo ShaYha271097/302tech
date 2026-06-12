@@ -177,6 +177,8 @@ export async function GET(req: NextRequest) {
       price: searchParams.getAll("price"),
       ram: searchParams.getAll("ram"),
       ssd: searchParams.getAll("ssd"),
+        // sort
+      sort : searchParams.get("sort") || "name_asc"
     });
    return NextResponse.json(result);
 
