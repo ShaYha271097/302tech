@@ -40,7 +40,7 @@ type Product = {
 
 export default function ProductDetail() {
   const router = useRouter();
-    const [sort, setSort] = useState("name_asc");
+    const [sort, setSort] = useState("date_desc");
   const [openSidebar, setOpenSidebar] = useState(false);
   const [search, setSearch] = useState("");
 

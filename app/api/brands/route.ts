@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     const search = searchParams.get("search") || "";
 
     // sort
-    const sort = searchParams.get("sort") || "name_asc";
+    const sort = searchParams.get("sort") || "date_asc";
 
     const skip = (page - 1) * limit;
 
@@ -99,6 +99,10 @@ export async function GET(req: Request) {
       .collection("brands")
       .find(filter)
       .sort(sortOption)
+      .collation({
+        locale: "vi",
+        strength: 2,
+      })
       .skip(skip)
       .limit(limit)
       .toArray();

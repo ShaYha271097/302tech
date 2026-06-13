@@ -178,7 +178,7 @@ export async function GET(req: NextRequest) {
       ram: searchParams.getAll("ram"),
       ssd: searchParams.getAll("ssd"),
         // sort
-      sort : searchParams.get("sort") || "name_asc"
+      sort : searchParams.get("sort") || "date_desc"
     });
    return NextResponse.json(result);
 

@@ -39,7 +39,7 @@ export default function BrandDetail() {
     const end = Math.min(page * limit, total);
 
 
-    const [sort, setSort] = useState("name_asc");
+    const [sort, setSort] = useState("date_desc");
 
     const fetchBrands = async (keyword = search) => {
 

@@ -249,10 +249,23 @@ export async function getProducts({
   // =========================
   // EXECUTE
   // =========================
+  // const [products, totalResult] = await Promise.all([
+  //   db.collection("products").aggregate(pipeline).toArray(),
+  //   db.collection("products").aggregate(countPipeline).toArray(),
+  // ]);
   const [products, totalResult] = await Promise.all([
-    db.collection("products").aggregate(pipeline).toArray(),
-    db.collection("products").aggregate(countPipeline).toArray(),
-  ]);
+  db
+    .collection("products")
+    .aggregate(pipeline, {
+      collation: {
+        locale: "vi",
+        strength: 2,
+      },
+    })
+    .toArray(),
+
+  db.collection("products").aggregate(countPipeline).toArray(),
+]);
 
   const total = totalResult[0]?.total || 0;
 
