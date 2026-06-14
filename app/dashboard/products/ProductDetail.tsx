@@ -1,6 +1,6 @@
 
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
 import AddProductDialog from "./AddProductDialog";
 import { Pencil, Trash2 } from "lucide-react"
@@ -38,7 +38,15 @@ type Product = {
   isActive: boolean;
 }
 
-export default function ProductDetail() {
+type Props = {
+  initialProducts: Product[];
+  initialTotal: number;
+};
+
+export default function ProductDetail({
+  initialProducts,
+  initialTotal,
+}: Props) {
   const router = useRouter();
     const [sort, setSort] = useState("date_desc");
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -47,19 +55,18 @@ export default function ProductDetail() {
   const [open, setOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [total, setTotal] = useState(0);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
+const [products, setProducts] = useState(initialProducts);
+const [total, setTotal] = useState(initialTotal);
   const totalPages = Math.ceil(total / limit);
 
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
-
+const firstRender = useRef(true);
 const fetchProducts = async (keyword = search) => {
   const res = await fetch(
     `/api/products?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
@@ -71,7 +78,14 @@ const fetchProducts = async (keyword = search) => {
   setTotal(data.total || 0);
 };
 
+
+
 useEffect(() => {
+  if (firstRender.current) {
+    firstRender.current = false;
+    return;
+  }
+
   const timeout = setTimeout(() => {
     fetchProducts();
   }, 300);

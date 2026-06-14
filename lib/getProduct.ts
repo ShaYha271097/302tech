@@ -280,7 +280,7 @@ export async function getProducts({
   }
 
   return {
-    products,
+    products:JSON.parse(JSON.stringify(products)),
     total,
     page,
     limit,
