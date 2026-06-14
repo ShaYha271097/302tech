@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/TopBar";
 import { useRouter } from "next/navigation";
@@ -16,8 +16,15 @@ type Brand = {
     createdAt: string;
     isActive: boolean;
 };
+type Props = {
+    initialBrands: Brand[];
+    initialTotal: number;
+};
 
-export default function BrandDetail() {
+export default function BrandDetail({
+    initialBrands,
+    initialTotal,
+}: Props) {
     const router = useRouter();
 
     const [openSidebar, setOpenSidebar] = useState(false);
@@ -28,8 +35,8 @@ export default function BrandDetail() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
 
-    const [brands, setBrands] = useState<Brand[]>([]);
-    const [total, setTotal] = useState(0);
+    const [brands, setBrands] = useState(initialBrands);
+    const [total, setTotal] = useState(initialTotal);
 
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
@@ -40,22 +47,30 @@ export default function BrandDetail() {
 
 
     const [sort, setSort] = useState("date_desc");
-
+    const firstRender = useRef(true);
     const fetchBrands = async (keyword = search) => {
-
+        console.time("fetchBrands");
         const res = await fetch(
             `/api/brands?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
         );
 
         const data = await res.json();
+        console.timeEnd("fetchBrands");
         setBrands(data.brands || []);
         setTotal(data.total || 0);
     };
+
+
     useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
+
         fetchBrands();
     }, [page, limit, sort]);
 
-    
+
     const handleToggleActive = async (
         id: string,
     ) => {
@@ -94,9 +109,9 @@ export default function BrandDetail() {
 
             <div className="flex min-h-screen bg-gray-50">
                 {/* SIDEBAR DESKTOP */}
-                 <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
-                       <Sidebar />
-                     </section>
+                <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
+                    <Sidebar />
+                </section>
                 {/* MOBILE SIDEBAR */}
                 <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
                 {/* CONTENT */}
@@ -266,14 +281,14 @@ export default function BrandDetail() {
                                                                 text-green-600
                                                                 hover:bg-green-600
                                                             `
-                                                                                                            }
+                                                        }
                                                     `}
                                                     onClick={() => handleToggleActive(p._id)}
                                                 >
                                                     <i
                                                         className={`fas ${p.isActive
-                                                                ? "fa-eye-slash"
-                                                                : "fa-eye"
+                                                            ? "fa-eye-slash"
+                                                            : "fa-eye"
                                                             } text-[13px]`}
                                                     />
 
@@ -290,15 +305,15 @@ export default function BrandDetail() {
 
                     {/* ================= MOBILE LIST ================= */}
                     <div className="md:hidden space-y-3">
-              <div className="flex items-center gap-2">
-    <span className="text-sm font-medium text-gray-600 whitespace-nowrap">
-      Sắp xếp:
-    </span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-600 whitespace-nowrap">
+                                Sắp xếp:
+                            </span>
 
-    <select
-      value={sort}
-      onChange={(e) => setSort(e.target.value)}
-      className="
+                            <select
+                                value={sort}
+                                onChange={(e) => setSort(e.target.value)}
+                                className="
         flex-1
         h-10
         px-3
@@ -308,13 +323,13 @@ export default function BrandDetail() {
         bg-white
         text-sm
       "
-    >
-      <option value="name_asc">Tên A → Z</option>
-      <option value="name_desc">Tên Z → A</option>
-      <option value="date_desc">Ngày tạo mới nhất</option>
-      <option value="date_asc">Ngày tạo cũ nhất</option>
-    </select>
-  </div>
+                            >
+                                <option value="name_asc">Tên A → Z</option>
+                                <option value="name_desc">Tên Z → A</option>
+                                <option value="date_desc">Ngày tạo mới nhất</option>
+                                <option value="date_asc">Ngày tạo cũ nhất</option>
+                            </select>
+                        </div>
                         {/* BRAND ITEM */}
                         {brands.map((p) => (
                             <div
@@ -363,7 +378,7 @@ export default function BrandDetail() {
 
                                     </div>
                                 </div>
-  
+
                                 {/* ACTION */}
                                 <div className="mt-3 flex justify-end gap-2">
                                     <button
@@ -385,40 +400,40 @@ export default function BrandDetail() {
                                     >
                                         Sửa
                                     </button>
-                                       {/* HIDE / SHOW */}
-                                                <button
-                                                    className={`
+                                    {/* HIDE / SHOW */}
+                                    <button
+                                        className={`
     px-3 py-2
     rounded-lg
     font-medium
     flex items-center gap-2
     transition-all duration-300
     ${p.isActive
-                                                            ? `
+                                                ? `
           bg-red-50
           text-red-500
           hover:bg-red-500
           hover:text-white
         `
-                                                            : `
+                                                : `
           bg-green-50
           text-green-600
           hover:bg-green-600
           hover:text-white
         `
-                                                        }
+                                            }
   `}
-                                                    onClick={() => handleToggleActive(p._id)}
-                                                >
-                                                    <i
-                                                        className={`fas ${p.isActive
-                                                                ? "fa-eye-slash"
-                                                                : "fa-eye"
-                                                            } text-[13px]`}
-                                                    />
+                                        onClick={() => handleToggleActive(p._id)}
+                                    >
+                                        <i
+                                            className={`fas ${p.isActive
+                                                ? "fa-eye-slash"
+                                                : "fa-eye"
+                                                } text-[13px]`}
+                                        />
 
-                                                    {p.isActive ? "Ẩn" : "Hiện"}
-                                                </button>
+                                        {p.isActive ? "Ẩn" : "Hiện"}
+                                    </button>
                                 </div>
                             </div>
                         ))}

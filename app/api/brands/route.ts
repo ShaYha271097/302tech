@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import { getBrands } from "@/lib/brands";
 
 type Brand = {
   _id?: string;
@@ -35,100 +36,16 @@ function toSlug(str: string) {
     .replace(/\s+/g, "-"); // space -> -
 }
 export async function GET(req: Request) {
-  try {
-    const client = await clientPromise;
-    const db = client.db("laptop-shop");
+  const { searchParams } = new URL(req.url);
 
-    const { searchParams } = new URL(req.url);
+  const data = await getBrands({
+    page: Number(searchParams.get("page")) || 1,
+    limit: Number(searchParams.get("limit")) || 10,
+    search: searchParams.get("search") || "",
+    sort: searchParams.get("sort") || "date_asc",
+  });
 
-    const page = Number(searchParams.get("page")) || 1;
-    const limit = Number(searchParams.get("limit")) || 10;
-
-    // search
-    const search = searchParams.get("search") || "";
-
-    // sort
-    const sort = searchParams.get("sort") || "date_asc";
-
-    const skip = (page - 1) * limit;
-
-    // FILTER
-    const filter: any = {};
-
-    if (search.trim()) {
-      filter.name = {
-        $regex: search,
-        $options: "i",
-      };
-    }
-
-    // SORT OPTION
-    let sortOption: any = {};
-
-    switch (sort) {
-
-      // NAME
-      case "name_asc":
-        sortOption = { name: 1 };
-        break;
-
-      case "name_desc":
-        sortOption = { name: -1 };
-        break;
-
-      // DATE
-      case "date_desc":
-        sortOption = { createdAt: -1 };
-        break;
-
-      case "date_asc":
-        sortOption = { createdAt: 1 };
-        break;
-
-      default:
-        sortOption = { name: 1 };
-    }
-
-    // TOTAL
-    const total = await db
-      .collection("brands")
-      .countDocuments(filter);
-
-    // DATA
-    const brands = await db
-      .collection("brands")
-      .find(filter)
-      .sort(sortOption)
-      .collation({
-        locale: "vi",
-        strength: 2,
-      })
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-
-    const totalPages = Math.ceil(total / limit);
-
-    return NextResponse.json({
-      brands,
-      total,
-      totalPages,
-      page,
-      limit,
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(
-      {
-        message: "Server Error",
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  return Response.json(data);
 }
 export async function POST(req: Request) {
   try {
