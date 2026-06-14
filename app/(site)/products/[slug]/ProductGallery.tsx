@@ -1,171 +1,254 @@
 "use client";
 
-import { useState, useRef, MouseEvent, useMemo } from "react";
-
-const LENS_SIZE = 160;
-const ZOOM = 10;
+import { useMemo, useState } from "react";
 
 type Props = {
   mainImage: string;
   gallery: string[];
 };
 
-export default function ProductGallery({ mainImage, gallery }: Props) {
-  // 👉 gộp ảnh
+export default function ProductGallery({
+  mainImage,
+  gallery,
+}: Props) {
   const images = useMemo(() => {
     const arr = [mainImage, ...(gallery || [])];
-    return [...new Set(arr)]; // tránh trùng
+    return [...new Set(arr)];
   }, [mainImage, gallery]);
 
-  const [currentImage, setCurrentImage] = useState(images[0]);
-  const [isZoomActive, setIsZoomActive] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [openViewer, setOpenViewer] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const currentImage = images[currentIndex];
 
-  const getPosition = (e: MouseEvent<HTMLDivElement>) => {
-    const rect = containerRef.current!.getBoundingClientRect();
-
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
-
-    const half = LENS_SIZE / 2;
-
-    x = Math.max(half, Math.min(x, rect.width - half));
-    y = Math.max(half, Math.min(y, rect.height - half));
-
-    return { x, y, width: rect.width, height: rect.height };
+  const nextImage = () => {
+    setCurrentIndex((prev) =>
+      prev === images.length - 1 ? 0 : prev + 1
+    );
   };
 
-  const handleClick = (e: MouseEvent<HTMLDivElement>) => {
-    const { x, y } = getPosition(e);
-
-    if (!isZoomActive) {
-      setPos({ x, y });
-      setIsZoomActive(true);
-    } else {
-      setIsZoomActive(false);
-    }
+  const prevImage = () => {
+    setCurrentIndex((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
   };
-
-  const handleMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!isZoomActive) return;
-
-    const { x, y } = getPosition(e);
-    setPos({ x, y });
-  };
-
-  const rect = containerRef.current?.getBoundingClientRect();
-  const width = rect?.width || 1;
-  const height = rect?.height || 1;
 
   return (
-    <div className="w-full max-w-xl">
-      {/* Ảnh lớn */}
-      <div
-        ref={containerRef}
-        className="w-full aspect-square bg-white border rounded-lg overflow-hidden"
-        onClick={handleClick}
-        onMouseMove={handleMove}
-        onMouseLeave={() => setIsZoomActive(false)}
-      >
-        <img
-          src={currentImage}
-          className="w-full h-full object-cover"
-          draggable={false}
-        />
+    <>
+      {/* MAIN IMAGE */}
+      <div className="w-full max-w-xl">
 
-        {/* Lens */}
-        {isZoomActive && (
-          <div
-            className="absolute border border-white shadow-lg rounded-full transition-all duration-100"
-            style={{
-              width: LENS_SIZE,
-              height: LENS_SIZE,
-              top: pos.y - LENS_SIZE / 2,
-              left: pos.x - LENS_SIZE / 2,
-              backgroundImage: `url(${currentImage})`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: `${ZOOM * 100}%`,
-              backgroundPosition: `${(pos.x / width) * 100}% ${(pos.y / height) * 100}%`,
-              pointerEvents: "none",
-              borderRadius: "50%",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            }}
+        <div
+          onClick={() => setOpenViewer(true)}
+          className="
+            group
+            relative
+            overflow-hidden
+            rounded-2xl
+            border border-orange-100
+            bg-white
+            cursor-zoom-in
+          "
+        >
+          <img
+            src={currentImage}
+            alt=""
+            className="
+              w-full
+              aspect-square
+              object-cover
+              transition-transform
+              duration-500
+              group-hover:scale-105
+            "
           />
-        )}
 
-        {!isZoomActive && (
-          <div className="absolute inset-0 flex items-end justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition">
-            <span className="text-white text-sm leading-7 font-medium bg-black/50 px-3 py-1 rounded mb-3">
-              Click to zoom
-            </span>
+          {/* Overlay */}
+          <div
+            className="
+              absolute inset-0
+              bg-black/0
+              group-hover:bg-black/5
+              transition
+            "
+          />
+
+          {/* Zoom Icon */}
+          <div
+            className="
+              absolute
+              bottom-4
+              right-4
+
+              bg-white/90
+              backdrop-blur
+
+              rounded-full
+              px-3 py-2
+
+              text-sm
+              shadow-lg
+            "
+          >
+            🔍 Xem ảnh lớn
           </div>
-        )}
+        </div>
+
+        {/* THUMBNAILS */}
+        <div className="grid grid-cols-4 gap-3 mt-4">
+
+          {images.slice(0,4).map((img, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`
+                overflow-hidden
+                rounded-xl
+                border
+                bg-white
+                transition-all
+
+                ${
+                  currentIndex === index
+                    ? `
+                      border-[#ff7a00]
+                      ring-4 ring-orange-100
+                    `
+                    : `
+                      border-orange-100
+                      hover:border-orange-300
+                    `
+                }
+              `}
+            >
+              <img
+                src={img}
+                alt=""
+                className="
+                  w-full
+                  aspect-square
+                  object-cover
+                  transition-transform
+                  duration-300
+                  hover:scale-105
+                "
+              />
+            </button>
+          ))}
+
+        </div>
       </div>
 
-     {/* Thumbnail */}
-<div className="grid grid-cols-4 gap-3 mt-4">
+      {/* FULLSCREEN VIEWER */}
+      {openViewer && (
+        <div
+          className="
+            fixed
+            inset-0
+            z-[9999]
 
-  {images.slice(0, 4).map((img, index) => (
-    <button
-      key={index}
-      onClick={() => setCurrentImage(img)}
-      className={`
-        group
-        relative
-        aspect-square
-        overflow-hidden
-        rounded-xl
-        border
-        bg-white
-        transition-all duration-300
+            bg-black/90
+            backdrop-blur-sm
 
-        ${
-          currentImage === img
-            ? `
-              border-[#ff7a00]
-              ring-4 ring-orange-100
-              shadow-[0_4px_20px_rgba(255,122,0,0.15)]
-            `
-            : `
-              border-orange-100
-              hover:border-orange-300
-              hover:shadow-[0_4px_20px_rgba(255,122,0,0.08)]
-            `
-        }
-      `}
-    >
+            flex
+            items-center
+            justify-center
+          "
+        >
 
-    
-      {/* IMAGE */}
-      <img
-        src={img}
-        className="
-          w-full h-full
-          object-cover
-          transition-transform duration-300
-          group-hover:scale-105
-        "
-      />
+          {/* Close */}
+          <button
+            onClick={() => setOpenViewer(false)}
+            className="
+              absolute
+              top-5
+              right-5
 
-      {/* OVERLAY */}
-      <div
-        className="
-          absolute inset-0
-          bg-gradient-to-t
-          from-black/5
-          to-transparent
-          opacity-0
-          group-hover:opacity-100
-          transition
-        "
-      />
+              w-12 h-12
 
-    </button>
-  ))}
+              rounded-full
+              bg-white
 
-</div>
-    </div>
+              text-xl
+              shadow-lg
+            "
+          >
+            ✕
+          </button>
+
+          {/* Prev */}
+          {images.length > 1 && (
+            <button
+              onClick={prevImage}
+              className="
+                absolute
+                left-4
+
+                w-12 h-12
+
+                rounded-full
+                bg-white
+
+                text-xl
+                shadow-lg
+              "
+            >
+              ←
+            </button>
+          )}
+
+          {/* Image */}
+          <img
+            src={currentImage}
+            alt=""
+            className="
+              max-w-[95vw]
+              max-h-[90vh]
+              object-contain
+            "
+          />
+
+          {/* Next */}
+          {images.length > 1 && (
+            <button
+              onClick={nextImage}
+              className="
+                absolute
+                right-4
+
+                w-12 h-12
+
+                rounded-full
+                bg-white
+
+                text-xl
+                shadow-lg
+              "
+            >
+              →
+            </button>
+          )}
+
+          {/* Counter */}
+          <div
+            className="
+              absolute
+              bottom-6
+
+              rounded-full
+              bg-white/10
+
+              px-4 py-2
+
+              text-white
+              backdrop-blur
+            "
+          >
+            {currentIndex + 1} / {images.length}
+          </div>
+
+        </div>
+      )}
+    </>
   );
 }
