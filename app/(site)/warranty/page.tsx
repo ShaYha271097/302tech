@@ -133,8 +133,7 @@ export default function WarrantyPage() {
                                             </div>
 
                                             <ul className="space-y-3 text-[#6B7280] leading-7 font-medium">
-                                                <li>✔️ Laptop dưới 10 triệu: Bảo hành 3 tháng</li>
-                                                <li>✔️ Laptop từ 10 triệu trở lên: Bảo hành 6 tháng</li>
+                                                <li>✔️ Laptop : Bảo hành 6 tháng</li>
                                                 <li>✔️ Bao test đổi trả 7 ngày nếu lỗi phần cứng</li>
                                             </ul>
                                         </section>
