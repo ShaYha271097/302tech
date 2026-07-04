@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
-  
   try {
     const { username, password } = await req.json();
 
@@ -21,11 +20,11 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-   console.log("=>>>>>>>>>>>>>SSS",username,password,process.env.ADMIN_PASSWORD_HASH!)
+   console.log("=>>>>>>>>>>>>>SSS",username,password,process.env.ADMIN_PASSWORD_HASH?.replace(/\\\$/g, "$")!)
     // ✅ check password hash
     const isMatch = await bcrypt.compare(
       password,
-      process.env.ADMIN_PASSWORD_HASH!
+      process.env.ADMIN_PASSWORD_HASH?.replace(/\\\$/g, "$")!
     );
  console.log("qua day ko=>>>>",isMatch)
     if (!isMatch) {
