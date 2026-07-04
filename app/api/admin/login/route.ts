@@ -23,17 +23,17 @@ export async function POST(req: Request) {
     }
    console.log("=>>>>>>>>>>>>>SSS",username,password,process.env.ADMIN_PASSWORD_HASH!)
     // ✅ check password hash
-//     const isMatch = await bcrypt.compare(
-//       password,
-//       process.env.ADMIN_PASSWORD_HASH!
-//     );
-//  console.log("qua day ko=>>>>",isMatch)
-//     if (!isMatch) {
-//       return NextResponse.json(
-//         { error: "Sai tài khoản hoặc mật khẩu" },
-//         { status: 400 }
-//       );
-//     }
+    const isMatch = await bcrypt.compare(
+      password,
+      process.env.ADMIN_PASSWORD_HASH!
+    );
+ console.log("qua day ko=>>>>",isMatch)
+    if (!isMatch) {
+      return NextResponse.json(
+        { error: "Sai tài khoản hoặc mật khẩu" },
+        { status: 400 }
+      );
+    }
 
     // ✅ tạo token
     const token = jwt.sign(
