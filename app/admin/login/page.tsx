@@ -67,7 +67,7 @@ export default function AdminLogin() {
     };
     return (
         <div className="relative h-screen flex items-center justify-center">
-            <img src={""} />
+            {/* <img src={""} /> */}
             {/* BACKGROUND */}
             <div
                 className="absolute inset-0 bg-cover bg-center"
