@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import BrandCarouselSkeleton from "../BrandCarouselSkeleton/BrandCarouselSkeleton";
 import { ObjectId } from "mongodb";
+
+
  interface Brand {
   _id: string;
   name: string;
@@ -56,7 +58,7 @@ if (!mounted) {
                 slidesPerView: 5,
               },
               1024: {
-                slidesPerView: 8,
+                slidesPerView: 7,
               },
             }}
           >
