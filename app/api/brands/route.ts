@@ -64,12 +64,12 @@ export async function POST(req: Request) {
 
     const baseSlug = toSlug(name);
     const slug = await generateUniqueSlug(db, baseSlug);
-
     const newBrand = {
       name,
       slug,
-      image: image || "", // 👈 thêm dòng này
+      image: image || null, // 👈 thêm dòng này
       createdAt: new Date(),
+      isActive:false
     };
 
     const result = await db.collection("brands").insertOne(newBrand);

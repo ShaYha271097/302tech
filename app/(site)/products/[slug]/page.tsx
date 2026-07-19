@@ -36,7 +36,7 @@ export async function generateMetadata({
 
       images: [
         {
-          url: product.mainImage,
+          url: product.mainImage.url,
         },
       ],
     },

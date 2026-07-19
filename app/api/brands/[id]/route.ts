@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-
+import cloudinary from "@/lib/cloudinary";
 
 async function generateUniqueSlug(db: any, baseSlug: string, excludeId?: string) {
   let slug = baseSlug;
@@ -41,6 +41,13 @@ export async function PUT(
 ) {
   try {
     const { id } = await context.params;
+
+    if (!ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { message: "ID không hợp lệ" },
+      { status: 400 }
+    );
+  }
 
     const { name, image } = await req.json(); // 👈 thêm image
 
@@ -90,6 +97,18 @@ export async function PUT(
         $set: updateData,
       }
     );
+
+    if (
+      image &&
+      brand.image?.publicId &&
+      image.publicId !== brand.image.publicId
+    ) {
+      try {
+        await cloudinary.uploader.destroy(brand.image.publicId);
+      } catch (err) {
+        console.error("Xóa ảnh Cloudinary thất bại:", err);
+      }
+    }
 
     return NextResponse.json({ message: "Cập nhật thành công" });
   } catch (error) {

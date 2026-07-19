@@ -17,7 +17,12 @@ export default function Header({
     //   loadingBrands,
 }: Props) {
     const [openMenu, setOpenMenu] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+   
 
     const activeBrands = (brands || []).filter(
         (b) => !b.isActive
@@ -33,11 +38,11 @@ export default function Header({
             ? activeBrands.slice(7)
             : [];
     const totalItems = useAppSelector(
-    (state) =>
-        state.cart.items.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-        )
+        (state) =>
+            state.cart.items.reduce(
+                (sum, item) => sum + item.quantity,
+                0
+            )
     );
 
 
@@ -137,25 +142,20 @@ export default function Header({
                                                 absolute
                                                 -top-2
                                                 -right-2
-
                                                 flex
                                                 items-center
                                                 justify-center
-
                                                 min-w-[20px]
                                                 h-5
                                                 px-1
-
                                                 rounded-full
-
                                                 bg-[#ff7a00]
-
                                                 text-[11px]
                                                 font-bold
                                                 text-white
                                             "
                                         >
-                                          {totalItems}
+                                            {mounted ? totalItems : 0}
                                         </span>
                                     </Link>
                                 </div>
@@ -207,10 +207,10 @@ export default function Header({
                         {/* RIGHT */}
                         <div className="flex items-center gap-3">
                             {/* CART */}
-                                <div className="cart">
-                                    <Link
-                                        href="/cart"
-                                        className="
+                            <div className="cart">
+                                <Link
+                                    href="/cart"
+                                    className="
                                                 relative
                                                 flex
                                                 items-center
@@ -230,17 +230,17 @@ export default function Header({
                                                 hover:border-orange-300
                                                 hover:bg-orange-50
                                                 "
-                                    >
-                                        <i
-                                            className="
+                                >
+                                    <i
+                                        className="
                                                 fas fa-shopping-bag
                                                 text-lg
                                                 text-[#ff7a00]
                                             "
-                                        />
+                                    />
 
-                                        <span
-                                            className="
+                                    <span
+                                        className="
                                                 absolute
                                                 -top-2
                                                 -right-2
@@ -261,11 +261,11 @@ export default function Header({
                                                 font-bold
                                                 text-white
                                             "
-                                        >
-                                          {totalItems}
-                                        </span>
-                                    </Link>
-                                </div>
+                                    >
+                                        {mounted ? totalItems : 0}
+                                    </span>
+                                </Link>
+                            </div>
                         </div>
                     </div>
 
@@ -298,7 +298,7 @@ export default function Header({
                                             >
                                                 <img
                                                     loading="lazy"
-                                                    src={brand.image}
+                                                    src={brand.image.url}
                                                     alt={brand.name}
                                                     className="!w-8 !h-8 "
                                                 />{" "}
@@ -360,7 +360,7 @@ export default function Header({
                                                             loading="lazy"
                                                             width={24}
                                                             height={24}
-                                                            src={brand.image}
+                                                            src={brand.image.url.url}
                                                             alt={brand.name}
                                                             className="w-6 h-6 object-contain"
                                                         />
@@ -423,7 +423,7 @@ export default function Header({
                                 className="flex items-center gap-3 py-2 border-b"
                             >
                                 <img
-                                    src={brand.image}
+                                    src={brand.image.url}
                                     className="w-6 h-6 object-contain"
                                 />
                                 <span>{brand.name}</span>

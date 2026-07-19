@@ -7,12 +7,13 @@ import { useRouter } from "next/navigation";
 import AddPBrandDialog from "./AddPBrandDialog";
 import DashboardPagination from "../components/DashboardPagination";
 import MobileSidebar from "../components/MobileSidebar";
+import { CloudinaryImage } from "@/types/image";
 
 type Brand = {
     _id: string;
     name: string;
     slug: string;
-    image: string;
+    image: CloudinaryImage
     createdAt: string;
     isActive: boolean;
 };
@@ -37,7 +38,6 @@ export default function BrandDetail({
 
     const [brands, setBrands] = useState(initialBrands);
     const [total, setTotal] = useState(initialTotal);
-
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
 
@@ -88,6 +88,7 @@ export default function BrandDetail({
             console.log(err);
         }
     };
+   
     return (
         <>
             <Topbar
@@ -204,7 +205,7 @@ export default function BrandDetail({
                                         <td className="px-4 py-2.5">
                                             <img
                                                 src={
-                                                    p.image ||
+                                                    p.image.url ||
                                                     "https://via.placeholder.com/60"
                                                 }
                                                 className="
@@ -348,7 +349,7 @@ export default function BrandDetail({
                                     {/* IMAGE */}
                                     <img
                                         src={
-                                            p.image ||
+                                            p.image.url ||
                                             "https://via.placeholder.com/60"
                                         }
                                         className="

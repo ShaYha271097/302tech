@@ -16,6 +16,7 @@ import { X, Trash } from "lucide-react";
 import { useEffect } from "react";
 import ImageCropDialog from "../components/ImageCropDialog";
 import { Loader2 } from "lucide-react";
+import { CloudinaryImage } from "@/types/image";
 type Variant = {
   id: string;
   cpu: string;
@@ -101,8 +102,12 @@ const [loadingBrand, setLoadingBrand] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [errorName, setErrorName] = useState("");
-  const [images, setImages] = useState<File[]>([]);
-  const [mainImage, setMainImage] = useState<File | null>(null);
+  const [images, setImages] = useState<
+  (File | CloudinaryImage)[]
+>([]);
+  const [mainImage, setMainImage] = useState<
+    File | CloudinaryImage | null
+  >(null);
   const [openBrand, setOpenBrand] = useState(false);
   const [newBrand, setNewBrand] = useState("");
   const [brands, setBrands] = useState<any[]>([]);
@@ -190,31 +195,35 @@ const [loadingBrand, setLoadingBrand] = useState(false);
 
     try {
       // 👉 MAIN IMAGE
-      const mainImageUrl =
-        typeof mainImage === "string"
-          ? mainImage
-          : await upload(mainImage, "product");
+      const mainImageData =
+        mainImage instanceof File
+      ? await upload(mainImage, "product")
+      : mainImage;
+
 
       // 👉 GALLERY (upload song song nhưng ổn định hơn)
-      const galleryUrls = await Promise.all(
+      const galleryData = await Promise.all(
         images
           .filter((i) => i !== mainImage)
           .map(async (img) => {
-            if (typeof img === "string") return img;
-            return await upload(img, "product");
-          }),
+            if (img instanceof File) {
+              return await upload(img, "product");
+            }
+
+            return img;
+          })
       );
 
       const payload = {
         name,
         brandId,
-        mainImage: mainImageUrl,
-        gallery: galleryUrls,
+        mainImage: mainImageData,
+        gallery: galleryData,
         variants,
         isHot,
         isNew,
         isActive,
-        slug
+        slug,
       };
 
 
@@ -255,19 +264,24 @@ const [loadingBrand, setLoadingBrand] = useState(false);
         body: formData,
       });
 
-      const data = await res.json();
-      return data.url;
+     const data = await res.json();
+      return {
+        url: data.url,
+        publicId: data.publicId,
+      };
     } finally {
       setUploading(false);
     }
   };
 
   const mainImageUrl = useMemo(() => {
-    if (!mainImage) return "";
+  if (!mainImage) return "";
 
-    return typeof mainImage === "string"
-      ? mainImage
-      : URL.createObjectURL(mainImage);
+  if (mainImage instanceof File) {
+    return URL.createObjectURL(mainImage);
+  }
+
+    return mainImage.url;
   }, [mainImage]);
 
   useEffect(() => {
@@ -288,13 +302,13 @@ const [loadingBrand, setLoadingBrand] = useState(false);
     setMainImage(file); // set luôn làm ảnh chính
   };
 
-  useEffect(() => {
-    return () => {
-      if (typeof mainImage !== "string") {
-        URL.revokeObjectURL(mainImageUrl);
-      }
-    };
-  }, [mainImageUrl]);
+useEffect(() => {
+  return () => {
+    if (mainImage instanceof File) {
+      URL.revokeObjectURL(mainImageUrl);
+    }
+  };
+}, [mainImage, mainImageUrl]);
 
   const validateForm = () => {
     if (!name.trim() || name.trim().length < 5) {
@@ -333,11 +347,10 @@ const [loadingBrand, setLoadingBrand] = useState(false);
     return null;
   };
   const count = images.filter((i) => i !== mainImage).length;
-  const isInvalid = count < 2 || count > 6;
 
 
 
-  const handleCreateBrand = async () => {
+const handleCreateBrand = async () => {
   if (!newBrand.trim()) {
     alert("Vui lòng nhập tên thương hiệu");
     return;
@@ -346,18 +359,21 @@ const [loadingBrand, setLoadingBrand] = useState(false);
   setLoadingBrand(true);
 
   try {
-    let imageUrl = "";
+    let image: CloudinaryImage = {
+      url: "",
+      publicId: "",
+    };
 
-    // upload logo
-    if (mainImage && typeof mainImage !== "string") {
-      imageUrl = await upload(mainImage, "brand");
-    } else {
-      imageUrl = mainImage || "";
+    // Upload logo nếu chọn file mới
+    if (mainImage instanceof File) {
+      image = await upload(mainImage, "brand");
+    } else if (mainImage) {
+      image = mainImage;
     }
 
     const payload = {
       name: newBrand.trim(),
-      image: imageUrl,
+      image,
     };
 
     const res = await fetch("/api/brands", {
@@ -370,37 +386,39 @@ const [loadingBrand, setLoadingBrand] = useState(false);
 
     const data = await res.json();
 
-if (!res.ok) {
-  alert(data.error || "Lỗi tạo thương hiệu");
-  return;
-}
+    if (!res.ok) {
+      alert(data.message || "Lỗi tạo thương hiệu");
+      return;
+    }
 
-const brand = data.data;
+    const brand = data.data;
 
-if (!brand?._id) {
-  alert("Brand không hợp lệ");
-  return;
-}
+    if (!brand?._id) {
+      alert("Brand không hợp lệ");
+      return;
+    }
 
-setBrands((prev) => {
-  const exists = prev.some(
-    (item) => String(item._id) === String(brand._id)
-  );
+    setBrands((prev) => {
+      const exists = prev.some(
+        (item) => String(item._id) === String(brand._id)
+      );
 
-  if (exists) return prev;
+      if (exists) return prev;
 
-  return [...prev, brand];
-});
+      return [...prev, brand];
+    });
 
-setBrandId(String(brand._id));
-    // reset form
+    setBrandId(String(brand._id));
+
+    // Reset
     setNewBrand("");
     setMainImage(null);
 
-    // đóng popup
+    // Đóng popup
     setOpenBrand(false);
 
   } catch (err) {
+    console.error(err);
     alert("Upload thất bại");
   } finally {
     setLoadingBrand(false);
@@ -949,9 +967,9 @@ sm:h-[90vh]
 
                 {images.map((img, index) => {
                   const url =
-                    typeof img === "string"
-                      ? img
-                      : URL.createObjectURL(img);
+                  img instanceof File
+                    ? URL.createObjectURL(img)
+                    : img.url;
 
                   return (
                     <div
@@ -962,15 +980,15 @@ sm:h-[90vh]
                         setCropOpen(true);
                       }}
                       className={`
-          relative
-         w-20 h-20 sm:w-24 sm:h-24
-          rounded-2xl
-          overflow-hidden
-          border-2
-          cursor-pointer
-          group
-          transition-all duration-300
-          hover:shadow-lg
+                      relative
+                    w-20 h-20 sm:w-24 sm:h-24
+                      rounded-2xl
+                      overflow-hidden
+                      border-2
+                      cursor-pointer
+                      group
+                      transition-all duration-300
+                      hover:shadow-lg
           ${img === mainImage
                           ? "border-[#ff7a00]"
                           : "border-[#E5E7EB]"

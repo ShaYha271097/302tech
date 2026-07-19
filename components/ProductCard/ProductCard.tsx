@@ -1,4 +1,5 @@
 import { getVariantText } from "@/lib/format";
+import { CloudinaryImage } from "@/types/image";
 import Link from "next/link";
 
 export default function ProductCard({
@@ -35,7 +36,7 @@ export default function ProductCard({
         >
 
           <img
-            src={product.mainImage}
+            src={product.mainImage.url}
             className="
               w-full
               h-full

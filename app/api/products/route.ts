@@ -6,6 +6,7 @@ import { NextResponse, NextRequest } from "next/server"
 import { ObjectId } from "mongodb"
 import { requireAdmin } from "@/lib/auth"
 import { getProducts } from "@/lib/getProduct";
+import { CloudinaryImage } from "@/types/image";
 
 type Variant = {
   cpu: string;
@@ -22,8 +23,8 @@ type Product = {
   brandId: ObjectId;
   name: string;
   slug: string;
-  mainImage: string;
-  gallery: string[];
+ mainImage: CloudinaryImage;
+  gallery: CloudinaryImage[];
   variants: Variant[];
   createdAt: Date;
   isHot: boolean;
@@ -123,9 +124,15 @@ export async function POST(req: Request) {
     // frontend gửi slug lên
     slug: body.slug.trim(),
 
-    mainImage: body.mainImage,
+     mainImage: {
+      url: body.mainImage.url,
+      publicId: body.mainImage.publicId,
+    },
 
-    gallery: body.gallery || [],
+    gallery: (body.gallery || []).map((img: any) => ({
+      url: img.url,
+      publicId: img.publicId,
+    })),
 
     variants: body.variants,
 

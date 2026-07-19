@@ -1,20 +1,24 @@
 "use client";
 
+import { CloudinaryImage } from "@/types/image";
 import { useMemo, useState } from "react";
 
 type Props = {
-  mainImage: string;
-  gallery: string[];
+  mainImage: CloudinaryImage;
+  gallery: CloudinaryImage[];
 };
 
 export default function ProductGallery({
   mainImage,
   gallery,
 }: Props) {
-  const images = useMemo(() => {
-    const arr = [mainImage, ...(gallery || [])];
-    return [...new Set(arr)];
-  }, [mainImage, gallery]);
+  console.log("gallery",gallery)
+const images = useMemo<( CloudinaryImage )[]>(() => {
+  return [mainImage, ...gallery].filter(
+    (img): img is  CloudinaryImage  => img !== null
+  );
+}, [mainImage, gallery]);
+
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [openViewer, setOpenViewer] = useState(false);
@@ -51,7 +55,7 @@ export default function ProductGallery({
           "
         >
           <img
-            src={currentImage}
+            src={currentImage.url}
             alt=""
             className="
               w-full
@@ -122,7 +126,7 @@ export default function ProductGallery({
               `}
             >
               <img
-                src={img}
+                src={img.url}
                 alt=""
                 className="
                   w-full
@@ -199,7 +203,7 @@ export default function ProductGallery({
 
           {/* Image */}
           <img
-            src={currentImage}
+            src={currentImage.url}
             alt=""
             className="
               max-w-[95vw]

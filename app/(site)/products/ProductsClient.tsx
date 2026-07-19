@@ -145,7 +145,7 @@ export default function ProductsClient({
                                                                             loading="lazy"
                                                                             width={1276}
                                                                             height={956}
-                                                                            src={item.mainImage}
+                                                                            src={item.mainImage.url}
                                                                             className="1"
                                                                             alt="Laptop Tèo Em - Cần Thơ"
                                                                             decoding="async"

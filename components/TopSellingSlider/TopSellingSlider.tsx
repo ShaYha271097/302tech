@@ -12,6 +12,7 @@ import TopSellingSkeleton from "../TopSellingSkeleton/TopSellingSkeleton";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { CloudinaryImage } from "@/types/image";
 
 
 
@@ -29,8 +30,8 @@ type Product = {
     brandId:string,
   name: string;
   slug: string;
-  mainImage: string;
-  gallery: string[];
+  mainImage: CloudinaryImage;
+  gallery: CloudinaryImage[];
   variants: Variant[];
   createdAt: string;
   isHot: boolean;
@@ -88,7 +89,7 @@ if (!mounted) {
               1024: { slidesPerView: 5 },
             }}
           >
-            {products?.map((p, index) => {
+            {products.map((p, index) => {
               return (
                 <SwiperSlide key={index}>
                     <ProductCard   key={p._id} product={p} />

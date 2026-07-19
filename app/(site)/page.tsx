@@ -129,7 +129,6 @@ export default async function Home() {
 } = await getHomeData();
   
 
-  console.log("brands111",brands)
   return (
     <>
       <BannerSlider

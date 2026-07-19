@@ -11,6 +11,7 @@ import Topbar from "../components/TopBar";
 import { useRouter } from "next/navigation";
 import MobileSidebar from "../components/MobileSidebar";
 import DashboardPagination from "../components/DashboardPagination";
+import { CloudinaryImage } from "@/types/image";
 type Variant = {
   id: string;
   cpu: string;
@@ -26,8 +27,8 @@ type Variant = {
 type Product = {
   _id: string
   name: string
-  mainImage: string
-  gallery: string[]
+  mainImage: CloudinaryImage
+  gallery: CloudinaryImage[]
   createdAt: string
   variants: Variant[]
   brand?: {
@@ -250,7 +251,7 @@ useEffect(() => {
                     {/* IMAGE */}
                     <img
                       src={
-                        p.mainImage ||
+                        p.mainImage.url ||
                         "https://via.placeholder.com/60"
                       }
                       className="
@@ -696,7 +697,7 @@ useEffect(() => {
                         <td className="px-4 py-2.5">
                           <img
                             src={
-                              p.mainImage ||
+                              p.mainImage.url ||
                               "https://via.placeholder.com/60"
                             }
                             className="
@@ -778,7 +779,7 @@ useEffect(() => {
                               <div className="w-48 h-48 flex-shrink-0">
                                 <img
                                   src={
-                                    p.mainImage ||
+                                    p.mainImage.url ||
                                     "https://via.placeholder.com/150"
                                   }
                                   className="

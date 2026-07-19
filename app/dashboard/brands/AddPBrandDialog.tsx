@@ -19,6 +19,11 @@ type Props = {
   onSuccess?: () => void;
 };
 
+type UploadedImage = {
+  url: string;
+  publicId: string;
+};
+
 export default function AddPBrandDialog({
   open,
   setOpen,
@@ -31,7 +36,7 @@ export default function AddPBrandDialog({
   const [name, setName] = useState("");
   const [errorName, setErrorName] = useState("");
 
-  const [mainImage, setMainImage] = useState<File | string | null>(null);
+  const [mainImage, setMainImage] = useState<File | UploadedImage | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -40,6 +45,8 @@ export default function AddPBrandDialog({
     setName("");
     setMainImage(null);
   };
+
+
 
   // 🔥 set data khi edit
   useEffect(() => {
@@ -53,13 +60,15 @@ export default function AddPBrandDialog({
     }
   }, [open, mode, brand]);
 
-  const mainImageUrl = useMemo(() => {
-    if (!mainImage) return "";
-    return typeof mainImage === "string"
-      ? mainImage
-      : URL.createObjectURL(mainImage);
-  }, [mainImage]);
+ const mainImageUrl = useMemo(() => {
+  if (!mainImage) return "";
 
+  if (mainImage instanceof File) {
+    return URL.createObjectURL(mainImage);
+  }
+
+  return mainImage.url;
+}, [mainImage]);
   // 🔥 cleanup đúng
   useEffect(() => {
     return () => {
@@ -90,7 +99,11 @@ export default function AddPBrandDialog({
       });
 
       const data = await res.json();
-      return data.url;
+      return {
+        url: data.url,
+        publicId: data.publicId,
+      };
+
     } finally {
       setUploading(false);
     }
@@ -106,17 +119,16 @@ export default function AddPBrandDialog({
     setLoading(true);
 
     try {
-      let imageUrl = "";
-
-      if (mainImage && typeof mainImage !== "string") {
-        imageUrl = await upload(mainImage);
+      let image: UploadedImage | null = null;
+      if (mainImage instanceof File) {
+        image = await upload(mainImage);
       } else {
-        imageUrl = mainImage || "";
+        image = mainImage;
       }
 
       const payload = {
-        name,
-        image: imageUrl,
+      name,
+      image,
       };
 
       const res = await fetch(

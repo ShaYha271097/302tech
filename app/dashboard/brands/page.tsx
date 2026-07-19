@@ -8,9 +8,9 @@ export default async function Page() {
   });
 
   return (
-    <BrandDetail
-      initialBrands={data.brands}
-      initialTotal={data.total}
-    />
+      <BrandDetail
+        initialBrands={data.brands}
+        initialTotal={data.total}
+      />
   );
 }
