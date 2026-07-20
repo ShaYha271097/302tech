@@ -4,6 +4,7 @@ import clientPromise from "@/lib/mongodb" // chỉnh đúng path của bạn
 import { NextResponse ,NextRequest} from "next/server"
 
 import { ObjectId } from "mongodb"
+import cloudinary from "@/lib/cloudinary"
 
 type Variant = {
     cpu: string
@@ -25,6 +26,16 @@ export async function PUT(
     const client = await clientPromise;
     const db = client.db("laptop-shop");
 
+    const oldProduct = await db.collection("products").findOne({
+      _id: new ObjectId(id),
+    });
+
+    if (!oldProduct) {
+      return NextResponse.json(
+        { message: "Không tìm thấy sản phẩm" },
+        { status: 404 }
+      );
+    }
 
     // 👉 validate id
     if (!ObjectId.isValid(id)) {
@@ -70,9 +81,18 @@ export async function PUT(
     const updateData = {
       name,
       brandId: new ObjectId(brandId),
+      slug: body.slug,
+
       mainImage,
+
       gallery,
+
       variants,
+
+      isHot: body.isHot ?? false,
+      isNew: body.isNew ?? false,
+      isActive: body.isActive ?? true,
+
       updatedAt: new Date(),
     };
 
@@ -87,6 +107,39 @@ export async function PUT(
         { status: 404 }
       );
     }
+
+    if (
+      oldProduct.mainImage?.publicId &&
+      oldProduct.mainImage.publicId !== mainImage.publicId
+    ) {
+      try {
+        await cloudinary.uploader.destroy(
+          oldProduct.mainImage.publicId
+        );
+      } catch (err) {
+        console.error("Xóa main image lỗi:", err);
+      }
+    }
+
+    const removedImages = oldProduct.gallery.filter(
+      (oldImg: any) =>
+        !gallery.some(
+          (newImg: any) =>
+            newImg.publicId === oldImg.publicId
+        )
+    );
+
+      await Promise.all(
+        removedImages.map(async (img: any) => {
+          try {
+            await cloudinary.uploader.destroy(
+              img.publicId
+            );
+          } catch (err) {
+            console.error(err);
+          }
+        })
+      );
 
     return NextResponse.json({
       message: "Cập nhật thành công",

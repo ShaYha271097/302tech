@@ -17,6 +17,19 @@ import { useEffect } from "react";
 import ImageCropDialog from "../components/ImageCropDialog";
 import { Loader2 } from "lucide-react";
 import { CloudinaryImage } from "@/types/image";
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+} from "@dnd-kit/core";
+
+import {
+  SortableContext,
+  rectSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import SortableImage from "@/components/SortableImage";
 type Variant = {
   id: string;
   cpu: string;
@@ -28,7 +41,7 @@ type Variant = {
   resolution: string;
   refreshRate: string;
   priceInput?: string;
-  slug:string
+  slug: string
 };
 
 type Props = {
@@ -86,7 +99,7 @@ const defaultVariant: Variant = {
   screenSize: "",
   resolution: "",
   refreshRate: "",
-  slug:""
+  slug: ""
 };
 
 export default function AddProductDialog({
@@ -98,13 +111,13 @@ export default function AddProductDialog({
 }: Props) {
   // const variantsRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-const [loadingBrand, setLoadingBrand] = useState(false);
+  const [loadingBrand, setLoadingBrand] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [errorName, setErrorName] = useState("");
   const [images, setImages] = useState<
-  (File | CloudinaryImage)[]
->([]);
+    (File | CloudinaryImage)[]
+  >([]);
   const [mainImage, setMainImage] = useState<
     File | CloudinaryImage | null
   >(null);
@@ -142,7 +155,10 @@ const [loadingBrand, setLoadingBrand] = useState(false);
       setBrandId(product.brandId || "");
       setVariants(product.variants || []);
       setMainImage(product.mainImage || null);
-      setImages(product.gallery || []);
+      setImages([
+        product.mainImage,
+        ...(product.gallery || []),
+      ]);
     } else {
       // create
       resetForm();
@@ -197,8 +213,8 @@ const [loadingBrand, setLoadingBrand] = useState(false);
       // 👉 MAIN IMAGE
       const mainImageData =
         mainImage instanceof File
-      ? await upload(mainImage, "product")
-      : mainImage;
+          ? await upload(mainImage, "product")
+          : mainImage;
 
 
       // 👉 GALLERY (upload song song nhưng ổn định hơn)
@@ -264,7 +280,7 @@ const [loadingBrand, setLoadingBrand] = useState(false);
         body: formData,
       });
 
-     const data = await res.json();
+      const data = await res.json();
       return {
         url: data.url,
         publicId: data.publicId,
@@ -275,11 +291,11 @@ const [loadingBrand, setLoadingBrand] = useState(false);
   };
 
   const mainImageUrl = useMemo(() => {
-  if (!mainImage) return "";
+    if (!mainImage) return "";
 
-  if (mainImage instanceof File) {
-    return URL.createObjectURL(mainImage);
-  }
+    if (mainImage instanceof File) {
+      return URL.createObjectURL(mainImage);
+    }
 
     return mainImage.url;
   }, [mainImage]);
@@ -302,13 +318,13 @@ const [loadingBrand, setLoadingBrand] = useState(false);
     setMainImage(file); // set luôn làm ảnh chính
   };
 
-useEffect(() => {
-  return () => {
-    if (mainImage instanceof File) {
-      URL.revokeObjectURL(mainImageUrl);
-    }
-  };
-}, [mainImage, mainImageUrl]);
+  useEffect(() => {
+    return () => {
+      if (mainImage instanceof File) {
+        URL.revokeObjectURL(mainImageUrl);
+      }
+    };
+  }, [mainImage, mainImageUrl]);
 
   const validateForm = () => {
     if (!name.trim() || name.trim().length < 5) {
@@ -350,85 +366,85 @@ useEffect(() => {
 
 
 
-const handleCreateBrand = async () => {
-  if (!newBrand.trim()) {
-    alert("Vui lòng nhập tên thương hiệu");
-    return;
-  }
-
-  setLoadingBrand(true);
-
-  try {
-    let image: CloudinaryImage = {
-      url: "",
-      publicId: "",
-    };
-
-    // Upload logo nếu chọn file mới
-    if (mainImage instanceof File) {
-      image = await upload(mainImage, "brand");
-    } else if (mainImage) {
-      image = mainImage;
-    }
-
-    const payload = {
-      name: newBrand.trim(),
-      image,
-    };
-
-    const res = await fetch("/api/brands", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message || "Lỗi tạo thương hiệu");
+  const handleCreateBrand = async () => {
+    if (!newBrand.trim()) {
+      alert("Vui lòng nhập tên thương hiệu");
       return;
     }
 
-    const brand = data.data;
+    setLoadingBrand(true);
 
-    if (!brand?._id) {
-      alert("Brand không hợp lệ");
-      return;
+    try {
+      let image: CloudinaryImage = {
+        url: "",
+        publicId: "",
+      };
+
+      // Upload logo nếu chọn file mới
+      if (mainImage instanceof File) {
+        image = await upload(mainImage, "brand");
+      } else if (mainImage) {
+        image = mainImage;
+      }
+
+      const payload = {
+        name: newBrand.trim(),
+        image,
+      };
+
+      const res = await fetch("/api/brands", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Lỗi tạo thương hiệu");
+        return;
+      }
+
+      const brand = data.data;
+
+      if (!brand?._id) {
+        alert("Brand không hợp lệ");
+        return;
+      }
+
+      setBrands((prev) => {
+        const exists = prev.some(
+          (item) => String(item._id) === String(brand._id)
+        );
+
+        if (exists) return prev;
+
+        return [...prev, brand];
+      });
+
+      setBrandId(String(brand._id));
+
+      // Reset
+      setNewBrand("");
+      setMainImage(null);
+
+      // Đóng popup
+      setOpenBrand(false);
+
+    } catch (err) {
+      console.error(err);
+      alert("Upload thất bại");
+    } finally {
+      setLoadingBrand(false);
     }
+  };
 
-    setBrands((prev) => {
-      const exists = prev.some(
-        (item) => String(item._id) === String(brand._id)
-      );
-
-      if (exists) return prev;
-
-      return [...prev, brand];
-    });
-
-    setBrandId(String(brand._id));
-
-    // Reset
-    setNewBrand("");
-    setMainImage(null);
-
-    // Đóng popup
-    setOpenBrand(false);
-
-  } catch (err) {
-    console.error(err);
-    alert("Upload thất bại");
-  } finally {
-    setLoadingBrand(false);
-  }
-};
-
-const SelectIcon = () => {
-  return (
-    <i
-      className="
+  const SelectIcon = () => {
+    return (
+      <i
+        className="
         fas fa-chevron-down
         absolute right-3 top-1/2
         -translate-y-1/2
@@ -436,8 +452,39 @@ const SelectIcon = () => {
         text-[#9CA3AF]
         pointer-events-none
       "
-    />
+      />
+    );
+  };
+
+const getImageId = (
+  img: File | CloudinaryImage
+) => {
+  if (img instanceof File) {
+    return `${img.name}-${img.lastModified}`;
+  }
+
+  return img.publicId;
+};
+
+const handleDragEnd = (event: DragEndEvent) => {
+  const { active, over } = event;
+
+  if (!over || active.id === over.id) return;
+
+  const oldIndex = images.findIndex(
+    (img) => getImageId(img) === active.id
   );
+
+  const newIndex = images.findIndex(
+    (img) => getImageId(img) === over.id
+  );
+
+  const newImages = arrayMove(images, oldIndex, newIndex);
+
+  setImages(newImages);
+
+  // Ảnh đầu tiên luôn là main
+  setMainImage(newImages[0] || null);
 };
   return (
     <>
@@ -467,14 +514,14 @@ sm:h-[90vh]
             "
           >
             <div
-  className="
+              className="
     flex flex-col
     sm:flex-row
     gap-4
     sm:items-center
     sm:justify-between
   "
->
+            >
               {/* LEFT */}
               <div className="flex items-center gap-4">
                 <div
@@ -569,10 +616,10 @@ sm:h-[90vh]
                 </div>
 
                 <div className="relative">
-                 <select
-  value={brandId}
-  onChange={(e) => setBrandId(e.target.value)}
-  className="
+                  <select
+                    value={brandId}
+                    onChange={(e) => setBrandId(e.target.value)}
+                    className="
     w-full h-[35px]
     rounded-xl
     border border-[#DCDCDC]
@@ -587,16 +634,16 @@ sm:h-[90vh]
     focus:ring-[#FFF3E8]
     cursor-pointer
   "
->
-  {brands.map((b: any) => (
-    <option
-      key={String(b._id)}
-      value={String(b._id)}
-    >
-      {b.name}
-    </option>
-  ))}
-</select>
+                  >
+                    {brands.map((b: any) => (
+                      <option
+                        key={String(b._id)}
+                        value={String(b._id)}
+                      >
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
 
                   <i
                     className="
@@ -786,7 +833,7 @@ sm:h-[90vh]
                       type="checkbox"
                       checked={isNew}
                       onChange={(e) => setIsNew(e.target.checked)}
-                    
+
                       className="
                         cursor-pointer
               w-4 h-4
@@ -802,13 +849,13 @@ sm:h-[90vh]
               </div>
 
               {/* RIGHT */}
-             <div
-              className="
+              <div
+                className="
                 lg:border-l border-[#E5E7EB]
                 lg:pl-8
                 flex items-center gap-4
               "
-            >
+              >
                 <div>
                   <label className="text-[15px] font-semibold text-[#111827]">
                     Sản phẩm hoạt động
@@ -860,10 +907,10 @@ sm:h-[90vh]
                 </label>
               </div>
 
-                      
-       {/* MAIN */}
-<div
-  className="
+
+              {/* MAIN */}
+              <div
+                className="
     border-2 border-dashed border-[#FED7AA]
     bg-[#FFF9F5]
     rounded-2xl
@@ -873,36 +920,36 @@ sm:h-[90vh]
     overflow-hidden
     mb-4
   "
->
+              >
 
-  {/* IMAGE */}
-  {mainImageUrl ? (
-    <img
-      src={mainImageUrl}
-      className="w-full h-full object-contain"
-    />
-  ) : (
-    <>
-      <div
-        className="
+                {/* IMAGE */}
+                {mainImageUrl ? (
+                  <img
+                    src={mainImageUrl}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <>
+                    <div
+                      className="
           w-20 h-20
           rounded-full
           bg-[#FFF1E7]
           flex items-center justify-center
         "
-      >
-        <i className="fas fa-images text-3xl text-[#ff7a00]" />
-      </div>
+                    >
+                      <i className="fas fa-images text-3xl text-[#ff7a00]" />
+                    </div>
 
-      <p className="mt-4 text-[#6B7280]">
-        Kéo thả ảnh vào đây hoặc click để chọn
-      </p>
-    </>
-  )}
+                    <p className="mt-4 text-[#6B7280]">
+                      Kéo thả ảnh vào đây hoặc click để chọn
+                    </p>
+                  </>
+                )}
 
-  {/* UPLOAD BUTTON LUÔN HIỆN */}
-  <label
-    className="
+                {/* UPLOAD BUTTON LUÔN HIỆN */}
+                <label
+                  className="
       absolute bottom-4 right-4
       h-9 px-5
       rounded-xl
@@ -913,67 +960,79 @@ sm:h-[90vh]
       hover:border-[#ff7a00]
       shadow-sm
     "
-  >
-    <i className="fas fa-plus" />
-    Thêm ảnh
+                >
+                  <i className="fas fa-plus" />
+                  Thêm ảnh
 
-    <input
-      type="file"
-      multiple
-      hidden
-      onChange={(e) => {
-        const files = Array.from(e.target.files || []);
+                  <input
+                    type="file"
+                    multiple
+                    hidden
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
 
-        const validFiles: File[] = [];
+                      const validFiles: File[] = [];
 
-        for (const file of files) {
-          if (!file.type.startsWith("image/")) {
-            alert("Chỉ được upload ảnh");
-            continue;
-          }
+                      for (const file of files) {
+                        if (!file.type.startsWith("image/")) {
+                          alert("Chỉ được upload ảnh");
+                          continue;
+                        }
 
-          if (file.size > 5 * 1024 * 1024) {
-            alert("Ảnh tối đa 5MB");
-            continue;
-          }
+                        if (file.size > 5 * 1024 * 1024) {
+                          alert("Ảnh tối đa 5MB");
+                          continue;
+                        }
 
-          validFiles.push(file);
-        }
+                        validFiles.push(file);
+                      }
 
-        if (!validFiles.length) {
-          e.target.value = "";
-          return;
-        }
+                      if (!validFiles.length) {
+                        e.target.value = "";
+                        return;
+                      }
 
-        setImages((prev) => {
-          const newList = [...prev, ...validFiles];
+                      setImages((prev) => {
+                        const newList = [...prev, ...validFiles];
 
-          // CHỈ set main khi chưa có
-          if (!mainImage && newList.length > 0) {
-            setMainImage(newList[0]);
-          }
+                        // CHỈ set main khi chưa có
+                        if (!mainImage && newList.length > 0) {
+                          setMainImage(newList[0]);
+                        }
 
-          return newList;
-        });
+                        return newList;
+                      });
 
-        e.target.value = "";
-      }}
-    />
-  </label>
-</div>
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
 
               {/* THUMB LIST */}
+      <DndContext
+  collisionDetection={closestCenter}
+  onDragEnd={handleDragEnd}
+>
+  <SortableContext
+    items={images.map(getImageId)}
+    strategy={rectSortingStrategy}
+  >
               <div className="flex flex-wrap gap-3">
-
                 {images.map((img, index) => {
+                  console.log("KKKKKKKKKKK", img, mainImage)
                   const url =
-                  img instanceof File
-                    ? URL.createObjectURL(img)
-                    : img.url;
+                    img instanceof File
+                      ? URL.createObjectURL(img)
+                      : img.url;
 
                   return (
+                     <SortableImage
+      key={getImageId(img)}
+      id={getImageId(img)}
+    >
                     <div
-                      key={index}
+                      // key={index}
                       onClick={() => {
                         setCropImage(url);
                         setCropIndex(index);
@@ -1005,7 +1064,6 @@ sm:h-[90vh]
             group-hover:scale-105
           "
                       />
-
                       {/* MAIN LABEL */}
                       {img === mainImage && (
                         <div
@@ -1025,19 +1083,19 @@ sm:h-[90vh]
                       )}
 
                       {/* DELETE */}
-                         <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
 
-            const newImgs = images.filter((i) => i !== img);
-            setImages(newImgs);
+                          const newImgs = images.filter((i) => i !== img);
+                          setImages(newImgs);
 
-            if (img === mainImage) {
-              setMainImage(newImgs[0] || null);
-            }
-          }}
-          className="
+                          if (img === mainImage) {
+                            setMainImage(newImgs[0] || null);
+                          }
+                        }}
+                        className="
             absolute bottom-2 right-2
             w-7 h-7
             rounded-lg
@@ -1048,30 +1106,32 @@ sm:h-[90vh]
             transition-all
             cursor-pointer
           "
-        >
-          <Trash className="w-3 h-3  cursor-pointer" />
-        </button>
+                      >
+                        <Trash className="w-3 h-3  cursor-pointer" />
+                      </button>
 
                     </div>
+                    </SortableImage>
                   );
                 })}
 
               </div>
+    </SortableContext>
+</DndContext>
 
-
-             {/* VARIANTS */}
-<div
-  className="
+              {/* VARIANTS */}
+              <div
+                className="
     bg-white
     border border-[#E5E7EB]
     rounded-2xl
     overflow-hidden
     mt-5
   "
->
-  {/* HEADER */}
-  <div
-    className="
+              >
+                {/* HEADER */}
+                <div
+                  className="
       px-4 sm:px-5 py-4
       border-b border-[#E5E7EB]
       flex flex-col sm:flex-row
@@ -1079,20 +1139,20 @@ sm:h-[90vh]
       sm:items-center
       sm:justify-between
     "
-  >
-    <div>
-      <h2 className="text-[15px] font-semibold text-[#111827]">
-        Cấu hình sản phẩm
-      </h2>
+                >
+                  <div>
+                    <h2 className="text-[15px] font-semibold text-[#111827]">
+                      Cấu hình sản phẩm
+                    </h2>
 
-      <p className="text-sm leading-7 text-[#6B7280] mt-1">
-        Quản lý nhiều phiên bản cấu hình
-      </p>
-    </div>
+                    <p className="text-sm leading-7 text-[#6B7280] mt-1">
+                      Quản lý nhiều phiên bản cấu hình
+                    </p>
+                  </div>
 
-    <button
-      onClick={addVariant}
-      className="
+                  <button
+                    onClick={addVariant}
+                    className="
         h-10 px-4
         rounded-xl
         border border-[#FED7AA]
@@ -1104,14 +1164,14 @@ sm:h-[90vh]
         w-full sm:w-auto
          cursor-pointer
       "
-    >
-      + Thêm cấu hình
-    </button>
-  </div>
+                  >
+                    + Thêm cấu hình
+                  </button>
+                </div>
 
-  {/* DESKTOP HEADER */}
-  <div
-    className="
+                {/* DESKTOP HEADER */}
+                <div
+                  className="
       hidden lg:grid
       grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
       gap-3
@@ -1120,229 +1180,229 @@ sm:h-[90vh]
       border-b border-[#E5E7EB]
       text-xs font-semibold text-[#6B7280]
     "
-  >
-    <div>CPU</div>
-    <div>RAM</div>
-    <div>SSD</div>
-    <div>GPU</div>
-    <div>Size</div>
-    <div>Độ phân giải</div>
-    <div>Tần số</div>
-    <div>Giá</div>
-    <div className="text-center">Xóa</div>
-  </div>
+                >
+                  <div>CPU</div>
+                  <div>RAM</div>
+                  <div>SSD</div>
+                  <div>GPU</div>
+                  <div>Size</div>
+                  <div>Độ phân giải</div>
+                  <div>Tần số</div>
+                  <div>Giá</div>
+                  <div className="text-center">Xóa</div>
+                </div>
 
-  {/* BODY */}
-  <div className="divide-y divide-[#F3F4F6]">
-    {variants.map((v, index) => (
-      <div
-        key={v.id}
-        className="
+                {/* BODY */}
+                <div className="divide-y divide-[#F3F4F6]">
+                  {variants.map((v, index) => (
+                    <div
+                      key={v.id}
+                      className="
           p-4 lg:px-5 lg:py-4
           hover:bg-[#FAFAFA]
           transition-all
         "
-      >
+                    >
 
-        {/* DESKTOP */}
-        <div
-          className="
+                      {/* DESKTOP */}
+                      <div
+                        className="
             hidden lg:grid
             grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
             gap-3
             items-center
           "
-        >
+                      >
 
-          {/* CPU */}
-          <input
-            className={selectClass}
-            placeholder="i7-1165G7"
-            value={v.cpu}
-            onChange={(e) => {
-              const newVariants = [...variants];
-              newVariants[index].cpu = e.target.value;
-              setVariants(newVariants);
-            }}
-          />
+                        {/* CPU */}
+                        <input
+                          className={selectClass}
+                          placeholder="i7-1165G7"
+                          value={v.cpu}
+                          onChange={(e) => {
+                            const newVariants = [...variants];
+                            newVariants[index].cpu = e.target.value;
+                            setVariants(newVariants);
+                          }}
+                        />
 
-          {/* RAM */}
-          <div className="relative">
-            <select
-             className={selectClass}
-              value={v.ram}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, ram: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="8GB">8GB</option>
-              <option value="16GB">16GB</option>
-              <option value="32GB">32GB</option>
-              <option value="64GB">64GB</option>
-            </select>
+                        {/* RAM */}
+                        <div className="relative">
+                          <select
+                            className={selectClass}
+                            value={v.ram}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? { ...item, ram: e.target.value }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="8GB">8GB</option>
+                            <option value="16GB">16GB</option>
+                            <option value="32GB">32GB</option>
+                            <option value="64GB">64GB</option>
+                          </select>
 
-           <SelectIcon />
-          </div>
+                          <SelectIcon />
+                        </div>
 
-          {/* SSD */}
-          <div className="relative">
-            <select
-             className={selectClass}
-              value={v.ssd}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, ssd: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="128GB">128GB</option>
-              <option value="256GB">256GB</option>
-              <option value="512GB">512GB</option>
-              <option value="1TB">1TB</option>
-            </select>
+                        {/* SSD */}
+                        <div className="relative">
+                          <select
+                            className={selectClass}
+                            value={v.ssd}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? { ...item, ssd: e.target.value }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="128GB">128GB</option>
+                            <option value="256GB">256GB</option>
+                            <option value="512GB">512GB</option>
+                            <option value="1TB">1TB</option>
+                          </select>
 
-           <SelectIcon />
-          </div>
+                          <SelectIcon />
+                        </div>
 
-          {/* GPU */}
-          <input
-          className={selectClass}
-            placeholder="RTX 4060"
-            value={v.gpu || ""}
-            onChange={(e) => {
-              const newVariants = [...variants];
-              newVariants[index].gpu = e.target.value;
-              setVariants(newVariants);
-            }}
-          />
+                        {/* GPU */}
+                        <input
+                          className={selectClass}
+                          placeholder="RTX 4060"
+                          value={v.gpu || ""}
+                          onChange={(e) => {
+                            const newVariants = [...variants];
+                            newVariants[index].gpu = e.target.value;
+                            setVariants(newVariants);
+                          }}
+                        />
 
-          {/* SIZE */}
-          <div className="relative">
-            <select
-             className={selectClass}
-              value={v.screenSize}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, screenSize: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="13.3">13.3"</option>
-              <option value="14">14"</option>
-              <option value="15.6">15.6"</option>
-              <option value="16">16"</option>
-            </select>
+                        {/* SIZE */}
+                        <div className="relative">
+                          <select
+                            className={selectClass}
+                            value={v.screenSize}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? { ...item, screenSize: e.target.value }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="13.3">13.3"</option>
+                            <option value="14">14"</option>
+                            <option value="15.6">15.6"</option>
+                            <option value="16">16"</option>
+                          </select>
 
-           <SelectIcon />
-          </div>
+                          <SelectIcon />
+                        </div>
 
-          {/* RESOLUTION */}
-          <div className="relative">
-            <select
-             className={selectClass}
-              value={v.resolution}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, resolution: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="FHD">FHD</option>
-              <option value="2K">2K</option>
-              <option value="4K">4K</option>
-            </select>
+                        {/* RESOLUTION */}
+                        <div className="relative">
+                          <select
+                            className={selectClass}
+                            value={v.resolution}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? { ...item, resolution: e.target.value }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="FHD">FHD</option>
+                            <option value="2K">2K</option>
+                            <option value="4K">4K</option>
+                          </select>
 
-           <SelectIcon />
-          </div>
+                          <SelectIcon />
+                        </div>
 
-          {/* REFRESH */}
-          <div className="relative">
-            <select
-           className={selectClass}
-              value={v.refreshRate}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, refreshRate: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="60">60Hz</option>
-              <option value="90">90Hz</option>
-              <option value="120">120Hz</option>
-              <option value="144">144Hz</option>
-            </select>
+                        {/* REFRESH */}
+                        <div className="relative">
+                          <select
+                            className={selectClass}
+                            value={v.refreshRate}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? { ...item, refreshRate: e.target.value }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="60">60Hz</option>
+                            <option value="90">90Hz</option>
+                            <option value="120">120Hz</option>
+                            <option value="144">144Hz</option>
+                          </select>
 
-           <SelectIcon />
-          </div>
+                          <SelectIcon />
+                        </div>
 
-          {/* PRICE */}
-          <div className="relative">
-            <input
-             className={selectClass}
-              value={
-                v.priceInput !== undefined
-                  ? new Intl.NumberFormat("vi-VN").format(
-                      Number(v.priceInput || 0)
-                    )
-                  : ""
-              }
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "");
+                        {/* PRICE */}
+                        <div className="relative">
+                          <input
+                            className={selectClass}
+                            value={
+                              v.priceInput !== undefined
+                                ? new Intl.NumberFormat("vi-VN").format(
+                                  Number(v.priceInput || 0)
+                                )
+                                : ""
+                            }
+                            onChange={(e) => {
+                              const raw = e.target.value.replace(/\D/g, "");
 
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? {
-                          ...item,
-                          priceInput: raw,
-                          price: Number(raw || 0),
-                        }
-                      : item
-                  )
-                );
-              }}
-              placeholder="15.900.000"
-            />
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? {
+                                      ...item,
+                                      priceInput: raw,
+                                      price: Number(raw || 0),
+                                    }
+                                    : item
+                                )
+                              );
+                            }}
+                            placeholder="15.900.000"
+                          />
 
-            <span
-              className="
+                          <span
+                            className="
                 absolute right-3 top-1/2
                 -translate-y-1/2
                 text-sm leading-7 text-[#6B7280]
               "
-            >
-              đ
-            </span>
-          </div>
+                          >
+                            đ
+                          </span>
+                        </div>
 
-          {/* DELETE */}
-          <div className="flex justify-center">
-            {variants.length > 1 && (
-              <button
-                onClick={() => removeVariant(v.id)}
-                className="
+                        {/* DELETE */}
+                        <div className="flex justify-center">
+                          {variants.length > 1 && (
+                            <button
+                              onClick={() => removeVariant(v.id)}
+                              className="
                   w-8 h-8
                   rounded-xl
                   border border-[#FECACA]
@@ -1353,20 +1413,20 @@ sm:h-[90vh]
                   hover:text-white
                   transition-all
                 "
-              >
-                <Trash className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
+                            >
+                              <Trash className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
 
-        {/* MOBILE + TABLET */}
-        <div className="lg:hidden space-y-3">
+                      {/* MOBILE + TABLET */}
+                      <div className="lg:hidden space-y-3">
 
-          {/* CPU */}
-       
-          <input
-            className="
+                        {/* CPU */}
+
+                        <input
+                          className="
               w-full h-10
               rounded-xl
               border border-[#DCDCDC]
@@ -1374,227 +1434,227 @@ sm:h-[90vh]
               text-sm leading-7
                
             "
-            placeholder="CPU"
-            value={v.cpu}
-            onChange={(e) => {
-              const newVariants = [...variants];
-              newVariants[index].cpu = e.target.value;
-              setVariants(newVariants);
-            }}
-          />
+                          placeholder="CPU"
+                          value={v.cpu}
+                          onChange={(e) => {
+                            const newVariants = [...variants];
+                            newVariants[index].cpu = e.target.value;
+                            setVariants(newVariants);
+                          }}
+                        />
 
-          {/* GPU */}
-          <input
-            className="
+                        {/* GPU */}
+                        <input
+                          className="
               w-full h-10
               rounded-xl
               border border-[#DCDCDC]
               px-3
               text-sm leading-7
             "
-            placeholder="GPU"
-            value={v.gpu}
-            onChange={(e) => {
-              const newVariants = [...variants];
-              newVariants[index].gpu = e.target.value;
-              setVariants(newVariants);
-            }}
-          />
+                          placeholder="GPU"
+                          value={v.gpu}
+                          onChange={(e) => {
+                            const newVariants = [...variants];
+                            newVariants[index].gpu = e.target.value;
+                            setVariants(newVariants);
+                          }}
+                        />
 
-          {/* RAM + SSD */}
-          <div className="grid grid-cols-2 gap-3">
-               <div className="relative">
-            <select
-              className="
+                        {/* RAM + SSD */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="relative">
+                            <select
+                              className="
                 w-full h-10
                 rounded-xl
                 border border-[#DCDCDC]
                 px-3
                 appearance-none
               "
-              value={v.ram}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, ram: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="8GB">8GB</option>
-              <option value="16GB">16GB</option>
-              <option value="32GB">32GB</option>
-              <option value="64GB">64GB</option>
-            </select>
-            <SelectIcon />
-  </div>
-                <div className="relative">   
-            <select
-              className="
+                              value={v.ram}
+                              onChange={(e) =>
+                                setVariants((prev) =>
+                                  prev.map((item) =>
+                                    item.id === v.id
+                                      ? { ...item, ram: e.target.value }
+                                      : item
+                                  )
+                                )
+                              }
+                            >
+                              <option value="8GB">8GB</option>
+                              <option value="16GB">16GB</option>
+                              <option value="32GB">32GB</option>
+                              <option value="64GB">64GB</option>
+                            </select>
+                            <SelectIcon />
+                          </div>
+                          <div className="relative">
+                            <select
+                              className="
                 w-full h-10
                 rounded-xl
                 border border-[#DCDCDC]
                 px-3
                 appearance-none
               "
-              value={v.ssd}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, ssd: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="128GB">128GB</option>
-              <option value="256GB">256GB</option>
-              <option value="512GB">512GB</option>
-              <option value="1TB">1TB</option>
-            </select>
-              <SelectIcon />
-  </div>
-          </div>
+                              value={v.ssd}
+                              onChange={(e) =>
+                                setVariants((prev) =>
+                                  prev.map((item) =>
+                                    item.id === v.id
+                                      ? { ...item, ssd: e.target.value }
+                                      : item
+                                  )
+                                )
+                              }
+                            >
+                              <option value="128GB">128GB</option>
+                              <option value="256GB">256GB</option>
+                              <option value="512GB">512GB</option>
+                              <option value="1TB">1TB</option>
+                            </select>
+                            <SelectIcon />
+                          </div>
+                        </div>
 
-          {/* SIZE + REFRESH */}
-          <div className="grid grid-cols-2 gap-3">
-             <div className="relative">   
-            <select
-              className="
+                        {/* SIZE + REFRESH */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="relative">
+                            <select
+                              className="
                 w-full h-10
                 rounded-xl
                 border border-[#DCDCDC]
                 px-3
                 appearance-none
               "
-              value={v.screenSize}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, screenSize: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="13.3">13.3"</option>
-              <option value="14">14"</option>
-              <option value="15.6">15.6"</option>
-              <option value="16">16"</option>
-            </select>
-               <SelectIcon />
-  </div>
-<div className="relative">   
-            <select
-              className="
+                              value={v.screenSize}
+                              onChange={(e) =>
+                                setVariants((prev) =>
+                                  prev.map((item) =>
+                                    item.id === v.id
+                                      ? { ...item, screenSize: e.target.value }
+                                      : item
+                                  )
+                                )
+                              }
+                            >
+                              <option value="13.3">13.3"</option>
+                              <option value="14">14"</option>
+                              <option value="15.6">15.6"</option>
+                              <option value="16">16"</option>
+                            </select>
+                            <SelectIcon />
+                          </div>
+                          <div className="relative">
+                            <select
+                              className="
                 w-full h-10
                 rounded-xl
                 border border-[#DCDCDC]
                 px-3
                  appearance-none
               "
-              value={v.refreshRate}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, refreshRate: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="60">60Hz</option>
-              <option value="90">90Hz</option>
-              <option value="120">120Hz</option>
-              <option value="144">144Hz</option>
-            </select>
-             <SelectIcon />
-  </div>
-          </div>
+                              value={v.refreshRate}
+                              onChange={(e) =>
+                                setVariants((prev) =>
+                                  prev.map((item) =>
+                                    item.id === v.id
+                                      ? { ...item, refreshRate: e.target.value }
+                                      : item
+                                  )
+                                )
+                              }
+                            >
+                              <option value="60">60Hz</option>
+                              <option value="90">90Hz</option>
+                              <option value="120">120Hz</option>
+                              <option value="144">144Hz</option>
+                            </select>
+                            <SelectIcon />
+                          </div>
+                        </div>
 
-          {/* RESOLUTION + PRICE */}
-          <div className="grid grid-cols-2 gap-3">
-<div className="relative">   
-            <select
-              className="
+                        {/* RESOLUTION + PRICE */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="relative">
+                            <select
+                              className="
                 w-full h-10
                 rounded-xl
                 border border-[#DCDCDC]
                 px-3
                   appearance-none
               "
-              value={v.resolution}
-              onChange={(e) =>
-                setVariants((prev) =>
-                  prev.map((item) =>
-                    item.id === v.id
-                      ? { ...item, resolution: e.target.value }
-                      : item
-                  )
-                )
-              }
-            >
-              <option value="FHD">FHD</option>
-              <option value="2K">2K</option>
-              <option value="4K">4K</option>
-            </select>
-<SelectIcon />
-  </div>
-            <div className="relative">
-              <input
-                className="
+                              value={v.resolution}
+                              onChange={(e) =>
+                                setVariants((prev) =>
+                                  prev.map((item) =>
+                                    item.id === v.id
+                                      ? { ...item, resolution: e.target.value }
+                                      : item
+                                  )
+                                )
+                              }
+                            >
+                              <option value="FHD">FHD</option>
+                              <option value="2K">2K</option>
+                              <option value="4K">4K</option>
+                            </select>
+                            <SelectIcon />
+                          </div>
+                          <div className="relative">
+                            <input
+                              className="
                   w-full h-10
                   rounded-xl
                   border border-[#DCDCDC]
                   px-3 pr-8
                 "
-                placeholder="Giá"
-                value={
-                  v.priceInput !== undefined
-                    ? new Intl.NumberFormat("vi-VN").format(
-                        Number(v.priceInput || 0)
-                      )
-                    : ""
-                }
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/\D/g, "");
+                              placeholder="Giá"
+                              value={
+                                v.priceInput !== undefined
+                                  ? new Intl.NumberFormat("vi-VN").format(
+                                    Number(v.priceInput || 0)
+                                  )
+                                  : ""
+                              }
+                              onChange={(e) => {
+                                const raw = e.target.value.replace(/\D/g, "");
 
-                  setVariants((prev) =>
-                    prev.map((item) =>
-                      item.id === v.id
-                        ? {
-                            ...item,
-                            priceInput: raw,
-                            price: Number(raw || 0),
-                          }
-                        : item
-                    )
-                  );
-                }}
-              />
+                                setVariants((prev) =>
+                                  prev.map((item) =>
+                                    item.id === v.id
+                                      ? {
+                                        ...item,
+                                        priceInput: raw,
+                                        price: Number(raw || 0),
+                                      }
+                                      : item
+                                  )
+                                );
+                              }}
+                            />
 
-              <span
-                className="
+                            <span
+                              className="
                   absolute right-3 top-1/2
                   -translate-y-1/2
                   text-sm leading-7 text-[#6B7280]
                 "
-              >
-                đ
-              </span>
-            </div>
-          </div>
+                            >
+                              đ
+                            </span>
+                          </div>
+                        </div>
 
-          {/* DELETE */}
-          {variants.length > 1 && (
-            <button
-              onClick={() => removeVariant(v.id)}
-              className="
+                        {/* DELETE */}
+                        {variants.length > 1 && (
+                          <button
+                            onClick={() => removeVariant(v.id)}
+                            className="
                 w-full h-10
                 rounded-xl
                 border border-red-200
@@ -1604,15 +1664,15 @@ sm:h-[90vh]
                 hover:text-white
                 transition-all
               "
-            >
-              Xóa cấu hình
-            </button>
-          )}
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
+                          >
+                            Xóa cấu hình
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1654,9 +1714,9 @@ sm:h-[90vh]
         </DialogContent>
       </Dialog>
 
-     <Dialog open={openBrand} onOpenChange={setOpenBrand}>
-  <DialogContent
-    className="
+      <Dialog open={openBrand} onOpenChange={setOpenBrand}>
+        <DialogContent
+          className="
       sm:max-w-md
       rounded-3xl
       border border-[#F3E8DF]
@@ -1665,58 +1725,58 @@ sm:h-[90vh]
       overflow-hidden
       shadow-2xl
     "
-  >
+        >
 
-    {/* HEADER */}
-    <DialogHeader
-      className="
+          {/* HEADER */}
+          <DialogHeader
+            className="
         px-6 py-5
         border-b border-[#F3E8DF]
         bg-white
       "
-    >
-      <div className="flex items-center gap-4">
+          >
+            <div className="flex items-center gap-4">
 
-        {/* ICON */}
-        <div
-          className="
+              {/* ICON */}
+              <div
+                className="
             w-14 h-14
             rounded-2xl
             bg-[#FFF1E7]
             flex items-center justify-center
           "
-        >
-          <i className="fas fa-tags text-[22px] text-[#ff7a00]" />
-        </div>
+              >
+                <i className="fas fa-tags text-[22px] text-[#ff7a00]" />
+              </div>
 
-        {/* TEXT */}
-        <div>
-          <DialogTitle
-            className="
+              {/* TEXT */}
+              <div>
+                <DialogTitle
+                  className="
               text-[22px]
               font-semibold
               text-[#111827]
             "
-          >
-            Thêm thương hiệu
-          </DialogTitle>
+                >
+                  Thêm thương hiệu
+                </DialogTitle>
 
-          <p className="text-sm leading-7 text-[#6B7280] mt-1">
-            Tạo thương hiệu mới cho sản phẩm
-          </p>
-        </div>
-      </div>
-    </DialogHeader>
+                <p className="text-sm leading-7 text-[#6B7280] mt-1">
+                  Tạo thương hiệu mới cho sản phẩm
+                </p>
+              </div>
+            </div>
+          </DialogHeader>
 
-    {/* BODY */}
-    <div className="px-6 py-5">
+          {/* BODY */}
+          <div className="px-6 py-5">
 
-      <label className="text-sm leading-7 font-semibold text-[#111827] mb-2 block">
-        Tên thương hiệu
-      </label>
+            <label className="text-sm leading-7 font-semibold text-[#111827] mb-2 block">
+              Tên thương hiệu
+            </label>
 
-      <input
-        className="
+            <input
+              className="
           w-full h-12
           rounded-2xl
           border border-[#E5E7EB]
@@ -1729,27 +1789,27 @@ sm:h-[90vh]
           focus:ring-4
           focus:ring-[#FFF3E8]
         "
-        placeholder="Ví dụ: Dell, Lenovo, ASUS..."
-        value={newBrand}
-        onChange={(e) => setNewBrand(e.target.value)}
-      />
+              placeholder="Ví dụ: Dell, Lenovo, ASUS..."
+              value={newBrand}
+              onChange={(e) => setNewBrand(e.target.value)}
+            />
 
-      {/* IMAGE */}
-<div>
-  <div className="flex items-center justify-between mb-3">
-    <label className="text-[15px] font-semibold text-[#111827]">
-      Logo thương hiệu
-    </label>
+            {/* IMAGE */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-[15px] font-semibold text-[#111827]">
+                  Logo thương hiệu
+                </label>
 
-    {mainImageUrl && (
-      <span className="text-xs text-[#9CA3AF]">
-        PNG, JPG tối đa 5MB
-      </span>
-    )}
-  </div>
+                {mainImageUrl && (
+                  <span className="text-xs text-[#9CA3AF]">
+                    PNG, JPG tối đa 5MB
+                  </span>
+                )}
+              </div>
 
-  <div
-    className="
+              <div
+                className="
       relative
       w-full
       h-[220px]
@@ -1760,38 +1820,38 @@ sm:h-[90vh]
       transition-all
       hover:border-[#ffb066]
     "
-  >
+              >
 
-    {/* IMAGE */}
-    {mainImageUrl ? (
-      <>
-        <img
-          src={mainImageUrl}
-          className="
+                {/* IMAGE */}
+                {mainImageUrl ? (
+                  <>
+                    <img
+                      src={mainImageUrl}
+                      className="
             w-full h-full
             object-contain
             p-6
           "
-        />
+                    />
 
-        {/* OVERLAY */}
-        <div
-          className="
+                    {/* OVERLAY */}
+                    <div
+                      className="
             absolute inset-0
             bg-black/0
             hover:bg-black/5
             transition-all
           "
-        />
+                    />
 
-        {/* DELETE */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setMainImage(null);
-          }}
-          className="
+                    {/* DELETE */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMainImage(null);
+                      }}
+                      className="
             absolute top-4 right-4
             w-10 h-10
             rounded-xl
@@ -1805,45 +1865,45 @@ sm:h-[90vh]
             shadow-sm
             z-20
           "
-        >
-          <Trash className="w-4 h-4" />
-        </button>
-      </>
-    ) : (
-      <div
-        className="
+                    >
+                      <Trash className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : (
+                  <div
+                    className="
           w-full h-full
           flex flex-col
           items-center justify-center
           px-5
           text-center
         "
-      >
-        {/* ICON */}
-        <div
-          className="
+                  >
+                    {/* ICON */}
+                    <div
+                      className="
             w-20 h-20
             rounded-full
             bg-[#FFF1E7]
             flex items-center justify-center
           "
-        >
-          <i className="fas fa-image text-3xl text-[#ff7a00]" />
-        </div>
+                    >
+                      <i className="fas fa-image text-3xl text-[#ff7a00]" />
+                    </div>
 
-        <p className="mt-5 text-[#374151] font-medium">
-          Tải logo thương hiệu
-        </p>
+                    <p className="mt-5 text-[#374151] font-medium">
+                      Tải logo thương hiệu
+                    </p>
 
-        <p className="text-sm leading-7 text-[#9CA3AF] mt-1">
-          PNG, JPG hoặc WEBP
-        </p>
-      </div>
-    )}
+                    <p className="text-sm leading-7 text-[#9CA3AF] mt-1">
+                      PNG, JPG hoặc WEBP
+                    </p>
+                  </div>
+                )}
 
-    {/* PICK BUTTON */}
-    <label
-      className="
+                {/* PICK BUTTON */}
+                <label
+                  className="
         absolute bottom-4 right-4
         h-10 px-4
         rounded-xl
@@ -1857,41 +1917,41 @@ sm:h-[90vh]
         shadow-sm
         z-20
       "
-    >
-      <i className="fas fa-upload text-[#ff7a00]" />
+                >
+                  <i className="fas fa-upload text-[#ff7a00]" />
 
-      {mainImageUrl ? "Đổi ảnh" : "Chọn ảnh"}
+                  {mainImageUrl ? "Đổi ảnh" : "Chọn ảnh"}
 
-      <input
-        type="file"
-        hidden
-        onChange={(e) => {
-          const file = e.target.files?.[0];
+                  <input
+                    type="file"
+                    hidden
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
 
-          if (!file) return;
+                      if (!file) return;
 
-          if (!file.type.startsWith("image/")) {
-            alert("Chỉ upload ảnh");
-            return;
-          }
+                      if (!file.type.startsWith("image/")) {
+                        alert("Chỉ upload ảnh");
+                        return;
+                      }
 
-          if (file.size > 5 * 1024 * 1024) {
-            alert("Max 5MB");
-            return;
-          }
+                      if (file.size > 5 * 1024 * 1024) {
+                        alert("Max 5MB");
+                        return;
+                      }
 
-          setMainImage(file);
+                      setMainImage(file);
 
-          // QUAN TRỌNG
-          e.target.value = "";
-        }}
-      />
-    </label>
+                      // QUAN TRỌNG
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
 
-    {/* LOADING */}
-    {uploading && (
-      <div
-        className="
+                {/* LOADING */}
+                {uploading && (
+                  <div
+                    className="
           absolute inset-0
           bg-white/80
           backdrop-blur-sm
@@ -1899,34 +1959,34 @@ sm:h-[90vh]
           items-center justify-center
           z-30
         "
-      >
-        <Loader2 className="w-7 h-7 animate-spin text-[#ff7a00]" />
+                  >
+                    <Loader2 className="w-7 h-7 animate-spin text-[#ff7a00]" />
 
-        <p className="mt-3 text-sm leading-7 text-[#6B7280]">
-          Đang upload ảnh...
-        </p>
-      </div>
-    )}
-  </div>
-</div>
-    </div>
-    
+                    <p className="mt-3 text-sm leading-7 text-[#6B7280]">
+                      Đang upload ảnh...
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
-    {/* FOOTER */}
-    <DialogFooter
-      className="
+
+          {/* FOOTER */}
+          <DialogFooter
+            className="
         px-6 py-7
         border-t border-[#F3E8DF]
         bg-white
         flex-row justify-end gap-3
       "
-    >
+          >
 
-      {/* CANCEL */}
-      <Button
-        variant="outline"
-        onClick={() => setOpenBrand(false)}
-        className="
+            {/* CANCEL */}
+            <Button
+              variant="outline"
+              onClick={() => setOpenBrand(false)}
+              className="
           h-11 px-5
           rounded-xl
           border border-[#E5E7EB]
@@ -1938,15 +1998,15 @@ sm:h-[90vh]
           transition-all
            cursor-pointer
         "
-      >
-        Huỷ
-      </Button>
+            >
+              Huỷ
+            </Button>
 
-      {/* SAVE */}
-      <Button
-  disabled={loadingBrand}
-  onClick={handleCreateBrand}
-  className="
+            {/* SAVE */}
+            <Button
+              disabled={loadingBrand}
+              onClick={handleCreateBrand}
+              className="
     h-11 px-6
     rounded-xl
     bg-[#ff7a00]
@@ -1957,23 +2017,23 @@ sm:h-[90vh]
     disabled:opacity-60
      cursor-pointer
   "
->
-  {loadingBrand ? (
-    <>
-      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-      Đang lưu...
-    </>
-  ) : (
-    <>
-      <i className="fas fa-plus text-sm leading-7 mr-2" />
-      Lưu thương hiệu
-    </>
-  )}
-</Button>
+            >
+              {loadingBrand ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-plus text-sm leading-7 mr-2" />
+                  Lưu thương hiệu
+                </>
+              )}
+            </Button>
 
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ImageCropDialog
         open={cropOpen}
