@@ -74,7 +74,7 @@ export default function ProductDescription({ selected }: any) {
         value: [
           selected?.screenSize && `${selected.screenSize}"`,
           selected?.resolution,
-          selected?.refreshRate && `${selected.refreshRate}Hz`,
+          selected?.refreshRate && `${selected.refreshRate}`,
         ]
           .filter(Boolean)
           .join(" "),

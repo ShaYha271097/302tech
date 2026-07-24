@@ -39,9 +39,9 @@ type Variant = {
   price: number;
   screenSize: string;
   resolution: string;
+  touch:boolean;
   refreshRate: string;
   priceInput?: string;
-  slug: string
 };
 
 type Props = {
@@ -98,8 +98,8 @@ const defaultVariant: Variant = {
   price: 0,
   screenSize: "",
   resolution: "",
+  touch:false,
   refreshRate: "",
-  slug: ""
 };
 
 export default function AddProductDialog({
@@ -110,6 +110,19 @@ export default function AddProductDialog({
   onSuccess,
 }: Props) {
   // const variantsRef = useRef<HTMLDivElement>(null);
+  const defaultVariant: Variant = {
+  id: Date.now().toString(),
+  cpu: "",
+  ram: "8GB",
+  ssd: "256GB",
+  gpu: "Onboard",
+  price: 0,
+  screenSize: "14",
+  resolution: "FHD",
+  touch:false,
+  refreshRate: "60Hz",
+};
+
   const bodyRef = useRef<HTMLDivElement>(null);
   const [loadingBrand, setLoadingBrand] = useState(false);
   const [name, setName] = useState("");
@@ -180,6 +193,7 @@ export default function AddProductDialog({
   };
 
   const removeVariant = (id: string) => {
+    console.log("id=>>>>>>>>>>>>>",id)
     setVariants((prev) => prev.filter((v) => v.id !== id));
   };
 
@@ -486,6 +500,8 @@ const handleDragEnd = (event: DragEndEvent) => {
   // Ảnh đầu tiên luôn là main
   setMainImage(newImages[0] || null);
 };
+
+console.log("variants",variants)
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -494,7 +510,7 @@ const handleDragEnd = (event: DragEndEvent) => {
           className="
     w-[100vw]
 sm:w-[96vw]
-sm:max-w-[1000px]
+sm:max-w-[1400px]
 h-[100vh]
 sm:h-[90vh]
     flex flex-col
@@ -1085,6 +1101,7 @@ sm:h-[90vh]
                       {/* DELETE */}
                       <button
                         type="button"
+                        onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => {
                           e.stopPropagation();
 
@@ -1173,7 +1190,7 @@ sm:h-[90vh]
                 <div
                   className="
       hidden lg:grid
-      grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
+      grid-cols-[1.2fr_0.5fr_0.5fr_1.3fr_0.65fr_0.5fr_0.8fr_90px_120px_50px]
       gap-3
       px-5 py-3
       bg-[#F9FAFB]
@@ -1187,6 +1204,7 @@ sm:h-[90vh]
                   <div>GPU</div>
                   <div>Size</div>
                   <div>Độ phân giải</div>
+                  <div>Màn hình</div>
                   <div>Tần số</div>
                   <div>Giá</div>
                   <div className="text-center">Xóa</div>
@@ -1208,7 +1226,7 @@ sm:h-[90vh]
                       <div
                         className="
             hidden lg:grid
-            grid-cols-[1.1fr_0.7fr_0.8fr_1.3fr_0.7fr_0.7fr_0.8fr_110px_50px]
+            grid-cols-[1.2fr_0.5fr_0.5fr_1.3fr_0.65fr_0.5fr_0.8fr_90px_120px_50px]
             gap-3
             items-center
           "
@@ -1328,6 +1346,28 @@ sm:h-[90vh]
                             <option value="FHD">FHD</option>
                             <option value="2K">2K</option>
                             <option value="4K">4K</option>
+                          </select>
+
+                          <SelectIcon />
+                        </div>
+
+                        {/* Touch */}
+                        <div className="relative">
+                          <select
+                            className={selectClass}
+                            value={String(v.touch)}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? { ...item, touch: e.target.value === "true" }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="false">Không cảm ứng</option>
+                            <option value="true">Cảm ứng</option>
                           </select>
 
                           <SelectIcon />
@@ -1605,6 +1645,7 @@ sm:h-[90vh]
                             </select>
                             <SelectIcon />
                           </div>
+                          
                           <div className="relative">
                             <input
                               className="

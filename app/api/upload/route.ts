@@ -18,35 +18,7 @@ export async function POST(req: Request) {
 
     // =========================
     // 🎯 HELPER chọn crop
-    // =========================
-    const getTransform = (
-      width: number,
-      height: number
-    ) => {
-      const targetRatio = width / height;
-
-      if (ratio) {
-        const diff = Math.abs(ratio - targetRatio);
-
-        // 👉 gần giống → fill (đẹp)
-        if (diff < 0.2) {
-          return {
-            width,
-            height,
-            crop: "fill",
-            gravity: "center",
-          };
-        }
-      }
-
-      // 👉 khác nhiều → fit (an toàn)
-      return {
-        width,
-        height,
-        crop: "fit",
-        background: "white",
-      };
-    };
+   
 
     // =========================
     // 🎯 chọn transformation

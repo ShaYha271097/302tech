@@ -1,21 +1,21 @@
 // ddrduongqua1027_db_user
 // jl4DFbBmPmRRzEuZ
 import clientPromise from "@/lib/mongodb" // chỉnh đúng path của bạn
-import { NextResponse ,NextRequest} from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 
 import { ObjectId } from "mongodb"
 import cloudinary from "@/lib/cloudinary"
 
 type Variant = {
-    cpu: string
-    ram: string
-    ssd: string
-    price: number
+  cpu: string
+  ram: string
+  ssd: string
+  price: number
 }
 
 export async function PUT(
   req: NextRequest,
- context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
@@ -108,38 +108,41 @@ export async function PUT(
       );
     }
 
-    if (
-      oldProduct.mainImage?.publicId &&
-      oldProduct.mainImage.publicId !== mainImage.publicId
-    ) {
-      try {
-        await cloudinary.uploader.destroy(
-          oldProduct.mainImage.publicId
-        );
-      } catch (err) {
-        console.error("Xóa main image lỗi:", err);
-      }
-    }
+    const oldImages = [
+      oldProduct.mainImage,
+      ...oldProduct.gallery,
+    ];
 
-    const removedImages = oldProduct.gallery.filter(
+
+
+    const newImages = [
+      mainImage,
+      ...gallery,
+    ];
+
+
+
+    const removedImages = oldImages.filter(
       (oldImg: any) =>
-        !gallery.some(
+        !newImages.some(
           (newImg: any) =>
             newImg.publicId === oldImg.publicId
         )
     );
 
-      await Promise.all(
-        removedImages.map(async (img: any) => {
-          try {
-            await cloudinary.uploader.destroy(
-              img.publicId
-            );
-          } catch (err) {
-            console.error(err);
-          }
-        })
-      );
+
+
+    await Promise.all(
+      removedImages.map(async (img: any) => {
+        try {
+          await cloudinary.uploader.destroy(img.publicId);
+        } catch (err) {
+          console.error(err);
+        }
+      })
+    );
+
+
 
     return NextResponse.json({
       message: "Cập nhật thành công",

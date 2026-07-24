@@ -7,7 +7,6 @@ export default async function Page() {
     limit: 10,
     sort: "date_desc",
   });
-  console.log("data=>>>>>",data)
   return (
     <ProductDetail
       initialProducts={data.products}

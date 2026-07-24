@@ -49,7 +49,7 @@ export default function ProductDetail({
   initialTotal,
 }: Props) {
   const router = useRouter();
-    const [sort, setSort] = useState("date_desc");
+  const [sort, setSort] = useState("date_desc");
   const [openSidebar, setOpenSidebar] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -61,55 +61,77 @@ export default function ProductDetail({
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-const [products, setProducts] = useState(initialProducts);
-const [total, setTotal] = useState(initialTotal);
+  const [products, setProducts] = useState(initialProducts);
+  const [deleting, setDeleting] = useState(false);
+
+  const [total, setTotal] = useState(initialTotal);
   const totalPages = Math.ceil(total / limit);
 
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
-const firstRender = useRef(true);
-const fetchProducts = async (keyword = search) => {
-  const res = await fetch(
-    `/api/products?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
-  );
+  const firstRender = useRef(true);
+  const fetchProducts = async (keyword = search) => {
+    const res = await fetch(
+      `/api/products?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  setProducts(data.products || []);
-  setTotal(data.total || 0);
-};
+    setProducts(data.products || []);
+    setTotal(data.total || 0);
+  };
 
 
 
-useEffect(() => {
-  if (firstRender.current) {
-    firstRender.current = false;
-    return;
-  }
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
 
-  const timeout = setTimeout(() => {
-    fetchProducts();
-  }, 300);
+    const timeout = setTimeout(() => {
+      fetchProducts();
+    }, 300);
 
-  return () => clearTimeout(timeout);
-}, [search, page, limit, sort]);
+    return () => clearTimeout(timeout);
+  }, [search, page, limit, sort]);
 
   const handleBulkDelete = async () => {
     const ok = confirm(`Xóa ${selectedIds.length} sản phẩm?`);
     if (!ok) return;
 
-    await fetch("/api/products/bulk-delete", {
-      method: "POST",
-      body: JSON.stringify({ ids: selectedIds }),
-    });
+    setDeleting(true);
 
-    setProducts((prev) =>
-      prev.filter((p) => !selectedIds.includes(p._id))
-    );
+    try {
+      const res = await fetch("/api/products/bulk-delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ids: selectedIds,
+        }),
+      });
 
-    setSelectedIds([]);
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Xóa thất bại");
+        return;
+      }
+
+      setProducts((prev) =>
+        prev.filter((p) => !selectedIds.includes(p._id))
+      );
+
+      setSelectedIds([]);
+    } catch (err) {
+      console.error(err);
+      alert("Có lỗi xảy ra");
+    } finally {
+      setDeleting(false);
+    }
   };
-
   const toggleField = async (
     id: string,
     field: "isHot" | "isNew" | "isActive",
@@ -146,26 +168,82 @@ useEffect(() => {
         onDelete={handleBulkDelete} />
 
       <div className="flex min-h-screen bg-gray-50">
-         <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
-               <Sidebar />
-             </section>
+        <section className="w-[70px] lg:w-[240px] bg-white border-r border-[#E5E7EB] transition-all duration-300">
+          <Sidebar />
+        </section>
+
 
         {/* MOBILE SIDEBAR */}
         <MobileSidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
 
-        <section className="flex-1 px-3 md:px-4 py-2.5 overflow-y-auto">
+ <section
+    className="
+      relative
+      flex-1
+      px-3
+      md:px-4
+      py-2.5
+      overflow-y-auto
+    "
+  >
+        {deleting && (
+          <div
+            className="
+          absolute
+          inset-0
+          z-50
+          bg-white/70
+          backdrop-blur-sm
+          flex
+          items-center
+          justify-center
+        "
+          >
+            <div
+              className="
+            bg-white
+            rounded-2xl
+            shadow-xl
+            px-8
+            py-6
+            flex
+            flex-col
+            items-center
+            gap-4
+          "
+            >
+              <div
+                className="
+              w-12
+              h-12
+              border-4
+              border-[#ff7a00]
+              border-t-transparent
+              rounded-full
+              animate-spin
+            "
+              />
+
+              <p className="font-medium text-gray-700">
+                Đang xóa {selectedIds.length} sản phẩm...
+              </p>
+            </div>
+          </div>
+        )}
+
+        
 
           {/* ================= MOBILE CARD ================= */}
           <div className="md:hidden space-y-3">
-      <div className="flex items-center gap-2">
-    <span className="text-sm font-medium text-gray-600 whitespace-nowrap">
-      Sắp xếp:
-    </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-600 whitespace-nowrap">
+                Sắp xếp:
+              </span>
 
-    <select
-      value={sort}
-      onChange={(e) => setSort(e.target.value)}
-      className="
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="
         flex-1
         h-10
         px-3
@@ -175,13 +253,13 @@ useEffect(() => {
         bg-white
         text-sm
       "
-    >
-      <option value="name_asc">Tên A → Z</option>
-      <option value="name_desc">Tên Z → A</option>
-      <option value="date_desc">Ngày tạo mới nhất</option>
-      <option value="date_asc">Ngày tạo cũ nhất</option>
-    </select>
-  </div>
+              >
+                <option value="name_asc">Tên A → Z</option>
+                <option value="name_desc">Tên Z → A</option>
+                <option value="date_desc">Ngày tạo mới nhất</option>
+                <option value="date_asc">Ngày tạo cũ nhất</option>
+              </select>
+            </div>
             {/* SELECT ALL */}
             {products.length > 0 && (
               <div className="bg-white border border-[#E5E7EB] rounded-xl p-3 flex items-center gap-3">
@@ -505,29 +583,29 @@ useEffect(() => {
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
-                      <button
-                                            onClick={() =>
-                                                setSort((prev) =>
-                                                    prev === "name_asc"
-                                                        ? "name_desc"
-                                                        : "name_asc"
-                                                )
-                                            }
-                                            className="flex items-center gap-1 "
-                                        >
-                                            Tên sản phẩm
+                    <button
+                      onClick={() =>
+                        setSort((prev) =>
+                          prev === "name_asc"
+                            ? "name_desc"
+                            : "name_asc"
+                        )
+                      }
+                      className="flex items-center gap-1 "
+                    >
+                      Tên sản phẩm
 
-                                            <i
-                                                className={`fas ${sort === "name_asc"
-                                                    ? "fa-chevron-up"
-                                                    : "fa-chevron-down"
-                                                    } text-[11px]
+                      <i
+                        className={`fas ${sort === "name_asc"
+                          ? "fa-chevron-up"
+                          : "fa-chevron-down"
+                          } text-[11px]
       cursor-pointer
     `}
 
-                                            />
-                                        </button>
-                    
+                      />
+                    </button>
+
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
@@ -539,27 +617,27 @@ useEffect(() => {
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
-                       <button
-                                            onClick={() =>
-                                                setSort((prev) =>
-                                                    prev === "date_desc"
-                                                        ? "date_asc"
-                                                        : "date_desc"
-                                                )
-                                            }
-                                            className="flex items-center gap-1"
-                                        >
-                                            Ngày tạo
-                                            <i
-                                                className={`fas ${sort === "date_desc"
-                                                    ? "fa-chevron-up"
-                                                    : "fa-chevron-down"
-                                                    } text-[11px]
+                    <button
+                      onClick={() =>
+                        setSort((prev) =>
+                          prev === "date_desc"
+                            ? "date_asc"
+                            : "date_desc"
+                        )
+                      }
+                      className="flex items-center gap-1"
+                    >
+                      Ngày tạo
+                      <i
+                        className={`fas ${sort === "date_desc"
+                          ? "fa-chevron-up"
+                          : "fa-chevron-down"
+                          } text-[11px]
                                   cursor-pointer
                                 `}
 
-                                            />
-                                        </button>
+                      />
+                    </button>
                   </th>
 
                   <th className="px-4 py-2.5 text-left font-semibold">
