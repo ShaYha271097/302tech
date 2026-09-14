@@ -39,6 +39,7 @@ type Product = {
   createdAt: Date
   isHot: boolean;
   isNew: boolean;
+   isActive: boolean;
 }
 type ProductDTO = {
   _id: string;
@@ -51,6 +52,7 @@ type ProductDTO = {
   createdAt: string;
   isHot: boolean;
   isNew: boolean;
+   isActive: boolean;
 };
 function toProductDTO(
   product: Product
@@ -101,6 +103,7 @@ const [bannerData, brands, hotProducts] =
           .collection("products")
           .find({
             brandId: brand._id,
+            isActive:true
           })
           .limit(4)
           .toArray();

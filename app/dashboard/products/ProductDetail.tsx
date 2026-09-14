@@ -137,6 +137,7 @@ export default function ProductDetail({
     field: "isHot" | "isNew" | "isActive",
     api: string
   ) => {
+    console.log("=>>>>",id,api,)
     const res = await fetch(`/api/products/${id}/${api}`, {
       method: "PATCH",
     });

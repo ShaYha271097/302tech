@@ -124,22 +124,27 @@ export async function getProducts({
   // =========================
   // PIPELINE BASE
   // =========================
-  const pipeline: any[] = [
-    {
-      $lookup: {
-        from: "brands",
-        localField: "brandId",
-        foreignField: "_id",
-        as: "brand",
-      },
+const pipeline: any[] = [
+  {
+    $match: {
+      isActive: true,
     },
-    {
-      $unwind: {
-        path: "$brand",
-        preserveNullAndEmptyArrays: true,
-      },
+  },
+  {
+    $lookup: {
+      from: "brands",
+      localField: "brandId",
+      foreignField: "_id",
+      as: "brand",
     },
-  ];
+  },
+  {
+    $unwind: {
+      path: "$brand",
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+];
 
   // =========================
   // FILTER: BRAND

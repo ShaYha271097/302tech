@@ -7,8 +7,7 @@ import ProductCard from "../ProductCard/ProductCard";
 
 export default function ProductSection({ title, slug, products }: any) {
 
-
-   
+  
     return (
         <div className="wrap_bottom wrap_list">
             <div className="fixwidth">

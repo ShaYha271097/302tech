@@ -11,15 +11,13 @@ export async function PATCH(
   const client = await clientPromise;
 
   const db = client.db("laptop-shop");
-
-  const brand = await db.collection("brands").findOne({
+  const products = await db.collection("products").findOne({
     _id: new ObjectId(id),
   });
-
-  if (!brand) {
+  if (!products) {
     return NextResponse.json(
       {
-        message: "Brand not found",
+        message: "products not found",
       },
       {
         status: 404,
@@ -27,9 +25,9 @@ export async function PATCH(
     );
   }
 
-  const newStatus = !brand.isActive;
+  const newStatus = !products.isActive;
 
-  await db.collection("brands").updateOne(
+  await db.collection("products").updateOne(
     {
       _id: new ObjectId(id),
     },
