@@ -12,7 +12,7 @@ type Variant = {
   cpu: string;
   ram: string;
   ssd: string;
-  gpu: string; 
+  gpu: string;
   price: number;
   screenSize: string;
   resolution: string;
@@ -23,13 +23,14 @@ type Product = {
   brandId: ObjectId;
   name: string;
   slug: string;
- mainImage: CloudinaryImage;
+  mainImage: CloudinaryImage;
   gallery: CloudinaryImage[];
   variants: Variant[];
   createdAt: Date;
   isHot: boolean;
   isNew: boolean;
-  isActive: boolean; 
+  isActive: boolean;
+  description: string
 };
 
 export async function POST(req: Request) {
@@ -123,8 +124,8 @@ export async function POST(req: Request) {
 
     // frontend gửi slug lên
     slug: body.slug.trim(),
-
-     mainImage: {
+    description: body.description?.trim() || "",
+    mainImage: {
       url: body.mainImage.url,
       publicId: body.mainImage.publicId,
     },
@@ -165,7 +166,7 @@ export async function GET(req: NextRequest) {
 
 
     const { searchParams } = new URL(req.url);
-   const result = await getProducts({
+    const result = await getProducts({
       page: Number(searchParams.get("page") || 1),
       limit: Number(searchParams.get("limit") || 5),
 
@@ -184,10 +185,10 @@ export async function GET(req: NextRequest) {
       price: searchParams.getAll("price"),
       ram: searchParams.getAll("ram"),
       ssd: searchParams.getAll("ssd"),
-        // sort
-      sort : searchParams.get("sort") || "date_desc"
+      // sort
+      sort: searchParams.get("sort") || "date_desc",
     });
-   return NextResponse.json(result);
+    return NextResponse.json(result);
 
   } catch (error) {
     return NextResponse.json(

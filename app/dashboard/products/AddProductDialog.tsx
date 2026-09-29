@@ -30,6 +30,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import SortableImage from "@/components/SortableImage";
+import ProductDescriptionEditor from "./ProductDescriptionEditor";
+
+
+
 type Variant = {
   id: string;
   cpu: string;
@@ -39,7 +43,7 @@ type Variant = {
   price: number;
   screenSize: string;
   resolution: string;
-  touch:boolean;
+  touch: boolean;
   refreshRate: string;
   priceInput?: string;
 };
@@ -98,7 +102,7 @@ const defaultVariant: Variant = {
   price: 0,
   screenSize: "",
   resolution: "",
-  touch:false,
+  touch: false,
   refreshRate: "",
 };
 
@@ -109,19 +113,20 @@ export default function AddProductDialog({
   product,
   onSuccess,
 }: Props) {
+  console.log("LLLLLLLLLLLLLLL",product)
   // const variantsRef = useRef<HTMLDivElement>(null);
   const defaultVariant: Variant = {
-  id: Date.now().toString(),
-  cpu: "",
-  ram: "8GB",
-  ssd: "256GB",
-  gpu: "Onboard",
-  price: 0,
-  screenSize: "14",
-  resolution: "FHD",
-  touch:false,
-  refreshRate: "60Hz",
-};
+    id: Date.now().toString(),
+    cpu: "",
+    ram: "8GB",
+    ssd: "256GB",
+    gpu: "Onboard",
+    price: 0,
+    screenSize: "14",
+    resolution: "FHD",
+    touch: false,
+    refreshRate: "60Hz",
+  };
 
   const bodyRef = useRef<HTMLDivElement>(null);
   const [loadingBrand, setLoadingBrand] = useState(false);
@@ -149,6 +154,11 @@ export default function AddProductDialog({
   const [isHot, setIsHot] = useState(false);
   const [isNew, setIsNew] = useState(true);
   const [isActive, setIsActive] = useState(true);
+  const [description, setDescription] = useState(
+  product?.description || ""
+);
+const [pendingDescriptionImages, setPendingDescriptionImages] =
+  useState<Map<string, File>>(new Map());
   const formatPrice = (num: number) => {
     return num.toLocaleString("vi-VN");
   };
@@ -172,6 +182,7 @@ export default function AddProductDialog({
         product.mainImage,
         ...(product.gallery || []),
       ]);
+      setDescription(product.description || "");
     } else {
       // create
       resetForm();
@@ -193,7 +204,7 @@ export default function AddProductDialog({
   };
 
   const removeVariant = (id: string) => {
-    console.log("id=>>>>>>>>>>>>>",id)
+    console.log("id=>>>>>>>>>>>>>", id)
     setVariants((prev) => prev.filter((v) => v.id !== id));
   };
 
@@ -243,7 +254,16 @@ export default function AddProductDialog({
             return img;
           })
       );
-
+    // ==========================================
+      // DESCRIPTION IMAGES
+      // ==========================================
+      const finalDescription = await uploadDescriptionImages(
+        description,
+        pendingDescriptionImages
+      );
+       // ==========================================
+    // PAYLOAD
+    // ==========================================
       const payload = {
         name,
         brandId,
@@ -254,6 +274,7 @@ export default function AddProductDialog({
         isNew,
         isActive,
         slug,
+       description: finalDescription,
       };
 
 
@@ -282,7 +303,7 @@ export default function AddProductDialog({
       setLoading(false);
     }
   };
-  const upload = async (file: File, type: "product" | "brand" | "slider" | "banner") => {
+  const upload = async (file: File, type: "product" | "brand" | "slider" | "banner" | "product-description") => {
     setUploading(true);
 
     const formData = new FormData();
@@ -470,38 +491,75 @@ export default function AddProductDialog({
     );
   };
 
-const getImageId = (
-  img: File | CloudinaryImage
+  const getImageId = (
+    img: File | CloudinaryImage
+  ) => {
+    if (img instanceof File) {
+      return `${img.name}-${img.lastModified}`;
+    }
+
+    return img.publicId;
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = images.findIndex(
+      (img) => getImageId(img) === active.id
+    );
+
+    const newIndex = images.findIndex(
+      (img) => getImageId(img) === over.id
+    );
+
+    const newImages = arrayMove(images, oldIndex, newIndex);
+
+    setImages(newImages);
+
+    // Ảnh đầu tiên luôn là main
+    setMainImage(newImages[0] || null);
+  };
+
+  const uploadDescriptionImages = async (
+  description: string,
+  pendingImages: Map<string, File>
 ) => {
-  if (img instanceof File) {
-    return `${img.name}-${img.lastModified}`;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(description, "text/html");
+
+  const images = Array.from(doc.querySelectorAll("img"));
+
+  for (const img of images) {
+    const src = img.getAttribute("src");
+
+    if (!src || !src.startsWith("blob:")) {
+      continue;
+    }
+
+    const file = pendingImages.get(src);
+
+    if (!file) {
+      continue;
+    }
+
+    // Upload File lên Cloudinary
+    const uploaded = await upload(file, "product-description");
+
+    // Thay blob URL bằng URL Cloudinary
+    img.setAttribute("src", uploaded.url);
+
+    // Giữ alt
+    img.setAttribute("alt", img.getAttribute("alt") || file.name);
+
+    // Xóa blob khỏi bộ nhớ trình duyệt
+    URL.revokeObjectURL(src);
   }
 
-  return img.publicId;
+  return doc.body.innerHTML;
 };
-
-const handleDragEnd = (event: DragEndEvent) => {
-  const { active, over } = event;
-
-  if (!over || active.id === over.id) return;
-
-  const oldIndex = images.findIndex(
-    (img) => getImageId(img) === active.id
-  );
-
-  const newIndex = images.findIndex(
-    (img) => getImageId(img) === over.id
-  );
-
-  const newImages = arrayMove(images, oldIndex, newIndex);
-
-  setImages(newImages);
-
-  // Ảnh đầu tiên luôn là main
-  setMainImage(newImages[0] || null);
-};
-
-console.log("variants",variants)
+  console.log("variants", variants)
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -1026,35 +1084,35 @@ sm:h-[90vh]
               </div>
 
               {/* THUMB LIST */}
-      <DndContext
-  collisionDetection={closestCenter}
-  onDragEnd={handleDragEnd}
->
-  <SortableContext
-    items={images.map(getImageId)}
-    strategy={rectSortingStrategy}
-  >
-              <div className="flex flex-wrap gap-3">
-                {images.map((img, index) => {
-                  console.log("KKKKKKKKKKK", img, mainImage)
-                  const url =
-                    img instanceof File
-                      ? URL.createObjectURL(img)
-                      : img.url;
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={images.map(getImageId)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="flex flex-wrap gap-3">
+                    {images.map((img, index) => {
+                      console.log("KKKKKKKKKKK", img, mainImage)
+                      const url =
+                        img instanceof File
+                          ? URL.createObjectURL(img)
+                          : img.url;
 
-                  return (
-                     <SortableImage
-      key={getImageId(img)}
-      id={getImageId(img)}
-    >
-                    <div
-                      // key={index}
-                      onClick={() => {
-                        setCropImage(url);
-                        setCropIndex(index);
-                        setCropOpen(true);
-                      }}
-                      className={`
+                      return (
+                        <SortableImage
+                          key={getImageId(img)}
+                          id={getImageId(img)}
+                        >
+                          <div
+                            // key={index}
+                            onClick={() => {
+                              setCropImage(url);
+                              setCropIndex(index);
+                              setCropOpen(true);
+                            }}
+                            className={`
                       relative
                     w-20 h-20 sm:w-24 sm:h-24
                       rounded-2xl
@@ -1065,25 +1123,25 @@ sm:h-[90vh]
                       transition-all duration-300
                       hover:shadow-lg
           ${img === mainImage
-                          ? "border-[#ff7a00]"
-                          : "border-[#E5E7EB]"
-                        }
+                                ? "border-[#ff7a00]"
+                                : "border-[#E5E7EB]"
+                              }
         `}
-                    >
+                          >
 
-                      <img
-                        src={url}
-                        className="
+                            <img
+                              src={url}
+                              className="
             w-full h-full
             object-cover
             transition-all duration-300
             group-hover:scale-105
           "
-                      />
-                      {/* MAIN LABEL */}
-                      {img === mainImage && (
-                        <div
-                          className="
+                            />
+                            {/* MAIN LABEL */}
+                            {img === mainImage && (
+                              <div
+                                className="
               absolute top-2 left-2
               px-2 py-1
               rounded-lg
@@ -1093,26 +1151,26 @@ sm:h-[90vh]
               font-semibold
               z-20
             "
-                        >
-                          MAIN
-                        </div>
-                      )}
+                              >
+                                MAIN
+                              </div>
+                            )}
 
-                      {/* DELETE */}
-                      <button
-                        type="button"
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onClick={(e) => {
-                          e.stopPropagation();
+                            {/* DELETE */}
+                            <button
+                              type="button"
+                              onPointerDown={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
 
-                          const newImgs = images.filter((i) => i !== img);
-                          setImages(newImgs);
+                                const newImgs = images.filter((i) => i !== img);
+                                setImages(newImgs);
 
-                          if (img === mainImage) {
-                            setMainImage(newImgs[0] || null);
-                          }
-                        }}
-                        className="
+                                if (img === mainImage) {
+                                  setMainImage(newImgs[0] || null);
+                                }
+                              }}
+                              className="
             absolute bottom-2 right-2
             w-7 h-7
             rounded-lg
@@ -1123,18 +1181,18 @@ sm:h-[90vh]
             transition-all
             cursor-pointer
           "
-                      >
-                        <Trash className="w-3 h-3  cursor-pointer" />
-                      </button>
+                            >
+                              <Trash className="w-3 h-3  cursor-pointer" />
+                            </button>
 
-                    </div>
-                    </SortableImage>
-                  );
-                })}
+                          </div>
+                        </SortableImage>
+                      );
+                    })}
 
-              </div>
-    </SortableContext>
-</DndContext>
+                  </div>
+                </SortableContext>
+              </DndContext>
 
               {/* VARIANTS */}
               <div
@@ -1645,7 +1703,7 @@ sm:h-[90vh]
                             </select>
                             <SelectIcon />
                           </div>
-                          
+
                           <div className="relative">
                             <input
                               className="
@@ -1714,6 +1772,11 @@ sm:h-[90vh]
                   ))}
                 </div>
               </div>
+        <ProductDescriptionEditor
+  value={description}
+  onChange={setDescription}
+  onPendingImagesChange={setPendingDescriptionImages}
+/>
             </div>
           </div>
 

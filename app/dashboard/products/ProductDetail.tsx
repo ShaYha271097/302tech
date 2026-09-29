@@ -37,6 +37,7 @@ type Product = {
   isHot?: boolean
   isNew?: boolean
   isActive: boolean;
+  description:string
 }
 
 type Props = {

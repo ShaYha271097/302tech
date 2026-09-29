@@ -1255,6 +1255,93 @@ ins.highlight {
     right: 8px;
 }
 
+
+
+
+
+
+/* Tiptap */
+.tiptap {
+  outline: none;
+  min-height: 300px;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.tiptap p {
+  margin: 0.5rem 0;
+}
+
+.tiptap h2 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 700;
+  color: #111827;
+}
+
+.tiptap h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tiptap ul {
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.tiptap ol {
+  padding-left: 1.5rem;
+  list-style: decimal;
+}
+
+.tiptap li {
+  margin: 0.25rem 0;
+}
+
+.tiptap blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid #ff7a00;
+  color: #6B7280;
+}
+
+.tiptap a {
+  color: #ff7a00;
+  text-decoration: underline;
+}
+
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px auto;
+}
+.tiptap p.is-editor-empty:first-child::before {
+  content: "Nhập mô tả sản phẩm...";
+  color: #9CA3AF;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /* MOBILE */
 @media (max-width: 768px) {
     .home-swiper .swiper-button-prev,
@@ -1399,3 +1486,4 @@ ins.highlight {
         max-width: 100%;
     }
 }
+

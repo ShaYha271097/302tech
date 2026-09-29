@@ -53,6 +53,7 @@ export async function PUT(
       mainImage,
       gallery,
       variants,
+      description
     } = body;
 
     // 👉 validate
@@ -92,7 +93,7 @@ export async function PUT(
       isHot: body.isHot ?? false,
       isNew: body.isNew ?? false,
       isActive: body.isActive ?? true,
-
+      description,
       updatedAt: new Date(),
     };
 
