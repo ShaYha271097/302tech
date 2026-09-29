@@ -49,7 +49,7 @@ export default function BrandDetail({
     const [sort, setSort] = useState("date_desc");
     const firstRender = useRef(true);
     const fetchBrands = async (keyword = search) => {
-        console.time("fetchBrands");
+        // console.time("fetchBrands");
         const res = await fetch(
             `/api/brands?search=${keyword}&page=${page}&limit=${limit}&sort=${sort}`
         );

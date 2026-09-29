@@ -17,30 +17,32 @@ import { CloudinaryImage } from "@/types/image";
 
 
 type Variant = {
-  cpu: string
-  ram: string
-  ssd: string
-  price: number
+  cpu: string;
+  ram: string;
+  ssd: string;
+  price: number;
   screenSize: string;
   resolution: string;
   refreshRate: string;
-}
+};
+
 type Product = {
-   _id: string;
-    brandId:string,
+  _id: string;
+  brandId: string;
   name: string;
   slug: string;
-  mainImage: CloudinaryImage;
-  gallery: CloudinaryImage[];
+  mainImage: string;
+  gallery: string[];
   variants: Variant[];
   createdAt: string;
   isHot: boolean;
   isNew: boolean;
-}
+  isActive: boolean;
+};
+
 type Props = {
   products: Product[];
 };
-
 export default function TopSellingSlider({
   products,
 }: Props) {

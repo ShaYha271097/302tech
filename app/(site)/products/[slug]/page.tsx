@@ -49,7 +49,7 @@ export default async function ProductDetail({
   const { slug } = await params;
 
   const id = slug.split("-").pop();
-console.time("TOTAL");
+// console.time("TOTAL");
   const product = await getProductById(id);
 
   if (!product) {
@@ -58,7 +58,7 @@ console.time("TOTAL");
 
 
 
-console.timeEnd("TOTAL");
+// console.timeEnd("TOTAL");
   return (
      <ProductDetailClient
       product={JSON.parse(JSON.stringify(product))}
