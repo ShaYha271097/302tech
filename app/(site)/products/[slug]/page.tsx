@@ -1,10 +1,8 @@
 import { getProductById } from "@/lib/getProduct";
+import { getSimilarProducts } from "@/lib/getSimilarProducts";
 import { notFound } from "next/navigation";
-import { ObjectId } from "mongodb";
 import ProductDetailClient from "./ProductDetailClient";
 import { getCheapestVariant } from "@/lib/format";
-import { getSimilarProducts } from "@/lib/getSimilarProducts";
-
 
 export async function generateMetadata({
   params,
@@ -13,8 +11,7 @@ export async function generateMetadata({
 
   const id = slug.split("-").pop();
 
-  const product =
-    await getProductById(id);
+  const product = await getProductById(id);
 
   if (!product) {
     return {
@@ -30,10 +27,8 @@ export async function generateMetadata({
 
     openGraph: {
       title: product.name,
-
       description:
         `${product.name} giá tốt tại 302 Tech.`,
-
       images: [
         {
           url: product.mainImage.url,
@@ -49,28 +44,24 @@ export default async function ProductDetail({
   const { slug } = await params;
 
   const id = slug.split("-").pop();
-// console.time("TOTAL");
+
   const product = await getProductById(id);
 
   if (!product) {
     return notFound();
   }
 
+  const cheapest = getCheapestVariant(product.variants);
 
+  const similarProducts = await getSimilarProducts(
+    product._id,
+    cheapest.price
+  );
 
-// console.timeEnd("TOTAL");
   return (
-     <ProductDetailClient
+    <ProductDetailClient
       product={JSON.parse(JSON.stringify(product))}
+      similarProducts={JSON.parse(JSON.stringify(similarProducts))}
     />
   );
 }
-
-//  const selected =
-//   getCheapestVariant(product.variants);
-
-//  const similarProducts =
-//     await getSimilarProducts(
-//       product._id.toString(),
-//       selected.price
-//     );

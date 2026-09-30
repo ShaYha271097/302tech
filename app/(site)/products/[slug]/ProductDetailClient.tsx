@@ -5,15 +5,10 @@ import { useState } from "react";
 import ProductGallery from "./ProductGallery";
 import ProductInfo from "./ProductInfo";
 import Breadcrumb from "./Breadcrumb";
-import Link from "next/link";
-import { useSimilarProducts } from "@/hooks/useSimilarProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
-import ProductDescription from "./ProductSortDescription";
-import ProductCardSkeleton from "@/components/ProductCardSkeleton/ProductCardSkeleton";
-import ProductDetailSkeleton from "@/components/ProductDetailSkeleton/ProductDetailSkeleton";
-import SimilarProducts from "./SimilarProducts";
 import ProductFullDescription from "./ProductFullDescription";
 import ProductSortDescription from "./ProductSortDescription";
+import SimilarProducts from "./SimilarProducts";
 
 
 
@@ -37,8 +32,7 @@ export default function ProductDetailClient({
             </div>
           </div>
           <div className="clearfix">
-            {/* {loading ? <ProductDetailSkeleton /> : */}
-            {/* ( */}
+    
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
 
               {/* IMAGE */}
@@ -72,14 +66,10 @@ export default function ProductDetailClient({
               </div>
 
             </div>
-            {/* ) */}
-            {/* } */}
           </div>
-          <SimilarProducts
-            productId={product._id}
-            price={selected.price}
-          />
-
+       <SimilarProducts
+  products={similarProducts}
+/>
           <ProductFullDescription description={product.description} />
         </div>
 

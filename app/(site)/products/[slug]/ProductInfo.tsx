@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { addToCart,openCartModal } from "@/store/slices/cartSlice";
-import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 
 export default function ProductInfo({ product, selected, setSelected }: any) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
   const formatPrice = (price: number) =>
@@ -39,6 +39,27 @@ const handleAddToCart = () => {
     })
   );
   dispatch(openCartModal());
+};
+const handleBuyNow = () => {
+  dispatch(
+    addToCart({
+      productId: product._id,
+      name: product.name,
+      slug: product.slug,
+      image: product.mainImage,
+
+      variant: {
+        cpu: selected.cpu,
+        ram: selected.ram,
+        ssd: selected.ssd,
+        price: selected.price,
+      },
+
+      quantity,
+    })
+  );
+
+  router.push("/cart");
 };
 
   return (
@@ -395,34 +416,35 @@ const handleAddToCart = () => {
       </button>
     </div>
 
-    {/* BUY NOW */}
-    <Link
-      href="/cart"
-      className="
-        block
-        w-full
-        rounded-xl
-        bg-[#ff7a00]
-        px-4
-        py-3
-        text-center
-        text-white
-        shadow-md
-        transition-all
-        duration-200
-        hover:bg-[#ff8c1a]
-        hover:shadow-lg
-        cursor-pointer
-      "
-    >
-      <div className="font-bold text-lg">
-        Thanh toán ngay
-      </div>
+   {/* BUY NOW */}
+<button
+  type="button"
+  onClick={handleBuyNow}
+  className="
+    block
+    w-full
+    rounded-xl
+    bg-[#ff7a00]
+    px-4
+    py-3
+    text-center
+    text-white
+    shadow-md
+    transition-all
+    duration-200
+    hover:bg-[#ff8c1a]
+    hover:shadow-lg
+    cursor-pointer
+  "
+>
+  <div className="font-bold text-lg">
+    Thanh toán ngay
+  </div>
 
-      <div className="text-sm opacity-90">
-        Giao hàng tận nơi, lắp đặt miễn phí
-      </div>
-    </Link>
+  <div className="text-sm opacity-90">
+    Giao hàng tận nơi, lắp đặt miễn phí
+  </div>
+</button>
   </>
 ) : (
   /* CONTACT */

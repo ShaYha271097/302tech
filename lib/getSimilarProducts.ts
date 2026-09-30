@@ -1,5 +1,3 @@
-// lib/getSimilarProducts.ts
-
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
@@ -10,37 +8,43 @@ export async function getSimilarProducts(
   const client = await clientPromise;
   const db = client.db("laptop-shop");
 
-  const product = await db.collection("products").findOne({
-    _id: new ObjectId(productId),
-  });
+  const product = await db.collection("products").findOne(
+    {
+      _id: new ObjectId(productId),
+    },
+    {
+      projection: {
+        brandId: 1,
+      },
+    }
+  );
 
   if (!product) {
     return [];
   }
 
-  return await db
+  return db
     .collection("products")
     .aggregate([
       {
         $match: {
-          _id: { $ne: product._id },
+          _id: {
+            $ne: product._id,
+          },
 
-          // cùng hãng
           brandId: product.brandId,
 
-          // giá ±20%
           "variants.price": {
             $gte: price * 0.8,
             $lte: price * 1.2,
           },
+
+          isActive: true,
         },
       },
 
-      // random 8 sản phẩm
       {
-        $sample: {
-          size: 8,
-        },
+        $limit: 4,
       },
     ])
     .toArray();
