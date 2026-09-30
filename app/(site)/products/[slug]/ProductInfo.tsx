@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { addToCart } from "@/store/slices/cartSlice";
+import { addToCart,openCartModal } from "@/store/slices/cartSlice";
 import Link from "next/link";
+
 
 export default function ProductInfo({ product, selected, setSelected }: any) {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useAppDispatch();
   const formatPrice = (price: number) =>
     price.toLocaleString("vi-VN") + "đ";
+
 const increaseQuantity = () => {
   setQuantity((prev) => prev + 1);
 };
@@ -36,8 +38,11 @@ const handleAddToCart = () => {
       quantity,
     })
   );
+  dispatch(openCartModal());
 };
+
   return (
+    <>
    <div className="space-y-4">
 
   {/* TITLE */}
@@ -117,9 +122,9 @@ const handleAddToCart = () => {
         {formatPrice(selected.price)}
       </span>
 
-      <span className="text-xs text-[#6B7280]">
+      {/* <span className="text-xs text-[#6B7280]">
         Đã bao gồm VAT
-      </span>
+      </span> */}
 
     </div>
 
@@ -255,7 +260,7 @@ const handleAddToCart = () => {
 
       {[
         <>
-          Bảo hành 3-6 tháng,{" "}
+          Bảo hành 6 tháng,{" "}
           <span className="font-semibold text-[#111827]">
             1 đổi 1 trong 7 ngày đầu
           </span>
@@ -321,114 +326,145 @@ const handleAddToCart = () => {
   </div>
       <div className="space-y-3">
 
-  {/* QUANTITY + ADD CART */}
-  <div className="flex gap-3">
-
-    <div
-      className="
-        flex items-center
-        overflow-hidden
-        rounded-xl
-        border border-orange-200
-        bg-white
-      "
-    >
-      <button
-      onClick={decreaseQuantity}
-        className="
-          h-12 w-12
-          text-lg
-          text-[#6B7280]
-          hover:bg-orange-50
-          cursor-pointer
-        "
-      >
-        -
-      </button>
-
+ {product.isActive ? (
+  <>
+    {/* QUANTITY + ADD CART */}
+    <div className="flex gap-3">
       <div
         className="
-          flex h-12 w-12
-          items-center justify-center
-          font-semibold
+          flex items-center
+          overflow-hidden
+          rounded-xl
+          border border-orange-200
+          bg-white
         "
       >
-       {quantity}
+        <button
+          onClick={decreaseQuantity}
+          className="
+            h-12 w-12
+            text-lg
+            text-[#6B7280]
+            hover:bg-orange-50
+            cursor-pointer
+          "
+        >
+          -
+        </button>
+
+        <div
+          className="
+            flex h-12 w-12
+            items-center justify-center
+            font-semibold
+          "
+        >
+          {quantity}
+        </div>
+
+        <button
+          onClick={increaseQuantity}
+          className="
+            h-12 w-12
+            text-lg
+            text-[#6B7280]
+            hover:bg-orange-50
+            cursor-pointer
+          "
+        >
+          +
+        </button>
       </div>
 
       <button
-      onClick={increaseQuantity}
+        onClick={handleAddToCart}
         className="
-          h-12 w-12
-          text-lg
-          text-[#6B7280]
-          hover:bg-orange-50
+          flex-1
+          rounded-xl
+          bg-[#ff7a00]
+          px-4
+          font-semibold
+          text-white
+          shadow-md
+          transition
+          hover:brightness-110
           cursor-pointer
         "
       >
-        +
+        🛒 THÊM VÀO GIỎ
       </button>
     </div>
 
-    <button
-     onClick={handleAddToCart}
+    {/* BUY NOW */}
+    <Link
+      href="/cart"
       className="
-        flex-1
+        block
+        w-full
         rounded-xl
         bg-[#ff7a00]
         px-4
-        font-semibold
+        py-3
+        text-center
         text-white
         shadow-md
-        transition
-        hover:brightness-110
+        transition-all
+        duration-200
+        hover:bg-[#ff8c1a]
+        hover:shadow-lg
         cursor-pointer
       "
     >
-      🛒 THÊM VÀO GIỎ
-    </button>
+      <div className="font-bold text-lg">
+        Thanh toán ngay
+      </div>
 
-  </div>
+      <div className="text-sm opacity-90">
+        Giao hàng tận nơi, lắp đặt miễn phí
+      </div>
+    </Link>
+  </>
+) : (
+  /* CONTACT */
+  <a
+    // href="tel:0946932067"
+    className="
+      flex
+      w-full
+      items-center
+      justify-center
+      gap-2
+      rounded-xl
+      bg-[#ff7a00]
+      px-4
+      py-3
+      text-center
+      text-white
+      shadow-md
+      transition-all
+      duration-200
+      hover:bg-[#e86f00]
+      hover:shadow-lg
+      cursor-pointer
+    "
+  >
+    <div>
+      <div className="font-bold text-lg">
+        Liên hệ
+      </div>
 
-  {/* BUY NOW */}
-<Link
-  href="/cart"
-  className="
-    block
-    w-full
-
-    rounded-xl
-
-    bg-[#ff7a00]
-
-    px-4
-    py-3
-
-    text-center
-    text-white
-
-    shadow-md
-
-    transition-all
-    duration-200
-
-    hover:bg-[#ff8c1a]
-    hover:shadow-lg
-
-    cursor-pointer
-  "
->
-  <div className="font-bold text-lg">
-    Thanh toán ngay
-  </div>
-
-  <div className="text-sm opacity-90">
-   Giao hàng tận nơi, lắp đặt miễn phí
-  </div>
-</Link>
+      {/* <div className="text-sm opacity-90">
+        Gọi ngay để được tư vấn
+      </div> */}
+    </div>
+  </a>
+)}
 
 
 </div>
 </div>
+
+
+</>
   );
 }

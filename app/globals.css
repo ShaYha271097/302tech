@@ -1487,3 +1487,41 @@ ins.highlight {
     }
 }
 
+@keyframes contact-attention {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  8% {
+    transform: scale(1.08);
+  }
+
+  16% {
+    transform: scale(0.96);
+  }
+
+  24% {
+    transform: scale(1.04);
+  }
+
+  32% {
+    transform: scale(1);
+  }
+}
+
+.contact-attention {
+  animation: contact-attention 4s ease-in-out infinite;
+}
+
+.contact-attention-delay-1 {
+  animation-delay: 0.8s;
+}
+
+.contact-attention-delay-2 {
+  animation-delay: 1.6s;
+}
+
+.contact-attention-delay-3 {
+  animation-delay: 2.4s;
+}

@@ -103,7 +103,7 @@ const [bannerData, brands, hotProducts] =
           .collection("products")
           .find({
             brandId: brand._id,
-            isActive:true
+            // isActive:true
           })
           .limit(4)
           .toArray();
@@ -147,9 +147,11 @@ export default async function Home() {
       <div className="wrap-home w-clear">
        <MultiItemCarousel brands={brands} />
 
-       <TopSellingSlider
+
+        {hotProducts.length > 0 && <TopSellingSlider
         products={hotProducts}
-      />
+        />}
+      
 
         {sections.map((section) => (
           <ProductSection

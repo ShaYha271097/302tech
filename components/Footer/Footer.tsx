@@ -298,8 +298,8 @@ export default function Footer() {
           </span>
         </div>
       </div>
-    <div
-  className="
+      <div
+        className="
     fixed
     bottom-4
     left-1/2
@@ -311,9 +311,9 @@ export default function Footer() {
     md:bottom-5
     md:translate-x-0
   "
->
-  <div
-    className="
+      >
+        <div
+          className="
       bg-white/95
       backdrop-blur
       rounded-full
@@ -328,14 +328,15 @@ export default function Footer() {
       md:border-0
       md:p-0
     "
-  >
-    <ul className="flex flex-row md:flex-col gap-2 md:gap-3">
+        >
+          <ul className="flex flex-row md:flex-col gap-2 md:gap-3">
 
-          {/* PHONE */}
-          <li>
-            <a
-              href="tel:0946932067"
-              className="
+            {/* PHONE */}
+            <li>
+              <a
+                href="tel:0946932067"
+                className="
+              contact-attention
           group
           w-12 h-12 md:w-14 md:h-14
           rounded-2xl
@@ -348,26 +349,28 @@ export default function Footer() {
           hover:border-[#FED7AA]
           hover:shadow-[0_10px_30px_rgba(255,122,0,0.15)]
         "
-            >
-              <img
-                src="/assets/images/phone2.svg"
-                className="
+              >
+                <img
+                  src="/assets/images/phone2.svg"
+                  className="
             w-6 h-6 md:w-7 md:h-7
             transition-transform duration-300
             group-hover:scale-110
           "
-                alt="phone"
-              />
-            </a>
-          </li>
+                  alt="phone"
+                />
+              </a>
+            </li>
 
-          {/* ZALO */}
-          <li>
-            <a
-              href="https://zalo.me/0946932067"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
+            {/* ZALO */}
+            <li>
+              <a
+                href="https://zalo.me/0946932067"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+              contact-attention
+              contact-attention-delay-1
           group
           w-12 h-12 md:w-14 md:h-14
           rounded-2xl
@@ -380,26 +383,28 @@ export default function Footer() {
           hover:border-[#FED7AA]
           hover:shadow-[0_10px_30px_rgba(255,122,0,0.15)]
         "
-            >
-              <img
-                src="/assets/images/zalo2.svg"
-                className="
+              >
+                <img
+                  src="/assets/images/zalo2.svg"
+                  className="
             w-6 h-6 md:w-7 md:h-7
             transition-transform duration-300
             group-hover:scale-110
           "
-                alt="zalo"
-              />
-            </a>
-          </li>
+                  alt="zalo"
+                />
+              </a>
+            </li>
 
-          {/* MESSENGER */}
-          <li>
-            <a
-              href="https://m.me/61568759679115"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
+            {/* MESSENGER */}
+            <li>
+              <a
+                href="https://m.me/61568759679115"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+              contact-attention
+               contact-attention-delay-2
           group
           w-12 h-12 md:w-14 md:h-14
           rounded-2xl
@@ -412,26 +417,28 @@ export default function Footer() {
           hover:border-[#FED7AA]
           hover:shadow-[0_10px_30px_rgba(255,122,0,0.15)]
         "
-            >
-              <img
-                src="/assets/images/messenger2.svg"
-                className="
+              >
+                <img
+                  src="/assets/images/messenger2.svg"
+                  className="
             w-6 h-6 md:w-7 md:h-7
             transition-transform duration-300
             group-hover:scale-110
           "
-                alt="messenger"
-              />
-            </a>
-          </li>
+                  alt="messenger"
+                />
+              </a>
+            </li>
 
-          {/* MAP */}
-          <li>
-            <a
-              href="https://maps.app.goo.gl/LjjyW6V9h5o7zsi96"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
+            {/* MAP */}
+            <li>
+              <a
+                href="https://maps.app.goo.gl/LjjyW6V9h5o7zsi96"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+              contact-attention
+               contact-attention-delay-3
           group
           w-12 h-12 md:w-14 md:h-14
           rounded-2xl
@@ -444,23 +451,23 @@ export default function Footer() {
           hover:border-[#FED7AA]
           hover:shadow-[0_10px_30px_rgba(255,122,0,0.15)]
         "
-            >
-              <img
-                src="/assets/images/map2.svg"
-                className="
+              >
+                <img
+                  src="/assets/images/map2.svg"
+                  className="
             w-6 h-6 md:w-7 md:h-7
             transition-transform duration-300
             group-hover:scale-110
           "
-                alt="map"
-              />
-            </a>
-          </li>
+                  alt="map"
+                />
+              </a>
+            </li>
 
-        </ul>
+          </ul>
+        </div>
+
       </div>
-
-    </div>
     </div>
 
   )

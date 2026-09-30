@@ -327,7 +327,7 @@ export default function Header({
                                                     absolute
                                                     top-full
                                                     left-0
-                                                    min-w-[180px]
+                                                    min-w-[200px]
                                                     bg-white
                                                     shadow-lg
                                                     z-50
@@ -360,7 +360,7 @@ export default function Header({
                                                             loading="lazy"
                                                             width={24}
                                                             height={24}
-                                                            src={brand.image.url.url}
+                                                            src={brand.image.url}
                                                             alt={brand.name}
                                                             className="w-6 h-6 object-contain"
                                                         />

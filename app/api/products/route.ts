@@ -18,6 +18,10 @@ type Variant = {
   resolution: string;
   refreshRate: string;
 };
+type DescriptionImage = {
+  url: string;
+  publicId: string;
+};
 
 type Product = {
   brandId: ObjectId;
@@ -31,6 +35,8 @@ type Product = {
   isNew: boolean;
   isActive: boolean;
   description: string
+  descriptionImages: DescriptionImage[];
+  shortDescription: string;
 };
 
 export async function POST(req: Request) {
@@ -125,6 +131,8 @@ export async function POST(req: Request) {
     // frontend gửi slug lên
     slug: body.slug.trim(),
     description: body.description?.trim() || "",
+    shortDescription: body.shortDescription?.trim() || "",
+    descriptionImages: body.descriptionImages || [],
     mainImage: {
       url: body.mainImage.url,
       publicId: body.mainImage.publicId,

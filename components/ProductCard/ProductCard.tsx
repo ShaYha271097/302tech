@@ -102,7 +102,7 @@ export default function ProductCard({
               hover:bg-[#e86f00]
             "
           >
-            Mua ngay
+            {product.isActive ? "Mua ngay" : "Liên hệ"}
           </Link>
 
         </div>

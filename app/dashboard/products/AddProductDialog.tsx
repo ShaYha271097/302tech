@@ -31,6 +31,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import SortableImage from "@/components/SortableImage";
 import ProductDescriptionEditor from "./ProductDescriptionEditor";
+import ProductShortDescriptionEditor from "./ProductShortDescriptionEditor";
 
 
 
@@ -105,7 +106,10 @@ const defaultVariant: Variant = {
   touch: false,
   refreshRate: "",
 };
-
+type DescriptionImage = {
+  url: string;
+  publicId: string;
+};
 export default function AddProductDialog({
   open,
   setOpen,
@@ -113,7 +117,7 @@ export default function AddProductDialog({
   product,
   onSuccess,
 }: Props) {
-  console.log("LLLLLLLLLLLLLLL",product)
+  console.log("LLLLLLLLLLLLLLL=<>>>>>>>>>>>>>>", product)
   // const variantsRef = useRef<HTMLDivElement>(null);
   const defaultVariant: Variant = {
     id: Date.now().toString(),
@@ -155,13 +159,15 @@ export default function AddProductDialog({
   const [isNew, setIsNew] = useState(true);
   const [isActive, setIsActive] = useState(true);
   const [description, setDescription] = useState(
-  product?.description || ""
-);
-const [pendingDescriptionImages, setPendingDescriptionImages] =
-  useState<Map<string, File>>(new Map());
-  const formatPrice = (num: number) => {
-    return num.toLocaleString("vi-VN");
-  };
+    product?.description || ""
+  );
+  const [originalDescriptionImages, setOriginalDescriptionImages] =
+    useState<DescriptionImage[]>([]);
+  const [pendingDescriptionImages, setPendingDescriptionImages] =
+    useState<Map<string, File>>(new Map());
+const [shortDescription, setShortDescription] = useState("");
+
+
   const resetForm = () => {
     setName("");
     setVariants([
@@ -178,16 +184,47 @@ const [pendingDescriptionImages, setPendingDescriptionImages] =
       setBrandId(product.brandId || "");
       setVariants(product.variants || []);
       setMainImage(product.mainImage || null);
+      setSlug(product.slug || "");
       setImages([
         product.mainImage,
         ...(product.gallery || []),
       ]);
+
       setDescription(product.description || "");
+
+      setOriginalDescriptionImages(
+        product.descriptionImages || []
+      );
+      setShortDescription(product.shortDescription || "");
     } else {
       // create
       resetForm();
     }
   }, [open, mode, product]);
+
+  const getDescriptionImages = (html: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    return Array.from(doc.querySelectorAll("img"))
+      .map((img) => ({
+        src: img.getAttribute("src") || "",
+        publicId: img.getAttribute("data-public-id") || "",
+      }))
+      .filter((img) => img.src);
+  };
+const getRemovedDescriptionImages = (
+  oldImages: DescriptionImage[],
+  newImages: DescriptionImage[]
+) => {
+  return oldImages.filter(
+    (oldImage) =>
+      !newImages.some(
+        (newImage) =>
+          newImage.url === oldImage.url
+      )
+  );
+};
 
   const addVariant = () => {
     setVariants((prev) => [
@@ -223,86 +260,188 @@ const [pendingDescriptionImages, setPendingDescriptionImages] =
     }
   }, [brands]);
 
-  const handleSubmit = async () => {
-    const err = validateForm();
-    if (err) {
-      alert(err);
+const handleSubmit = async () => {
+  const err = validateForm();
+
+  if (err) {
+    alert(err);
+    return;
+  }
+
+  if (!mainImage) return;
+
+  setLoading(true);
+
+  let newlyUploadedDescriptionImages: DescriptionImage[] = [];
+
+  try {
+    // ==========================================
+    // MAIN IMAGE
+    // ==========================================
+
+    const mainImageData =
+      mainImage instanceof File
+        ? await upload(mainImage, "product")
+        : mainImage;
+
+
+    // ==========================================
+    // GALLERY
+    // ==========================================
+
+    const galleryData = await Promise.all(
+      images
+        .filter((i) => i !== mainImage)
+        .map(async (img) => {
+          if (img instanceof File) {
+            return await upload(img, "product");
+          }
+
+          return img;
+        })
+    );
+
+
+    // ==========================================
+    // DESCRIPTION IMAGES
+    // ==========================================
+
+    const {
+      html: finalDescription,
+      images: finalDescriptionImages,
+      newlyUploaded,
+    } = await uploadDescriptionImages(
+      description,
+      pendingDescriptionImages,
+      originalDescriptionImages
+    );
+
+    newlyUploadedDescriptionImages = newlyUploaded;
+
+
+    // ==========================================
+    // ẢNH CŨ BỊ XÓA
+    // ==========================================
+
+    const removedImages =
+      getRemovedDescriptionImages(
+        originalDescriptionImages,
+        finalDescriptionImages
+      );
+
+
+    // ==========================================
+    // PAYLOAD
+    // ==========================================
+
+    const payload = {
+      name,
+      brandId,
+      mainImage: mainImageData,
+      gallery: galleryData,
+      variants,
+      isHot,
+      isNew,
+      isActive,
+      slug,
+
+      description: finalDescription,
+
+      descriptionImages: finalDescriptionImages,
+      shortDescription
+    };
+
+
+    // ==========================================
+    // SAVE DATABASE
+    // ==========================================
+
+    const res = await fetch(
+      mode === "create"
+        ? "/api/products"
+        : `/api/products/${product._id}`,
+      {
+        method: mode === "create" ? "POST" : "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+
+    // ==========================================
+    // DATABASE LỖI
+    // ==========================================
+
+    if (!res.ok) {
+      const data = await res.json();
+
+      // Upload rồi nhưng MongoDB không lưu
+      // => xóa ảnh mới trên Cloudinary
+      await Promise.all(
+        newlyUploadedDescriptionImages.map(
+          (image) =>
+            deleteDescriptionImage(image.publicId)
+        )
+      );
+
+      alert(data.error || "Lỗi lưu sản phẩm");
       return;
     }
 
-    if (!mainImage) return;
 
-    setLoading(true);
-
-    try {
-      // 👉 MAIN IMAGE
-      const mainImageData =
-        mainImage instanceof File
-          ? await upload(mainImage, "product")
-          : mainImage;
-
-
-      // 👉 GALLERY (upload song song nhưng ổn định hơn)
-      const galleryData = await Promise.all(
-        images
-          .filter((i) => i !== mainImage)
-          .map(async (img) => {
-            if (img instanceof File) {
-              return await upload(img, "product");
-            }
-
-            return img;
-          })
-      );
     // ==========================================
-      // DESCRIPTION IMAGES
-      // ==========================================
-      const finalDescription = await uploadDescriptionImages(
-        description,
-        pendingDescriptionImages
-      );
-       // ==========================================
-    // PAYLOAD
+    // DATABASE OK
+    // => XÓA ẢNH CŨ KHÔNG CÒN DÙNG
     // ==========================================
-      const payload = {
-        name,
-        brandId,
-        mainImage: mainImageData,
-        gallery: galleryData,
-        variants,
-        isHot,
-        isNew,
-        isActive,
-        slug,
-       description: finalDescription,
-      };
+
+    await Promise.all(
+      removedImages.map(
+        (image) =>
+          deleteDescriptionImage(image.publicId)
+      )
+    );
 
 
-      const res = await fetch(
-        mode === "create" ? "/api/products" : `/api/products/${product._id}`,
-        {
-          method: mode === "create" ? "POST" : "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        },
-      );
+    // ==========================================
+    // DONE
+    // ==========================================
 
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.error || "Lỗi lưu sản phẩm");
-        return;
-      }
+    setOpen(false);
+    onSuccess?.();
 
-      setOpen(false);
-      onSuccess?.();
-    } catch (err) {
-      alert("Upload thất bại");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    console.error(err);
+
+    // Cleanup ảnh mới nếu quá trình bị lỗi
+    await Promise.all(
+      newlyUploadedDescriptionImages.map(
+        (image) =>
+          deleteDescriptionImage(image.publicId)
+      )
+    );
+
+    alert("Upload thất bại");
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+const deleteDescriptionImage = async (
+  publicId: string
+) => {
+  await fetch("/api/upload/delete", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      publicId,
+    }),
+  });
+};
   const upload = async (file: File, type: "product" | "brand" | "slider" | "banner" | "product-description") => {
     setUploading(true);
 
@@ -523,42 +662,76 @@ const [pendingDescriptionImages, setPendingDescriptionImages] =
   };
 
   const uploadDescriptionImages = async (
-  description: string,
-  pendingImages: Map<string, File>
-) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(description, "text/html");
+    html: string,
+    pendingImages: Map<string, File>,
+    existingImages: DescriptionImage[]
+  ) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
 
-  const images = Array.from(doc.querySelectorAll("img"));
+    const currentImages: DescriptionImage[] = [];
+    const newlyUploaded: DescriptionImage[] = [];
 
-  for (const img of images) {
-    const src = img.getAttribute("src");
+    const images = Array.from(doc.querySelectorAll("img"));
 
-    if (!src || !src.startsWith("blob:")) {
-      continue;
+    for (const img of images) {
+      const src = img.getAttribute("src");
+
+      if (!src) continue;
+
+      // =========================
+      // ẢNH MỚI
+      // =========================
+
+      if (src.startsWith("blob:")) {
+        const file = pendingImages.get(src);
+
+        if (!file) continue;
+
+        const uploaded = await upload(
+          file,
+          "product-description"
+        );
+
+        img.setAttribute("src", uploaded.url);
+
+        if (!img.getAttribute("alt")) {
+          img.setAttribute("alt", file.name);
+        }
+
+        const imageData = {
+          url: uploaded.url,
+          publicId: uploaded.publicId,
+        };
+
+        currentImages.push(imageData);
+        newlyUploaded.push(imageData);
+
+        URL.revokeObjectURL(src);
+
+        continue;
+      }
+
+      // =========================
+      // ẢNH CŨ
+      // =========================
+
+      const oldImage = existingImages.find(
+        (image) => image.url === src
+      );
+
+      if (oldImage) {
+        currentImages.push(oldImage);
+      }
     }
 
-    const file = pendingImages.get(src);
-
-    if (!file) {
-      continue;
-    }
-
-    // Upload File lên Cloudinary
-    const uploaded = await upload(file, "product-description");
-
-    // Thay blob URL bằng URL Cloudinary
-    img.setAttribute("src", uploaded.url);
-
-    // Giữ alt
-    img.setAttribute("alt", img.getAttribute("alt") || file.name);
-
-    // Xóa blob khỏi bộ nhớ trình duyệt
-    URL.revokeObjectURL(src);
-  }
-
-  return doc.body.innerHTML;
-};
+    return {
+      html: doc.body.innerHTML,
+      images: currentImages,
+      newlyUploaded,
+    };
+  };
+  console.log("slug", slug)
   console.log("variants", variants)
   return (
     <>
@@ -1202,6 +1375,7 @@ sm:h-[90vh]
     rounded-2xl
     overflow-hidden
     mt-5
+     mb-10
   "
               >
                 {/* HEADER */}
@@ -1772,11 +1946,17 @@ sm:h-[90vh]
                   ))}
                 </div>
               </div>
-        <ProductDescriptionEditor
-  value={description}
-  onChange={setDescription}
-  onPendingImagesChange={setPendingDescriptionImages}
-/>
+              <ProductShortDescriptionEditor
+              value={shortDescription}
+                onChange={setShortDescription}
+              />
+         
+
+              <ProductDescriptionEditor
+                value={description}
+                onChange={setDescription}
+                onPendingImagesChange={setPendingDescriptionImages}
+              />
             </div>
           </div>
 

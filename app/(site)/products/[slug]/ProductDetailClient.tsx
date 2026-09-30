@@ -8,10 +8,12 @@ import Breadcrumb from "./Breadcrumb";
 import Link from "next/link";
 import { useSimilarProducts } from "@/hooks/useSimilarProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
-import ProductDescription from "./ProductDescription";
+import ProductDescription from "./ProductSortDescription";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton/ProductCardSkeleton";
 import ProductDetailSkeleton from "@/components/ProductDetailSkeleton/ProductDetailSkeleton";
 import SimilarProducts from "./SimilarProducts";
+import ProductFullDescription from "./ProductFullDescription";
+import ProductSortDescription from "./ProductSortDescription";
 
 
 
@@ -19,7 +21,7 @@ export default function ProductDetailClient({
   product,
   similarProducts,
 }: any) {
- const [selected, setSelected] = useState(
+  const [selected, setSelected] = useState(
     getCheapestVariant(product.variants)
   );
 
@@ -36,45 +38,49 @@ export default function ProductDetailClient({
           </div>
           <div className="clearfix">
             {/* {loading ? <ProductDetailSkeleton /> : */}
-              {/* ( */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
+            {/* ( */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
 
-                {/* IMAGE */}
-                <div className="md:col-span-1 lg:col-span-4">
-                  <div className="bg-white p-1 h-full">
-                    <ProductGallery
-                      mainImage={product.mainImage}
-                      gallery={product.gallery}
-                    />
-                  </div>
+              {/* IMAGE */}
+              <div className="md:col-span-1 lg:col-span-4">
+                <div className="bg-white p-1 h-full">
+                  <ProductGallery
+                    mainImage={product.mainImage}
+                    gallery={product.gallery}
+                  />
                 </div>
-
-                {/* INFO */}
-                <div className="md:col-span-1 lg:col-span-4">
-                  <div className="bg-white p-1 h-full sticky top-4">
-
-                    <ProductInfo
-                      product={product}
-                      selected={selected}
-                      setSelected={setSelected}
-                    />
-
-                  </div>
-                </div>
-
-                {/* DESCRIPTION */}
-                <div className="md:col-span-2 lg:col-span-4">
-                  <ProductDescription selected={selected} />
-                </div>
-
               </div>
-              {/* ) */}
-          {/* } */}
+
+              {/* INFO */}
+              <div className="md:col-span-1 lg:col-span-4">
+                <div className="bg-white p-1 h-full sticky top-4">
+
+                  <ProductInfo
+                    product={product}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+
+                </div>
+              </div>
+
+              {/* DESCRIPTION */}
+              <div className="md:col-span-2 lg:col-span-4">
+                  <ProductSortDescription
+        content={product.shortDescription}
+      />
+              </div>
+
+            </div>
+            {/* ) */}
+            {/* } */}
           </div>
-         <SimilarProducts
-  productId={product._id}
-  price={selected.price}
-/>
+          <SimilarProducts
+            productId={product._id}
+            price={selected.price}
+          />
+
+          <ProductFullDescription description={product.description} />
         </div>
 
       </div>

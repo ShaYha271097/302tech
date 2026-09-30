@@ -25,7 +25,7 @@ export interface CartItem {
   productId: string;
   name: string;
   slug: string;
-  image: string;
+  image: any;
 
   variant: {
     cpu: string;
@@ -39,12 +39,14 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
+  isCartModalOpen: boolean;
 }
 
 
 
 const initialState: CartState = {
   items: loadCart(),
+  isCartModalOpen: false,
 };
 
 const cartSlice = createSlice({
@@ -144,6 +146,13 @@ const cartSlice = createSlice({
       state.items = [];
        saveCart([]);
     },
+    openCartModal: (state) => {
+  state.isCartModalOpen = true;
+},
+
+closeCartModal: (state) => {
+  state.isCartModalOpen = false;
+},
   },
 });
 
@@ -153,6 +162,8 @@ export const {
   increaseQuantity,
   decreaseQuantity,
   clearCart,
+  openCartModal,
+  closeCartModal
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

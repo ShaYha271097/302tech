@@ -1,6 +1,7 @@
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import clientPromise from "@/lib/mongodb";
+import GlobalCartModal from "./products/[slug]/GlobalCartModal";
 
 export default async function SiteLayout({
   children,
@@ -21,6 +22,7 @@ export default async function SiteLayout({
     <>
        <Header brands={JSON.parse(JSON.stringify(brands))} />
         {children}
+         <GlobalCartModal/>
         <Footer />
     </>
   );

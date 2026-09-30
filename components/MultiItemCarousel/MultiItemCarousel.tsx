@@ -8,7 +8,7 @@ import BrandCarouselSkeleton from "../BrandCarouselSkeleton/BrandCarouselSkeleto
 import { ObjectId } from "mongodb";
 
 
- interface Brand {
+interface Brand {
   _id: string;
   name: string;
   slug: string;
@@ -27,15 +27,15 @@ type Props = {
 export default function MultiItemCarousel({
   brands,
 }: Props) {
-const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-useEffect(() => {
-  setMounted(true);
-}, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-if (!mounted) {
-  return <BrandCarouselSkeleton />;
-}
+  if (!mounted) {
+    return <BrandCarouselSkeleton />;
+  }
 
   return (
     <div className="all_list_noibat">
@@ -44,12 +44,13 @@ if (!mounted) {
           <Swiper
             modules={[Autoplay]}
             spaceBetween={16}
-            loop={true}
+            loop
+            speed={3000}
             autoplay={{
-              delay: 2000,
+              delay: 0,
               disableOnInteraction: false,
+              pauseOnMouseEnter: false,
             }}
-            speed={500}
             breakpoints={{
               0: {
                 slidesPerView: 3,
@@ -65,17 +66,17 @@ if (!mounted) {
             {brands.map((brand, index) => {
               const image =
                 brandImages[index % brandImages.length];
-               const isLaptopMenu = brand.slug === "laptop";
+              const isLaptopMenu = brand.slug === "laptop";
               return (
                 <SwiperSlide key={`${brand.slug}-${index}`}>
-                  <Link   href={{
-                                pathname: "/products",
-                                query: isLaptopMenu
-                                    ? { category: "laptop" }
-                                    : { category: "laptop", brand: brand.slug },
-                            }}>
+                  <Link href={{
+                    pathname: "/products",
+                    query: isLaptopMenu
+                      ? { category: "laptop" }
+                      : { category: "laptop", brand: brand.slug },
+                  }}>
 
-                  
+
                     <div
                       className="
                         group

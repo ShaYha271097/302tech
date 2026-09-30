@@ -50,13 +50,13 @@ const currentPageTitle = pageTitles[pathname];
                 href={`/products?category=laptop&brand=${product.brand.slug}`}
                 className="hover:text-[#111827]"
               >
-                {product.brand.name}
+{product.brand.name.charAt(0).toUpperCase() + product.brand.name.slice(1)}
               </Link>
             </li>
           ) : (
             // 👉 nếu đang ở trang brand → KHÔNG click
             <li className="text-[#111827] font-medium">
-              {brand}
+              {brand.charAt(0).toUpperCase() + brand.slice(1)}
             </li>
           )}
         </>

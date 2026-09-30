@@ -53,7 +53,9 @@ export async function PUT(
       mainImage,
       gallery,
       variants,
-      description
+      description,
+      descriptionImages,
+      shortDescription
     } = body;
 
     // 👉 validate
@@ -93,7 +95,10 @@ export async function PUT(
       isHot: body.isHot ?? false,
       isNew: body.isNew ?? false,
       isActive: body.isActive ?? true,
-      description,
+    description: description || "",
+
+      descriptionImages: descriptionImages || [],
+shortDescription:shortDescription || "",
       updatedAt: new Date(),
     };
 
@@ -109,40 +114,58 @@ export async function PUT(
       );
     }
 
+      // ==========================================
+    // ẢNH CŨ
+    // ==========================================
+
     const oldImages = [
       oldProduct.mainImage,
-      ...oldProduct.gallery,
+      ...(oldProduct.gallery || []),
+      ...(oldProduct.descriptionImages || []),
     ];
 
-
+    // ==========================================
+    // ẢNH MỚI
+    // ==========================================
 
     const newImages = [
       mainImage,
-      ...gallery,
+      ...(gallery || []),
+      ...(descriptionImages || []),
     ];
 
-
+    // ==========================================
+    // TÌM ẢNH ĐÃ BỊ XÓA
+    // ==========================================
 
     const removedImages = oldImages.filter(
       (oldImg: any) =>
+        oldImg?.publicId &&
         !newImages.some(
           (newImg: any) =>
-            newImg.publicId === oldImg.publicId
+            newImg?.publicId === oldImg.publicId
         )
     );
 
-
+    // ==========================================
+    // XÓA CLOUDINARY
+    // ==========================================
 
     await Promise.all(
       removedImages.map(async (img: any) => {
         try {
-          await cloudinary.uploader.destroy(img.publicId);
+          await cloudinary.uploader.destroy(
+            img.publicId
+          );
         } catch (err) {
-          console.error(err);
+          console.error(
+            "Lỗi xóa Cloudinary:",
+            img.publicId,
+            err
+          );
         }
       })
     );
-
 
 
     return NextResponse.json({

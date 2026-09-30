@@ -48,6 +48,7 @@ export default function SimilarProducts({
     
   }, [productId, price]);
 
+  console.log("similarProducts",similarProducts)
   return (
     <>
       <div className="title_sp_cungloai text-2xl font-semibold text-center mt-8 mb-7">
@@ -70,74 +71,114 @@ export default function SimilarProducts({
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-              {similarProducts.map((item: any) => {
+              {similarProducts.slice(0, 4).map((item: any) => {
                 const cheapest = getCheapestVariant(
                   item.variants
                 );
 
                 return (
-                  <div
-                    key={item._id}
-                    className="all_sp_banchay_index"
-                  >
-                    <div className="all_img_sp_bc">
-                      <Link
-                        href={`/products/${item.slug}-${item._id}`}
-                      >
-                        <div className="img_sp_bc">
-                          <div>
-                            <img
-                              loading="lazy"
-                              width={1276}
-                              height={956}
-                              src={item.mainImage}
-                              alt={item.name}
-                              className="1"
-                            />
-                          </div>
+                 <div 
+                 key={item._id}
+      className="
+        group
+        bg-white
+        border border-[#E8E8E8]
+        rounded-sm
+        p-4
+        h-full
+        transition-all duration-300
+        hover:border-[#FED7AA]
+        hover:shadow-[0_10px_30px_rgba(255,122,0,0.08)]
+      "
+    >
 
-                          <div className="img_sp_2">
-                            <img
-                              loading="lazy"
-                              width={1276}
-                              height={956}
-                              src="https://laptopgaming.com.vn/upload/2tr9/z7091979203318_3fa05743fb3591027b992c73476e1979.jpg"
-                              alt={item.name}
-                              className="1"
-                            />
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
+      {/* IMAGE */}
+      <Link href={`/products/${item.slug}-${item._id}`}>
 
-                    <div className="all_content_sp">
-                      <Link
-                        href={`/products/${item.slug}-${item._id}`}
-                      >
-                        <div className="name_sp text-split">
-                          {item.name} -{" "}
-                          {getVariantText(cheapest)}
-                        </div>
-                      </Link>
+        <div
+          className="
+            aspect-square
+            overflow-hidden
+            bg-[#FFF7ED]
+            rounded-sm
+          "
+        >
 
-                      <div className="gia_sp">
-                        <span>
-                          {formatPrice(
-                            cheapest?.price
-                          )}
-                        </span>
-                      </div>
+          <img
+            src={item.mainImage.url}
+            className="
+              w-full
+              h-full
+              object-cover
+              transition-transform duration-300
+              group-hover:scale-105
+            "
+          />
 
-                      <div className="cart-product">
-                        <Link
-                          href={`/products/${item.slug}-${item._id}`}
-                          className="muangay_sp"
-                        >
-                          Mua ngay
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+        </div>
+
+      </Link>
+
+      {/* CONTENT */}
+      <div className="py-3">
+
+        {/* NAME */}
+        <Link href={`/products/${item.slug}-${item._id}`}>
+
+          <div
+            className="
+              text-[15px]
+              font-semibold
+              text-[#111827]
+              leading-6
+              line-clamp-2
+              min-h-[48px]
+              transition-colors
+              group-hover:text-[#ff7a00]
+            "
+          >
+            {item.name} - {getVariantText(cheapest)}
+          </div>
+
+        </Link>
+
+        {/* PRICE */}
+        <div
+          className="
+            mt-3
+            text-[18px]
+            font-black
+            text-[#ff3b30]
+          "
+        >
+          {cheapest?.price?.toLocaleString("vi-VN")}đ
+        </div>
+
+        {/* BUTTON */}
+        <div className="mt-4">
+
+          <Link
+            href={`/products/${item.slug}-${item._id}`}
+            className="
+              h-10
+              rounded-sm
+              bg-[#ff7a00]
+              text-white
+              text-sm
+              font-semibold
+              flex items-center justify-center
+              transition-all duration-300
+              hover:bg-[#e86f00]
+            "
+          >
+            Mua ngay
+          </Link>
+
+        </div>
+
+      </div>
+
+    </div>
                 );
               })}
             </div>

@@ -93,7 +93,7 @@ return ( <div className="container mx-auto max-w-7xl px-4 py-6">
                 <div className="flex gap-4">
 
                   <img
-                    src={item.image}
+                    src={item.image.url}
                     alt={item.name}
                     className="
                       w-24

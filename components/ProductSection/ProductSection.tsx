@@ -15,8 +15,8 @@ export default function ProductSection({ title, slug, products }: any) {
                     <Link href={`/products?brand=${slug}`}>
                         <div className="title_sp">{title}</div>
                     </Link>
-
                     <div className="all_xemtatca">
+
                         <Link href={`/products?brand=${slug}`}>
                             Xem tất cả <i className="fas fa-angle-double-right" />
                         </Link>
