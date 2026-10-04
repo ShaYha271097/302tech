@@ -93,6 +93,7 @@ const [bannerData, brands, hotProducts] =
       .toArray(),
   ]);
 
+  console.log("BANNER DATA=>>>>>>>>>>>>>>>>>>>>>>>>>:", bannerData);
   const brandDTOs = brands.map(toBrandDTO);
   const hotProductDTOs =hotProducts.map(toProductDTO);
   
@@ -123,6 +124,9 @@ const [bannerData, brands, hotProducts] =
   };
 }
 
+
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
  const {
   bannerData,
@@ -131,7 +135,6 @@ export default async function Home() {
   hotProducts,
 } = await getHomeData();
   
-
   return (
     <>
       <BannerSlider
