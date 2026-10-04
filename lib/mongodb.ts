@@ -1,22 +1,36 @@
-import { MongoClient } from "mongodb"
+import { MongoClient } from "mongodb";
 
-const uri = process.env.MONGO_URI!
+const uri = process.env.MONGO_URI!;
 
 if (!uri) {
-  throw new Error("Thiếu MONGO_URI trong .env")
+  throw new Error("Thiếu MONGO_URI trong .env");
 }
 
 const options = {
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true,
-  // ssl: true,
-};  // Không cần phải chỉ định thêm options ở đây
+  maxPoolSize: 10,
+  minPoolSize: 0,
+  maxIdleTimeMS: 60000,
+  connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 10000,
+};
 
-let clientPromise: Promise<MongoClient>
-let client: MongoClient;
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+}
 
-  client = new MongoClient(uri, options);
+let clientPromise: Promise<MongoClient>;
+
+if (process.env.NODE_ENV === "development") {
+  if (!global._mongoClientPromise) {
+    const client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
+  }
+
+  clientPromise = global._mongoClientPromise;
+} else {
+  const client = new MongoClient(uri, options);
   clientPromise = client.connect();
+}
 
-  
 export default clientPromise;

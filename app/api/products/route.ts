@@ -17,6 +17,8 @@ type Variant = {
   screenSize: string;
   resolution: string;
   refreshRate: string;
+  shortDescription:string
+  
 };
 type DescriptionImage = {
   url: string;
@@ -36,7 +38,6 @@ type Product = {
   isActive: boolean;
   description: string
   descriptionImages: DescriptionImage[];
-  shortDescription: string;
 };
 
 export async function POST(req: Request) {
@@ -131,7 +132,6 @@ export async function POST(req: Request) {
     // frontend gửi slug lên
     slug: body.slug.trim(),
     description: body.description?.trim() || "",
-    shortDescription: body.shortDescription?.trim() || "",
     descriptionImages: body.descriptionImages || [],
     mainImage: {
       url: body.mainImage.url,

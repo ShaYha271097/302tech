@@ -19,7 +19,7 @@ export default function ProductDetailClient({
   const [selected, setSelected] = useState(
     getCheapestVariant(product.variants)
   );
-
+  console.log("asdasdsadsad=>>>>>>>>>>>>>>",selected)
   return (
     <>
       <div className="wrap-main w-clear">
@@ -58,10 +58,10 @@ export default function ProductDetailClient({
                 </div>
               </div>
 
-              {/* DESCRIPTION */}
+              {/* SORT DESCRIPTION */}
               <div className="md:col-span-2 lg:col-span-4">
                   <ProductSortDescription
-        content={product.shortDescription}
+        content={selected.shortDescription}
       />
               </div>
 

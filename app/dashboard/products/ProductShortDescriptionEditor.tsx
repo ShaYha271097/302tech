@@ -92,15 +92,7 @@ export default function ProductShortDescriptionEditor({
           <h3 className="text-sm font-semibold text-gray-900">
             Mô tả ngắn
           </h3>
-
-          <p className="mt-0.5 text-xs text-gray-500">
-            Thông tin nổi bật hiển thị nhanh trên trang sản phẩm
-          </p>
         </div>
-
-        <span className="rounded-md bg-orange-50 px-2 py-1 text-[11px] font-medium text-orange-600">
-          Không hỗ trợ ảnh
-        </span>
       </div>
 
       {/* Toolbar */}
@@ -109,11 +101,10 @@ export default function ProductShortDescriptionEditor({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={`toolbar-btn ${
-            editor.isActive("bold")
+          className={`toolbar-btn ${editor.isActive("bold")
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="In đậm"
         >
           <Bold size={16} />
@@ -123,11 +114,10 @@ export default function ProductShortDescriptionEditor({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          className={`toolbar-btn ${
-            editor.isActive("italic")
+          className={`toolbar-btn ${editor.isActive("italic")
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="In nghiêng"
         >
           <Italic size={16} />
@@ -137,11 +127,10 @@ export default function ProductShortDescriptionEditor({
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          className={`toolbar-btn ${
-            editor.isActive("underline")
+          className={`toolbar-btn ${editor.isActive("underline")
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="Gạch chân"
         >
           <UnderlineIcon size={16} />
@@ -155,11 +144,10 @@ export default function ProductShortDescriptionEditor({
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
-          className={`toolbar-btn ${
-            editor.isActive("heading", { level: 2 })
+          className={`toolbar-btn ${editor.isActive("heading", { level: 2 })
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="Tiêu đề lớn"
         >
           <Heading2 size={17} />
@@ -171,11 +159,10 @@ export default function ProductShortDescriptionEditor({
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 3 }).run()
           }
-          className={`toolbar-btn ${
-            editor.isActive("heading", { level: 3 })
+          className={`toolbar-btn ${editor.isActive("heading", { level: 3 })
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="Tiêu đề nhỏ"
         >
           <Heading3 size={17} />
@@ -189,11 +176,10 @@ export default function ProductShortDescriptionEditor({
           onClick={() =>
             editor.chain().focus().toggleBulletList().run()
           }
-          className={`toolbar-btn ${
-            editor.isActive("bulletList")
+          className={`toolbar-btn ${editor.isActive("bulletList")
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="Danh sách"
         >
           <List size={17} />
@@ -205,11 +191,10 @@ export default function ProductShortDescriptionEditor({
           onClick={() =>
             editor.chain().focus().toggleOrderedList().run()
           }
-          className={`toolbar-btn ${
-            editor.isActive("orderedList")
+          className={`toolbar-btn ${editor.isActive("orderedList")
               ? "bg-orange-50 text-[#ff7a00]"
               : ""
-          }`}
+            }`}
           title="Danh sách đánh số"
         >
           <ListOrdered size={17} />
@@ -275,15 +260,12 @@ export default function ProductShortDescriptionEditor({
       </div>
 
       {/* Editor */}
-      <EditorContent editor={editor} />
+    <div className="h-[130px] overflow-y-auto">
+  <EditorContent editor={editor} />
+</div>
 
       {/* Footer */}
-      <div className="border-t border-gray-100 bg-gray-50 px-4 py-2">
-        <p className="text-[11px] text-gray-400">
-          Có thể dùng <b>in đậm</b>, màu chữ, tiêu đề và danh sách để trình
-          bày thông tin dễ đọc hơn.
-        </p>
-      </div>
+     
 
       <style jsx>{`
         .toolbar-btn {

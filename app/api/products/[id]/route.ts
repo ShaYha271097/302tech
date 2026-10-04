@@ -98,7 +98,7 @@ export async function PUT(
     description: description || "",
 
       descriptionImages: descriptionImages || [],
-shortDescription:shortDescription || "",
+// shortDescription:shortDescription || "",
       updatedAt: new Date(),
     };
 

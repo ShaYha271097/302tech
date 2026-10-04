@@ -47,6 +47,7 @@ type Variant = {
   touch: boolean;
   refreshRate: string;
   priceInput?: string;
+  shortDescription: string
 };
 
 type Props = {
@@ -94,18 +95,7 @@ const slugify = (text: string) => {
     .replace(/-+/g, "-");
 };
 
-const defaultVariant: Variant = {
-  id: Date.now().toString(),
-  cpu: "",
-  ram: "8GB",
-  ssd: "256GB",
-  gpu: "",
-  price: 0,
-  screenSize: "",
-  resolution: "",
-  touch: false,
-  refreshRate: "",
-};
+
 type DescriptionImage = {
   url: string;
   publicId: string;
@@ -130,6 +120,7 @@ export default function AddProductDialog({
     resolution: "FHD",
     touch: false,
     refreshRate: "60Hz",
+    shortDescription: "",
   };
 
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -165,7 +156,7 @@ export default function AddProductDialog({
     useState<DescriptionImage[]>([]);
   const [pendingDescriptionImages, setPendingDescriptionImages] =
     useState<Map<string, File>>(new Map());
-const [shortDescription, setShortDescription] = useState("");
+  // const [shortDescription, setShortDescription] = useState("");
 
 
   const resetForm = () => {
@@ -195,7 +186,7 @@ const [shortDescription, setShortDescription] = useState("");
       setOriginalDescriptionImages(
         product.descriptionImages || []
       );
-      setShortDescription(product.shortDescription || "");
+      // setShortDescription(product.shortDescription || "");
     } else {
       // create
       resetForm();
@@ -213,18 +204,18 @@ const [shortDescription, setShortDescription] = useState("");
       }))
       .filter((img) => img.src);
   };
-const getRemovedDescriptionImages = (
-  oldImages: DescriptionImage[],
-  newImages: DescriptionImage[]
-) => {
-  return oldImages.filter(
-    (oldImage) =>
-      !newImages.some(
-        (newImage) =>
-          newImage.url === oldImage.url
-      )
-  );
-};
+  const getRemovedDescriptionImages = (
+    oldImages: DescriptionImage[],
+    newImages: DescriptionImage[]
+  ) => {
+    return oldImages.filter(
+      (oldImage) =>
+        !newImages.some(
+          (newImage) =>
+            newImage.url === oldImage.url
+        )
+    );
+  };
 
   const addVariant = () => {
     setVariants((prev) => [
@@ -260,125 +251,161 @@ const getRemovedDescriptionImages = (
     }
   }, [brands]);
 
-const handleSubmit = async () => {
-  const err = validateForm();
+  const handleSubmit = async () => {
+    const err = validateForm();
 
-  if (err) {
-    alert(err);
-    return;
-  }
+    if (err) {
+      alert(err);
+      return;
+    }
 
-  if (!mainImage) return;
+    if (!mainImage) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  let newlyUploadedDescriptionImages: DescriptionImage[] = [];
+    let newlyUploadedDescriptionImages: DescriptionImage[] = [];
 
-  try {
-    // ==========================================
-    // MAIN IMAGE
-    // ==========================================
+    try {
+      // ==========================================
+      // MAIN IMAGE
+      // ==========================================
 
-    const mainImageData =
-      mainImage instanceof File
-        ? await upload(mainImage, "product")
-        : mainImage;
-
-
-    // ==========================================
-    // GALLERY
-    // ==========================================
-
-    const galleryData = await Promise.all(
-      images
-        .filter((i) => i !== mainImage)
-        .map(async (img) => {
-          if (img instanceof File) {
-            return await upload(img, "product");
-          }
-
-          return img;
-        })
-    );
+      const mainImageData =
+        mainImage instanceof File
+          ? await upload(mainImage, "product")
+          : mainImage;
 
 
-    // ==========================================
-    // DESCRIPTION IMAGES
-    // ==========================================
+      // ==========================================
+      // GALLERY
+      // ==========================================
 
-    const {
-      html: finalDescription,
-      images: finalDescriptionImages,
-      newlyUploaded,
-    } = await uploadDescriptionImages(
-      description,
-      pendingDescriptionImages,
-      originalDescriptionImages
-    );
+      const galleryData = await Promise.all(
+        images
+          .filter((i) => i !== mainImage)
+          .map(async (img) => {
+            if (img instanceof File) {
+              return await upload(img, "product");
+            }
 
-    newlyUploadedDescriptionImages = newlyUploaded;
-
-
-    // ==========================================
-    // ẢNH CŨ BỊ XÓA
-    // ==========================================
-
-    const removedImages =
-      getRemovedDescriptionImages(
-        originalDescriptionImages,
-        finalDescriptionImages
+            return img;
+          })
       );
 
 
-    // ==========================================
-    // PAYLOAD
-    // ==========================================
+      // ==========================================
+      // DESCRIPTION IMAGES
+      // ==========================================
 
-    const payload = {
-      name,
-      brandId,
-      mainImage: mainImageData,
-      gallery: galleryData,
-      variants,
-      isHot,
-      isNew,
-      isActive,
-      slug,
+      const {
+        html: finalDescription,
+        images: finalDescriptionImages,
+        newlyUploaded,
+      } = await uploadDescriptionImages(
+        description,
+        pendingDescriptionImages,
+        originalDescriptionImages
+      );
 
-      description: finalDescription,
-
-      descriptionImages: finalDescriptionImages,
-      shortDescription
-    };
+      newlyUploadedDescriptionImages = newlyUploaded;
 
 
-    // ==========================================
-    // SAVE DATABASE
-    // ==========================================
+      // ==========================================
+      // ẢNH CŨ BỊ XÓA
+      // ==========================================
 
-    const res = await fetch(
-      mode === "create"
-        ? "/api/products"
-        : `/api/products/${product._id}`,
-      {
-        method: mode === "create" ? "POST" : "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+      const removedImages =
+        getRemovedDescriptionImages(
+          originalDescriptionImages,
+          finalDescriptionImages
+        );
+
+
+      // ==========================================
+      // PAYLOAD
+      // ==========================================
+
+      const payload = {
+        name,
+        brandId,
+        mainImage: mainImageData,
+        gallery: galleryData,
+        variants,
+        isHot,
+        isNew,
+        isActive,
+        slug,
+
+        description: finalDescription,
+
+        descriptionImages: finalDescriptionImages,
+        // shortDescription
+      };
+
+
+      // ==========================================
+      // SAVE DATABASE
+      // ==========================================
+
+      const res = await fetch(
+        mode === "create"
+          ? "/api/products"
+          : `/api/products/${product._id}`,
+        {
+          method: mode === "create" ? "POST" : "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+
+      // ==========================================
+      // DATABASE LỖI
+      // ==========================================
+
+      if (!res.ok) {
+        const data = await res.json();
+
+        // Upload rồi nhưng MongoDB không lưu
+        // => xóa ảnh mới trên Cloudinary
+        await Promise.all(
+          newlyUploadedDescriptionImages.map(
+            (image) =>
+              deleteDescriptionImage(image.publicId)
+          )
+        );
+
+        alert(data.error || "Lỗi lưu sản phẩm");
+        return;
       }
-    );
 
 
-    // ==========================================
-    // DATABASE LỖI
-    // ==========================================
+      // ==========================================
+      // DATABASE OK
+      // => XÓA ẢNH CŨ KHÔNG CÒN DÙNG
+      // ==========================================
 
-    if (!res.ok) {
-      const data = await res.json();
+      await Promise.all(
+        removedImages.map(
+          (image) =>
+            deleteDescriptionImage(image.publicId)
+        )
+      );
 
-      // Upload rồi nhưng MongoDB không lưu
-      // => xóa ảnh mới trên Cloudinary
+
+      // ==========================================
+      // DONE
+      // ==========================================
+
+      setOpen(false);
+      onSuccess?.();
+
+    } catch (err) {
+      console.error(err);
+
+      // Cleanup ảnh mới nếu quá trình bị lỗi
       await Promise.all(
         newlyUploadedDescriptionImages.map(
           (image) =>
@@ -386,62 +413,26 @@ const handleSubmit = async () => {
         )
       );
 
-      alert(data.error || "Lỗi lưu sản phẩm");
-      return;
+      alert("Upload thất bại");
+
+    } finally {
+      setLoading(false);
     }
+  };
 
-
-    // ==========================================
-    // DATABASE OK
-    // => XÓA ẢNH CŨ KHÔNG CÒN DÙNG
-    // ==========================================
-
-    await Promise.all(
-      removedImages.map(
-        (image) =>
-          deleteDescriptionImage(image.publicId)
-      )
-    );
-
-
-    // ==========================================
-    // DONE
-    // ==========================================
-
-    setOpen(false);
-    onSuccess?.();
-
-  } catch (err) {
-    console.error(err);
-
-    // Cleanup ảnh mới nếu quá trình bị lỗi
-    await Promise.all(
-      newlyUploadedDescriptionImages.map(
-        (image) =>
-          deleteDescriptionImage(image.publicId)
-      )
-    );
-
-    alert("Upload thất bại");
-
-  } finally {
-    setLoading(false);
-  }
-};
-
-const deleteDescriptionImage = async (
-  publicId: string
-) => {
-  await fetch("/api/upload/delete", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      publicId,
-    }),
-  });
-};
+  const deleteDescriptionImage = async (
+    publicId: string
+  ) => {
+    await fetch("/api/upload/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        publicId,
+      }),
+    });
+  };
   const upload = async (file: File, type: "product" | "brand" | "slider" | "banner" | "product-description") => {
     setUploading(true);
 
@@ -1375,7 +1366,7 @@ sm:h-[90vh]
     rounded-2xl
     overflow-hidden
     mt-5
-     mb-10
+    mb-10
   "
               >
                 {/* HEADER */}
@@ -1411,7 +1402,7 @@ sm:h-[90vh]
         hover:bg-[#FFE7D6]
         transition-all
         w-full sm:w-auto
-         cursor-pointer
+        cursor-pointer
       "
                   >
                     + Thêm cấu hình
@@ -1443,7 +1434,7 @@ sm:h-[90vh]
                 </div>
 
                 {/* BODY */}
-                <div className="divide-y divide-[#F3F4F6]">
+                <div className="divide-y divide-[#F3F4F6] ">
                   {variants.map((v, index) => (
                     <div
                       key={v.id}
@@ -1453,17 +1444,16 @@ sm:h-[90vh]
           transition-all
         "
                     >
-
-                      {/* DESKTOP */}
+                      {/* ================= DESKTOP ================= */}
                       <div
                         className="
-            hidden lg:grid
-            grid-cols-[1.2fr_0.5fr_0.5fr_1.3fr_0.65fr_0.5fr_0.8fr_90px_120px_50px]
-            gap-3
-            items-center
-          "
+                          hidden lg:grid
+                          grid-cols-[1.2fr_0.5fr_0.5fr_1.3fr_0.65fr_0.5fr_0.8fr_90px_120px_50px]
+                          gap-3
+                          items-center
+                          mb-5
+                        "
                       >
-
                         {/* CPU */}
                         <input
                           className={selectClass}
@@ -1583,7 +1573,7 @@ sm:h-[90vh]
                           <SelectIcon />
                         </div>
 
-                        {/* Touch */}
+                        {/* TOUCH */}
                         <div className="relative">
                           <select
                             className={selectClass}
@@ -1592,7 +1582,10 @@ sm:h-[90vh]
                               setVariants((prev) =>
                                 prev.map((item) =>
                                   item.id === v.id
-                                    ? { ...item, touch: e.target.value === "true" }
+                                    ? {
+                                      ...item,
+                                      touch: e.target.value === "true",
+                                    }
                                     : item
                                 )
                               )
@@ -1614,7 +1607,10 @@ sm:h-[90vh]
                               setVariants((prev) =>
                                 prev.map((item) =>
                                   item.id === v.id
-                                    ? { ...item, refreshRate: e.target.value }
+                                    ? {
+                                      ...item,
+                                      refreshRate: e.target.value,
+                                    }
                                     : item
                                 )
                               )
@@ -1660,10 +1656,10 @@ sm:h-[90vh]
 
                           <span
                             className="
-                absolute right-3 top-1/2
-                -translate-y-1/2
-                text-sm leading-7 text-[#6B7280]
-              "
+                              absolute right-3 top-1/2
+                              -translate-y-1/2
+                              text-sm leading-7 text-[#6B7280]
+                            "
                           >
                             đ
                           </span>
@@ -1675,28 +1671,32 @@ sm:h-[90vh]
                             <button
                               onClick={() => removeVariant(v.id)}
                               className="
-                  w-8 h-8
-                  rounded-xl
-                  border border-[#FECACA]
-                  bg-[#FEF2F2]
-                  flex items-center justify-center
-                  text-red-500
-                  hover:bg-red-500
-                  hover:text-white
-                  transition-all
-                "
+                                w-8 h-8
+                                rounded-xl
+                                border border-[#FECACA]
+                                bg-[#FEF2F2]
+                                flex items-center justify-center
+                                text-red-500
+                                hover:bg-red-500
+                                hover:text-white
+                                transition-all
+                                cursor-pointer
+                              "
                             >
                               <Trash className="w-4 h-4" />
                             </button>
                           )}
                         </div>
+                        
                       </div>
+                          
+                      {/* ================= MOBILE + TABLET ================= */}
+                      <div className="lg:hidden space-y-3 mt-4">    
+                      {/* ================= MÔ TẢ NGẮN ================= */}
+                   
 
-                      {/* MOBILE + TABLET */}
-                      <div className="lg:hidden space-y-3">
 
                         {/* CPU */}
-
                         <input
                           className="
               w-full h-10
@@ -1704,7 +1704,10 @@ sm:h-[90vh]
               border border-[#DCDCDC]
               px-3
               text-sm leading-7
-               
+              outline-none
+              focus:border-[#ff7a00]
+              focus:ring-2
+              focus:ring-[#ff7a00]/10
             "
                           placeholder="CPU"
                           value={v.cpu}
@@ -1718,14 +1721,18 @@ sm:h-[90vh]
                         {/* GPU */}
                         <input
                           className="
-              w-full h-10
-              rounded-xl
-              border border-[#DCDCDC]
-              px-3
-              text-sm leading-7
-            "
+                            w-full h-10
+                            rounded-xl
+                            border border-[#DCDCDC]
+                            px-3
+                            text-sm leading-7
+                            outline-none
+                            focus:border-[#ff7a00]
+                            focus:ring-2
+                            focus:ring-[#ff7a00]/10
+                          "
                           placeholder="GPU"
-                          value={v.gpu}
+                          value={v.gpu || ""}
                           onChange={(e) => {
                             const newVariants = [...variants];
                             newVariants[index].gpu = e.target.value;
@@ -1738,12 +1745,16 @@ sm:h-[90vh]
                           <div className="relative">
                             <select
                               className="
-                w-full h-10
-                rounded-xl
-                border border-[#DCDCDC]
-                px-3
-                appearance-none
-              "
+                                w-full h-10
+                                rounded-xl
+                                border border-[#DCDCDC]
+                                px-3
+                                appearance-none
+                                outline-none
+                                focus:border-[#ff7a00]
+                                focus:ring-2
+                                focus:ring-[#ff7a00]/10
+                              "
                               value={v.ram}
                               onChange={(e) =>
                                 setVariants((prev) =>
@@ -1760,17 +1771,23 @@ sm:h-[90vh]
                               <option value="32GB">32GB</option>
                               <option value="64GB">64GB</option>
                             </select>
+
                             <SelectIcon />
                           </div>
+
                           <div className="relative">
                             <select
                               className="
-                w-full h-10
-                rounded-xl
-                border border-[#DCDCDC]
-                px-3
-                appearance-none
-              "
+                              w-full h-10
+                              rounded-xl
+                              border border-[#DCDCDC]
+                              px-3
+                              appearance-none
+                              outline-none
+                              focus:border-[#ff7a00]
+                              focus:ring-2
+                              focus:ring-[#ff7a00]/10
+                            "
                               value={v.ssd}
                               onChange={(e) =>
                                 setVariants((prev) =>
@@ -1787,6 +1804,7 @@ sm:h-[90vh]
                               <option value="512GB">512GB</option>
                               <option value="1TB">1TB</option>
                             </select>
+
                             <SelectIcon />
                           </div>
                         </div>
@@ -1796,18 +1814,25 @@ sm:h-[90vh]
                           <div className="relative">
                             <select
                               className="
-                w-full h-10
-                rounded-xl
-                border border-[#DCDCDC]
-                px-3
-                appearance-none
-              "
+                                w-full h-10
+                                rounded-xl
+                                border border-[#DCDCDC]
+                                px-3
+                                appearance-none
+                                outline-none
+                                focus:border-[#ff7a00]
+                                focus:ring-2
+                                focus:ring-[#ff7a00]/10
+                              "
                               value={v.screenSize}
                               onChange={(e) =>
                                 setVariants((prev) =>
                                   prev.map((item) =>
                                     item.id === v.id
-                                      ? { ...item, screenSize: e.target.value }
+                                      ? {
+                                        ...item,
+                                        screenSize: e.target.value,
+                                      }
                                       : item
                                   )
                                 )
@@ -1818,23 +1843,32 @@ sm:h-[90vh]
                               <option value="15.6">15.6"</option>
                               <option value="16">16"</option>
                             </select>
+
                             <SelectIcon />
                           </div>
+
                           <div className="relative">
                             <select
                               className="
-                w-full h-10
-                rounded-xl
-                border border-[#DCDCDC]
-                px-3
-                 appearance-none
-              "
+                                w-full h-10
+                                rounded-xl
+                                border border-[#DCDCDC]
+                                px-3
+                                appearance-none
+                                outline-none
+                                focus:border-[#ff7a00]
+                                focus:ring-2
+                                focus:ring-[#ff7a00]/10
+                              "
                               value={v.refreshRate}
                               onChange={(e) =>
                                 setVariants((prev) =>
                                   prev.map((item) =>
                                     item.id === v.id
-                                      ? { ...item, refreshRate: e.target.value }
+                                      ? {
+                                        ...item,
+                                        refreshRate: e.target.value,
+                                      }
                                       : item
                                   )
                                 )
@@ -1845,6 +1879,7 @@ sm:h-[90vh]
                               <option value="120">120Hz</option>
                               <option value="144">144Hz</option>
                             </select>
+
                             <SelectIcon />
                           </div>
                         </div>
@@ -1854,18 +1889,25 @@ sm:h-[90vh]
                           <div className="relative">
                             <select
                               className="
-                w-full h-10
-                rounded-xl
-                border border-[#DCDCDC]
-                px-3
-                  appearance-none
-              "
+                                w-full h-10
+                                rounded-xl
+                                border border-[#DCDCDC]
+                                px-3
+                                appearance-none
+                                outline-none
+                                focus:border-[#ff7a00]
+                                focus:ring-2
+                                focus:ring-[#ff7a00]/10
+                              "
                               value={v.resolution}
                               onChange={(e) =>
                                 setVariants((prev) =>
                                   prev.map((item) =>
                                     item.id === v.id
-                                      ? { ...item, resolution: e.target.value }
+                                      ? {
+                                        ...item,
+                                        resolution: e.target.value,
+                                      }
                                       : item
                                   )
                                 )
@@ -1875,17 +1917,22 @@ sm:h-[90vh]
                               <option value="2K">2K</option>
                               <option value="4K">4K</option>
                             </select>
+
                             <SelectIcon />
                           </div>
 
                           <div className="relative">
                             <input
                               className="
-                  w-full h-10
-                  rounded-xl
-                  border border-[#DCDCDC]
-                  px-3 pr-8
-                "
+                              w-full h-10
+                              rounded-xl
+                              border border-[#DCDCDC]
+                              px-3 pr-8
+                              outline-none
+                              focus:border-[#ff7a00]
+                              focus:ring-2
+                              focus:ring-[#ff7a00]/10
+                            "
                               placeholder="Giá"
                               value={
                                 v.priceInput !== undefined
@@ -1913,44 +1960,90 @@ sm:h-[90vh]
 
                             <span
                               className="
-                  absolute right-3 top-1/2
-                  -translate-y-1/2
-                  text-sm leading-7 text-[#6B7280]
-                "
+                                absolute right-3 top-1/2
+                                -translate-y-1/2
+                                text-sm leading-7 text-[#6B7280]
+                              "
                             >
                               đ
                             </span>
                           </div>
                         </div>
 
+                        {/* TOUCH */}
+                        <div className="relative">
+                          <select
+                            className="
+                              w-full h-10
+                              rounded-xl
+                              border border-[#DCDCDC]
+                              px-3
+                              appearance-none
+                              outline-none
+                              focus:border-[#ff7a00]
+                              focus:ring-2
+                              focus:ring-[#ff7a00]/10
+                            "
+                            value={String(v.touch)}
+                            onChange={(e) =>
+                              setVariants((prev) =>
+                                prev.map((item) =>
+                                  item.id === v.id
+                                    ? {
+                                      ...item,
+                                      touch: e.target.value === "true",
+                                    }
+                                    : item
+                                )
+                              )
+                            }
+                          >
+                            <option value="false">Không cảm ứng</option>
+                            <option value="true">Cảm ứng</option>
+                          </select>
+
+                          <SelectIcon />
+                        </div>
+                             
                         {/* DELETE */}
                         {variants.length > 1 && (
                           <button
                             onClick={() => removeVariant(v.id)}
                             className="
-                w-full h-10
-                rounded-xl
-                border border-red-200
-                bg-red-50
-                text-red-500
-                hover:bg-red-500
-                hover:text-white
-                transition-all
-              "
+                            w-full h-10
+                            rounded-xl
+                            border border-red-200
+                            bg-red-50
+                            text-red-500
+                            hover:bg-red-500
+                            hover:text-white
+                            transition-all
+                            cursor-pointer
+                          "
                           >
                             Xóa cấu hình
                           </button>
                         )}
                       </div>
+
+                      <ProductShortDescriptionEditor
+                          value={v.shortDescription || ""}
+                          onChange={(value) => {
+                            setVariants((prev) =>
+                              prev.map((item) =>
+                                item.id === v.id
+                                  ? { ...item, shortDescription: value }
+                                  : item
+                              )
+                            );
+                          }}
+                        />
+
                     </div>
                   ))}
                 </div>
               </div>
-              <ProductShortDescriptionEditor
-              value={shortDescription}
-                onChange={setShortDescription}
-              />
-         
+             
 
               <ProductDescriptionEditor
                 value={description}
