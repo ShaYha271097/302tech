@@ -79,7 +79,6 @@ export default function ProductsClient({
         toggleQueryParam("price", price);
     };
 
-
     return (
         <div className="wrap-main w-clear">
             <div className="fixwidth">

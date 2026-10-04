@@ -10,6 +10,7 @@ export default function ProductFilter({
     ssdSelected,
     toggleSSD
 }: any) {
+    console.log("brandlllllllllllllll",brand)
     return (
         <div className="w-64 bg-white  border shadow-sm p-4 space-y-5">
 
@@ -50,8 +51,8 @@ export default function ProductFilter({
             {/* BRAND */}
             <div>
                 <p className="text-sm leading-7 font-medium mb-2">Hãng</p>
-                <div className="grid grid-cols-2 gap-2 text-sm leading-7">
-                    {["Dell", "Lenovo", "HP", "Asus", "Acer", "MSI", "Macbook"].map((b) => {
+                <div className="grid grid-cols-2 gap-2 px-2 text-sm leading-7">
+                    {["Lenovo", "HP", "Asus", "Dell", "Acer", "Apple", "Surface","LaptopGaming"].map((b) => {
                         const slug = b.toLowerCase();
 
                         return (
@@ -76,7 +77,7 @@ export default function ProductFilter({
                                     }}
                                     readOnly                   // 👈 tránh warning React
                                 />
-                                <span className="leading-5">{b}</span>
+                                <span className="leading-5 whitespace-nowrap text-[13px]">{b}</span>
                             </label>
                         );
                     })}

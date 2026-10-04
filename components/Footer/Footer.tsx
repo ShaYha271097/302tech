@@ -257,7 +257,7 @@ export default function Footer() {
             </div>
 
             {/* BCT */}
-            <div className="mt-5">
+            {/* <div className="mt-5">
 
               <a
                 href="http://online.gov.vn/Website/chi-tiet-138321"
@@ -270,7 +270,7 @@ export default function Footer() {
                 />
               </a>
 
-            </div>
+            </div> */}
           </div>
 
         </div>
