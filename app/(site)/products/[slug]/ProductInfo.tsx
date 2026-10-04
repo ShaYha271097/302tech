@@ -289,17 +289,12 @@ const handleBuyNow = () => {
 
         <>
           <span className="font-semibold text-[#ff7a00]">
-            Giảm thêm 300.000đ
+            Giảm 300.000đ
           </span>{" "}
           cho sinh viên
         </>,
 
-        <>
-          <span className="font-semibold text-[#ff7a00]">
-            Giảm thêm 200.000đ
-          </span>{" "}
-          cho khách đã mua hàng
-        </>,
+      
 
         <>
           Giao hàng COD,{" "}
