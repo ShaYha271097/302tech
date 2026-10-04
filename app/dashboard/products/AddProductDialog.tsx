@@ -223,12 +223,12 @@ export default function AddProductDialog({
       defaultVariant,
     ]);
 
-    setTimeout(() => {
-      bodyRef.current?.scrollTo({
-        top: bodyRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }, 0);
+    // setTimeout(() => {
+    //   bodyRef.current?.scrollTo({
+    //     top: bodyRef.current.scrollHeight,
+    //     behavior: "smooth",
+    //   });
+    // }, 0);
   };
 
   const removeVariant = (id: string) => {
@@ -1667,7 +1667,7 @@ sm:h-[90vh]
 
                         {/* DELETE */}
                         <div className="flex justify-center">
-                          {variants.length > 1 && (
+                          {variants.length > 0 && (
                             <button
                               onClick={() => removeVariant(v.id)}
                               className="
@@ -2004,9 +2004,20 @@ sm:h-[90vh]
 
                           <SelectIcon />
                         </div>
-                             
+                                <ProductShortDescriptionEditor
+                value={v.shortDescription || ""}
+                onChange={(value) => {
+                  setVariants((prev) =>
+                    prev.map((item) =>
+                      item.id === v.id
+                        ? { ...item, shortDescription: value }
+                        : item
+                    )
+                  );
+                }}
+              />
                         {/* DELETE */}
-                        {variants.length > 1 && (
+                        {variants.length > 0 && (
                           <button
                             onClick={() => removeVariant(v.id)}
                             className="
@@ -2026,18 +2037,21 @@ sm:h-[90vh]
                         )}
                       </div>
 
-                      <ProductShortDescriptionEditor
-                          value={v.shortDescription || ""}
-                          onChange={(value) => {
-                            setVariants((prev) =>
-                              prev.map((item) =>
-                                item.id === v.id
-                                  ? { ...item, shortDescription: value }
-                                  : item
-                              )
-                            );
-                          }}
-                        />
+                    {/* ================= DESKTOP ================= */}
+                <div className="hidden lg:block">
+                  <ProductShortDescriptionEditor
+                    value={v.shortDescription || ""}
+                    onChange={(value) => {
+                      setVariants((prev) =>
+                        prev.map((item) =>
+                          item.id === v.id
+                            ? { ...item, shortDescription: value }
+                            : item
+                        )
+                      );
+                    }}
+                  />
+                </div>
 
                     </div>
                   ))}
