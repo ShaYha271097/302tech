@@ -24,8 +24,9 @@ export const metadata = {
 
   description:
     "Chuyên ThinkPad, Dell Latitude, HP EliteBook, Laptop Gaming. Giao hàng toàn quốc.",
-};
 
+  applicationName: "302 Tech",
+};
 export default async function RootLayout({
   children,
 }: Readonly<{
