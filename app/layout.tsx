@@ -18,7 +18,7 @@ export const metadata = {
   metadataBase: new URL("https://302tech.vn"),
 
   title: {
-    default: "302 Tech - Laptop Cũ Chính Hãng Giá Tốt",
+    default: "302 Tech - Laptop Cũ Xách Tay Mỹ Giá Tốt",
     template: "%s | 302 Tech",
   },
 
