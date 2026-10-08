@@ -94,11 +94,11 @@ const handleBuyNow = () => {
       <div className="w-2 h-2 rounded-full bg-green-500" />
 
       <span className="font-medium text-green-700">
-        Like New
+         Còn hàng
       </span>
     </div>
 
-    <div
+    {/* <div
       className="
         flex items-center gap-2
         rounded-full
@@ -112,7 +112,7 @@ const handleBuyNow = () => {
       <span className="font-medium text-[#ff7a00]">
         Còn hàng
       </span>
-    </div>
+    </div> */}
 
   </div>
 
