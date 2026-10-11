@@ -19,7 +19,6 @@ export default function ProductDetailClient({
   const [selected, setSelected] = useState(
     getCheapestVariant(product.variants)
   );
-  console.log("asdasdsadsad=>>>>>>>>>>>>>>",selected)
   return (
     <>
       <div className="wrap-main w-clear">

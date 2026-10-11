@@ -107,7 +107,6 @@ export default function AddProductDialog({
   product,
   onSuccess,
 }: Props) {
-  console.log("LLLLLLLLLLLLLLL=<>>>>>>>>>>>>>>", product)
   // const variantsRef = useRef<HTMLDivElement>(null);
   const defaultVariant: Variant = {
     id: Date.now().toString(),
@@ -722,8 +721,7 @@ export default function AddProductDialog({
       newlyUploaded,
     };
   };
-  console.log("slug", slug)
-  console.log("variants", variants)
+  
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -1258,7 +1256,6 @@ sm:h-[90vh]
                 >
                   <div className="flex flex-wrap gap-3">
                     {images.map((img, index) => {
-                      console.log("KKKKKKKKKKK", img, mainImage)
                       const url =
                         img instanceof File
                           ? URL.createObjectURL(img)

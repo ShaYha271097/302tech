@@ -63,7 +63,6 @@ export default function ProductsClient({
     updatedValues.forEach((v) => {
         params.append(key, v);
     });
-    console.log("sssss!!!!!!!!!!!!!",`/products?${params.toString()}`)
     router.push(`/products?${params.toString()}`);
     };
 
@@ -134,59 +133,113 @@ export default function ProductsClient({
                                             {products.map((item: any) => {
                                                 const cheapest = getCheapestVariant(item.variants);
 
-                                                return (
-                                                    <div key={item._id} className="all_sp_banchay_index !w-full">
-                                                        <div className="all_img_sp_bc">
-                                                            <Link href={`/products/${item.slug}-${item._id}`}>
-                                                                <div className="img_sp_bc">
-                                                                    <div>
-                                                                        <img
-                                                                            loading="lazy"
-                                                                            width={1276}
-                                                                            height={956}
-                                                                            src={item.mainImage.url}
-                                                                            className="1"
-                                                                            alt="Laptop Tèo Em - Cần Thơ"
-                                                                            decoding="async"
-                                                                        />
-                                                                    </div>
-                                                                    <div className="img_sp_2">
-                                                                        <img
-                                                                            loading="lazy"
-                                                                            width={1276}
-                                                                            height={956}
-                                                                            src="https://laptopgaming.com.vn/upload/2tr9/z7091979203318_3fa05743fb3591027b992c73476e1979.jpg"
-                                                                            className="1"
-                                                                            alt="Laptop Tèo Em - Cần Thơ"
-                                                                            decoding="async"
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </Link>
-                                                        </div>
+                                                  return (
+                <div
+                  key={item._id}
+                  className="
+                    group
+                    bg-white
+                    border border-[#E8E8E8]
+                    rounded-sm
+                    p-4
+                    h-full
+                    transition-all duration-300
+                    hover:border-[#FED7AA]
+                    hover:shadow-[0_10px_30px_rgba(255,122,0,0.08)]
+                  "
+                >
+                   {/* IMAGE */}
+      <Link href={`/products/${item.slug}-${item._id}`}>
+        <div
+          className="
+        group/image
+        relative
+        aspect-square
+        overflow-hidden
+        bg-[#FFF7ED]
+        rounded-sm
+      "
+        >
+          {/* Ảnh chính */}
+          <img
+            src={item.mainImage.url}
+            alt={item.name}
+            className="
+          absolute inset-0
+          w-full
+          h-full
+          object-cover
+          opacity-100
+          transition-opacity duration-500 ease-in-out
+          group-hover/image:opacity-0
+        "
+          />
 
-                                                        <div className="all_content_sp">
-                                                            <Link href={`/products/${item.slug}-${item._id}`}>
-                                                                <div className="name_sp line-clamp-2 text-split">
-                                                                    {item.name} - {getVariantText(cheapest)}
-                                                                </div>
-                                                            </Link>
+          {/* Ảnh phụ: hiện dần khi hover */}
+          {item.gallery?.[0]?.url && (
+            <img
+              src={item.gallery[0].url}
+              alt={`${item.name} - ảnh phụ`}
+              className="
+            absolute inset-0
+            w-full
+            h-full
+            object-cover
+            opacity-0
+            transition-opacity duration-500 ease-in-out
+            group-hover/image:opacity-100
+          "
+            />
+          )}
+        </div>
+      </Link>
 
-                                                            <div className="gia_sp">
-                                                                <span>{formatPrice(cheapest?.price)}</span>
-                                                            </div>
+                  <div className="py-3">
+                    <Link
+                      href={`/products/${item.slug}-${item._id}`}
+                    >
+                      <div
+                        className="
+                          text-[15px]
+                          font-semibold
+                          text-[#111827]
+                          leading-6
+                          line-clamp-2
+                          min-h-[48px]
+                          transition-colors
+                          group-hover:text-[#ff7a00]
+                        "
+                      >
+                        {item.name} - {getVariantText(cheapest)}
+                      </div>
+                    </Link>
 
-                                                            <div className="cart-product">
-                                                                <Link
-                                                                    href={`/products/${item.slug}-${item._id}`}
-                                                                    className="muangay_sp"
-                                                                >
-                                                                    Mua ngay
-                                                                </Link>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                );
+                    <div className="mt-3 text-[18px] font-black text-[#ff3b30]">
+                         Còn hàng
+                      {/* {cheapest?.price?.toLocaleString("vi-VN")}đ */}
+                    </div>
+
+                    <div className="mt-4">
+                      <Link
+                        href={`/products/${item.slug}-${item._id}`}
+                        className="
+                          h-10
+                          rounded-sm
+                          bg-[#ff7a00]
+                          text-white
+                          text-sm
+                          font-semibold
+                          flex items-center justify-center
+                          transition-all duration-300
+                          hover:bg-[#e86f00]
+                        "
+                      >
+                        Mua ngay
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
                                             })}
                                         </div>
                                     )}

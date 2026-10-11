@@ -46,23 +46,51 @@ export default function SimilarProducts({
                     hover:shadow-[0_10px_30px_rgba(255,122,0,0.08)]
                   "
                 >
-                  <Link
-                    href={`/products/${item.slug}-${item._id}`}
-                  >
-                    <div className="aspect-square overflow-hidden bg-[#FFF7ED] rounded-sm">
-                      <img
-                        src={item.mainImage.url}
-                        alt={item.name}
-                        className="
-                          w-full
-                          h-full
-                          object-cover
-                          transition-transform duration-300
-                          group-hover:scale-105
-                        "
-                      />
-                    </div>
-                  </Link>
+                   {/* IMAGE */}
+      <Link href={`/products/${item.slug}-${item._id}`}>
+        <div
+          className="
+        group/image
+        relative
+        aspect-square
+        overflow-hidden
+        bg-[#FFF7ED]
+        rounded-sm
+      "
+        >
+          {/* Ảnh chính */}
+          <img
+            src={item.mainImage.url}
+            alt={item.name}
+            className="
+          absolute inset-0
+          w-full
+          h-full
+          object-cover
+          opacity-100
+          transition-opacity duration-500 ease-in-out
+          group-hover/image:opacity-0
+        "
+          />
+
+          {/* Ảnh phụ: hiện dần khi hover */}
+          {item.gallery?.[0]?.url && (
+            <img
+              src={item.gallery[0].url}
+              alt={`${item.name} - ảnh phụ`}
+              className="
+            absolute inset-0
+            w-full
+            h-full
+            object-cover
+            opacity-0
+            transition-opacity duration-500 ease-in-out
+            group-hover/image:opacity-100
+          "
+            />
+          )}
+        </div>
+      </Link>
 
                   <div className="py-3">
                     <Link
@@ -85,7 +113,8 @@ export default function SimilarProducts({
                     </Link>
 
                     <div className="mt-3 text-[18px] font-black text-[#ff3b30]">
-                      {cheapest?.price?.toLocaleString("vi-VN")}đ
+                         Còn hàng
+                      {/* {cheapest?.price?.toLocaleString("vi-VN")}đ */}
                     </div>
 
                     <div className="mt-4">

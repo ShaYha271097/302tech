@@ -117,7 +117,7 @@ const handleBuyNow = () => {
   </div>
 
   {/* PRICE */}
-  <div
+  {/* <div
     className="
       rounded-2xl
       border border-orange-100
@@ -142,14 +142,9 @@ const handleBuyNow = () => {
       >
         {formatPrice(selected.price)}
       </span>
-
-      {/* <span className="text-xs text-[#6B7280]">
-        Đã bao gồm VAT
-      </span> */}
-
     </div>
 
-  </div>
+  </div> */}
 
   {/* CONFIG */}
   <div
@@ -289,9 +284,9 @@ const handleBuyNow = () => {
 
         <>
           <span className="font-semibold text-[#ff7a00]">
-            Giảm 300.000đ
+           Ưu đãi đặc biệt cho 
           </span>{" "}
-          cho sinh viên
+          cho học sinh, sinh viên
         </>,
 
       
@@ -345,7 +340,7 @@ const handleBuyNow = () => {
  {product.isActive ? (
   <>
     {/* QUANTITY + ADD CART */}
-    <div className="flex gap-3">
+    {/* <div className="flex gap-3">
       <div
         className="
           flex items-center
@@ -409,10 +404,44 @@ const handleBuyNow = () => {
       >
         🛒 THÊM VÀO GIỎ
       </button>
-    </div>
+    </div> */}
 
    {/* BUY NOW */}
-<button
+   <button
+  type="button"
+  // onClick={handleBuyNow}
+   onClick={() =>
+      window.open(
+        "https://zalo.me/0946932067?text=Tôi%20muốn%20mua%20sản%20phẩm%20này",
+        "_blank"
+      )
+    }
+  className="
+    block
+    w-full
+    rounded-xl
+    bg-[#ff7a00]
+    px-4
+    py-3
+    text-center
+    text-white
+    shadow-md
+    transition-all
+    duration-200
+    hover:bg-[#ff8c1a]
+    hover:shadow-lg
+    cursor-pointer
+  "
+>
+  <div className="font-bold text-lg">
+    Liên hệ: 0946932067
+  </div>
+
+  <div className="text-sm opacity-90">
+    Giao hàng tận nơi, lắp đặt miễn phí
+  </div>
+</button>
+{/* <button
   type="button"
   onClick={handleBuyNow}
   className="
@@ -439,7 +468,7 @@ const handleBuyNow = () => {
   <div className="text-sm opacity-90">
     Giao hàng tận nơi, lắp đặt miễn phí
   </div>
-</button>
+</button> */}
   </>
 ) : (
   /* CONTACT */

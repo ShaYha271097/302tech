@@ -10,7 +10,6 @@ export default function ProductFilter({
     ssdSelected,
     toggleSSD
 }: any) {
-    console.log("brandlllllllllllllll",brand)
     return (
         <div className="w-64 bg-white  border shadow-sm p-4 space-y-5">
 

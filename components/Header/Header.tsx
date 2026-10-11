@@ -105,7 +105,7 @@ export default function Header({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="cart">
+                                {/* <div className="cart">
                                     <Link
                                         href="/cart"
                                         className="
@@ -158,7 +158,7 @@ export default function Header({
                                             {mounted ? totalItems : 0}
                                         </span>
                                     </Link>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
@@ -207,7 +207,7 @@ export default function Header({
                         {/* RIGHT */}
                         <div className="flex items-center gap-3">
                             {/* CART */}
-                            <div className="cart">
+                            {/* <div className="cart">
                                 <Link
                                     href="/cart"
                                     className="
@@ -265,7 +265,7 @@ export default function Header({
                                         {mounted ? totalItems : 0}
                                     </span>
                                 </Link>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

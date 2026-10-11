@@ -7,7 +7,6 @@ export default function ProductCard({
 }: any) {
 
   const cheapest = product?.variants?.[0];
-  console.log("product", product)
   return (
 
     <div
@@ -99,7 +98,8 @@ export default function ProductCard({
         text-[#ff3b30]
       "
         >
-          {cheapest?.price?.toLocaleString("vi-VN")}đ
+          Còn hàng
+          {/* {cheapest?.price?.toLocaleString("vi-VN")}đ */}
         </div>
 
         {/* BUTTON */}
