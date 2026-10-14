@@ -5,14 +5,18 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import cloudinary from "@/lib/cloudinary";
 
-async function generateUniqueSlug(db: any, baseSlug: string, excludeId?: string) {
+async function generateUniqueSlug(
+  db: any,
+  baseSlug: string,
+  excludeId?: ObjectId
+) {
   let slug = baseSlug;
   let count = 1;
 
   while (true) {
-    const exist = await db.collection("brands").findOne({
+    const exist = await db.collection("categories").findOne({
       slug,
-      ...(excludeId && { _id: { $ne: excludeId } }), // 👈 loại chính nó
+      ...(excludeId && { _id: { $ne: excludeId } }),
     });
 
     if (!exist) break;
@@ -27,12 +31,12 @@ async function generateUniqueSlug(db: any, baseSlug: string, excludeId?: string)
 function toSlug(str: string) {
   return str
     .toLowerCase()
-    .normalize("NFD") // bỏ dấu tiếng Việt
+    .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
-    .replace(/[^a-z0-9\s-]/g, "") // bỏ ký tự đặc biệt
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, "-"); // space -> -
+    .replace(/\s+/g, "-");
 }
 
 export async function PUT(
@@ -43,77 +47,102 @@ export async function PUT(
     const { id } = await context.params;
 
     if (!ObjectId.isValid(id)) {
-    return NextResponse.json(
-      { message: "ID không hợp lệ" },
-      { status: 400 }
-    );
-  }
-
-    const { name, image } = await req.json(); // 👈 thêm image
-
-    if (!name) {
       return NextResponse.json(
-        { message: "Thiếu tên thương hiệu" },
+        { message: "ID không hợp lệ" },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json();
+    const { name, image, description, isActive, sortOrder } = body;
+
+    if (!name || typeof name !== "string" || !name.trim()) {
+      return NextResponse.json(
+        { message: "Thiếu tên danh mục" },
         { status: 400 }
       );
     }
 
     const client = await clientPromise;
     const db = client.db("laptop-shop");
+    const categoryId = new ObjectId(id);
 
-    const brand = await db.collection("brands").findOne({
-      _id: new ObjectId(id),
+    const category = await db.collection("categories").findOne({
+      _id: categoryId,
     });
 
-    if (!brand) {
+    if (!category) {
       return NextResponse.json(
-        { message: "Không tìm thấy brand" },
+        { message: "Không tìm thấy danh mục" },
         { status: 404 }
       );
     }
 
-    // 🔥 xử lý slug
-    let slug = brand.slug;
+    const normalizedName = name.trim();
+    let slug = category.slug;
 
-    if (brand.name !== name) {
-      const baseSlug = toSlug(name);
-      slug = await generateUniqueSlug(db, baseSlug, id);
+    if (category.name !== normalizedName) {
+      const baseSlug = toSlug(normalizedName);
+
+      if (!baseSlug) {
+        return NextResponse.json(
+          { message: "Tên danh mục không hợp lệ" },
+          { status: 400 }
+        );
+      }
+
+      slug = await generateUniqueSlug(db, baseSlug, categoryId);
     }
 
-    // 🔥 build update data
     const updateData: any = {
-      name,
+      name: normalizedName,
       slug,
     };
 
-    // 👇 chỉ update image khi có gửi lên
     if (image !== undefined) {
       updateData.image = image;
     }
 
-    await db.collection("brands").updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: updateData,
-      }
+    if (description !== undefined) {
+      updateData.description = description;
+    }
+
+    if (typeof isActive === "boolean") {
+      updateData.isActive = isActive;
+    }
+
+    if (
+      sortOrder !== undefined &&
+      Number.isFinite(Number(sortOrder))
+    ) {
+      updateData.sortOrder = Number(sortOrder);
+    }
+
+    await db.collection("categories").updateOne(
+      { _id: categoryId },
+      { $set: updateData }
     );
 
     if (
       image &&
-      brand.image?.publicId &&
-      image.publicId !== brand.image.publicId
+      category.image?.publicId &&
+      image.publicId !== category.image.publicId
     ) {
       try {
-        await cloudinary.uploader.destroy(brand.image.publicId);
+        await cloudinary.uploader.destroy(category.image.publicId);
       } catch (err) {
         console.error("Xóa ảnh Cloudinary thất bại:", err);
       }
     }
 
-    return NextResponse.json({ message: "Cập nhật thành công" });
+    return NextResponse.json({
+      message: "Cập nhật danh mục thành công",
+    });
   } catch (error) {
+    console.error("PUT /api/categories/[id] error:", error);
+
     return NextResponse.json(
-      { message: "Lỗi server", error },
+      { message: "Lỗi server" },
       { status: 500 }
     );
   }

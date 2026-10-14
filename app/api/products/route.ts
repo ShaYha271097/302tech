@@ -27,6 +27,7 @@ type DescriptionImage = {
 
 type Product = {
   brandId: ObjectId;
+  categoryIds: ObjectId[];
   name: string;
   slug: string;
   mainImage: CloudinaryImage;
@@ -60,6 +61,30 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
+// CATEGORY
+  const categoryIds: ObjectId[] = [];
+
+if (body.categoryIds !== undefined) {
+  if (
+    !Array.isArray(body.categoryIds) ||
+    !body.categoryIds.every(
+      (id: unknown) =>
+        typeof id === "string" &&
+        ObjectId.isValid(id)
+    )
+  ) {
+    return Response.json(
+      { error: "Danh mục không hợp lệ" },
+      { status: 400 }
+    );
+  }
+
+  const uniqueIds = [...new Set(body.categoryIds)];
+
+  categoryIds.push(
+    ...uniqueIds.map((id:any) => new ObjectId(id))
+  );
+}
 
   // SLUG
   if (!body.slug || !body.slug.trim()) {
@@ -126,7 +151,7 @@ export async function POST(req: Request) {
 
   const product: Product = {
     brandId: new ObjectId(body.brandId),
-
+      categoryIds,
     name: body.name.trim(),
 
     // frontend gửi slug lên

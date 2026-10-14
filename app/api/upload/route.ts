@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     // =========================
     // 🎯 HELPER chọn crop
-   
+
 
     // =========================
     // 🎯 chọn transformation
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
     switch (type) {
       case "product":
-          transformation = [];
+        transformation = [];
         // transformation = [
         //   {
         //     width: 800,
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
       case "banner":
         // transformation = [getTransform(400, 250)];
-         transformation = [];
+        transformation = [];
         break;
 
       case "brand":
@@ -53,6 +53,16 @@ export async function POST(req: Request) {
             height: 300,
             crop: "fit",
             background: "white",
+          },
+        ];
+        break;
+      case "category":
+        transformation = [
+          {
+            width: 600,
+            height: 400,
+            crop: "fill",
+            gravity: "auto",
           },
         ];
         break;
@@ -80,7 +90,7 @@ export async function POST(req: Request) {
 
     return Response.json({
       url: result.secure_url,
-     publicId: result.public_id,
+      publicId: result.public_id,
     });
 
   } catch (err: any) {

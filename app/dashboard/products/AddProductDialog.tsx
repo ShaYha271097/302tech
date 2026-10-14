@@ -50,6 +50,14 @@ type Variant = {
   shortDescription: string
 };
 
+type Category = {
+  _id: string;
+  name: string;
+  isActive?: boolean;
+};
+
+
+
 type Props = {
   open: boolean;
   setOpen: (v: boolean) => void;
@@ -122,6 +130,9 @@ export default function AddProductDialog({
     shortDescription: "",
   };
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+
   const bodyRef = useRef<HTMLDivElement>(null);
   const [loadingBrand, setLoadingBrand] = useState(false);
   const [name, setName] = useState("");
@@ -185,6 +196,11 @@ export default function AddProductDialog({
       setOriginalDescriptionImages(
         product.descriptionImages || []
       );
+      setCategoryIds(
+        (product.categoryIds ?? []).map((id: any) =>
+          String(typeof id === "object" ? id._id : id)
+        )
+);
       // setShortDescription(product.shortDescription || "");
     } else {
       // create
@@ -251,6 +267,7 @@ export default function AddProductDialog({
   }, [brands]);
 
   const handleSubmit = async () => {
+   
     const err = validateForm();
 
     if (err) {
@@ -338,6 +355,7 @@ export default function AddProductDialog({
         description: finalDescription,
 
         descriptionImages: finalDescriptionImages,
+        categoryIds
         // shortDescription
       };
 
@@ -721,7 +739,29 @@ export default function AddProductDialog({
       newlyUploaded,
     };
   };
-  
+
+  useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories?limit=100&sort=sortOrder_asc");
+      const data = await res.json();
+      console.log("data=>>>>>",data)
+      if (res.ok) {
+        const list = Array.isArray(data)
+          ? data
+          : data.categories ?? [];
+        setCategories(
+          list.filter((category: Category) => category.isActive == false)
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi tải danh mục:", error);
+    }
+  };
+
+  fetchCategories();
+}, []);
+    console.log("categories",categories)
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -820,161 +860,108 @@ sm:h-[90vh]
             `}
           >
             {/* TOP */}
-            <div
-              className="
-                grid
-                grid-cols-1
-                md:grid-cols-2
-                xl:grid-cols-3
-                gap-5
-                items-start
-              "
-            >
-              {/* BRAND */}
-              <div className="flex flex-col">
-                <div className="flex items-center justify-between ">
-                  <label className="text-[15px] font-semibold text-[#111827] mb-2">
-                    Thương hiệu <span className="text-red-500">*</span>
-                  </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+  {/* TÊN SẢN PHẨM */}
+  <div className="flex flex-col gap-2">
+    <label className="text-sm font-medium">
+      Tên sản phẩm *
+    </label>
 
-                  <button
-                    type="button"
-                    onClick={() => setOpenBrand(true)}
-                    className="
-                                        text-[#ff7a00]
-                                        text-sm leading-7
-                                        font-semibold
-                                        hover:underline
-                                    "
-                  >
-                    + Thêm
-                  </button>
-                </div>
+    <input
+      value={name}
+      placeholder="Nhập tên sản phẩm"
+      onChange={(e) => {
+        const value = e.target.value;
+        setName(value);
+        setSlug(slugify(value));
+      }}
+      className="w-full rounded-lg border px-3 py-2"
+    />
+  </div>
 
-                <div className="relative">
-                  <select
-                    value={brandId}
-                    onChange={(e) => setBrandId(e.target.value)}
-                    className="
-    w-full h-[35px]
-    rounded-xl
-    border border-[#DCDCDC]
-    bg-white
-    px-2 pr-10
-    outline-none
-    text-[15px]
-    appearance-none
-    transition-all
-    focus:border-[#ff7a00]
-    focus:ring-4
-    focus:ring-[#FFF3E8]
-    cursor-pointer
-  "
-                  >
-                    {brands.map((b: any) => (
-                      <option
-                        key={String(b._id)}
-                        value={String(b._id)}
-                      >
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
+  {/* THƯƠNG HIỆU */}
+  <div className="flex flex-col gap-2">
+    <label className="text-sm font-medium">
+      Thương hiệu *
+    </label>
 
-                  <i
-                    className="
-                                        fas fa-chevron-down
-                                        absolute right-3 top-1/2
-                                        -translate-y-1/2
-                                        text-[12px]
-                                        text-[#9CA3AF]
-                                        pointer-events-none
-                                    "
-                  />
-                </div>
-              </div>
+    <select
+      value={brandId}
+      onChange={(e) => setBrandId(e.target.value)}
+      className="w-full rounded-lg border px-3 py-2"
+    >
+      <option value="">Chọn thương hiệu</option>
 
-              {/* NAME */}
-              <div className="flex flex-col">
-                <label className="text-[15px] font-semibold text-[#111827] mb-2">
-                  Tên Sản Phẩm <span className="text-red-500">*</span>
-                </label>
+      {brands.map((b: any) => (
+        <option key={String(b._id)} value={String(b._id)}>
+          {b.name}
+        </option>
+      ))}
+    </select>
 
-                <input
-                  value={name}
-                  placeholder="Nhập tên sản phẩm"
-                  onChange={(e) => {
-                    const value = e.target.value;
+    <button
+      type="button"
+      onClick={() => setOpenBrand(true)}
+      className="text-left text-sm text-orange-600 hover:underline"
+    >
+      + Thêm thương hiệu
+    </button>
+  </div>
 
-                    setName(value);
+  {/* DANH MỤC - CHỌN NHIỀU */}
+  <div className="flex flex-col gap-2">
+    <label className="text-sm font-medium">
+      Danh mục / Nhóm sản phẩm
+    </label>
 
-                    // auto slug
-                    setSlug(slugify(value));
+    <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
+      {categories.length === 0 ? (
+        <p className="text-sm text-gray-500">
+          Chưa có danh mục đang hoạt động.
+        </p>
+      ) : (
+        categories.map((category) => (
+          <label
+            key={category._id}
+            className="flex cursor-pointer items-center gap-2 text-sm"
+          >
+            <input
+              type="checkbox"
+              checked={categoryIds.includes(String(category._id))}
+              onChange={(e) => {
+                const id = String(category._id);
 
-                    if (!value.trim()) {
-                      setErrorName("Không được để trống");
-                    } else if (value.length < 5) {
-                      setErrorName("Tên phải ít nhất 5 ký tự");
-                    } else {
-                      setErrorName("");
-                    }
-                  }}
-                  className={`
-                                    w-full h-[35px]
-                                    rounded-xl
-                                    border
-                                    bg-white
-                                    px-4
-                                    outline-none
-                                    text-[15px]
-                                    transition-all
-                                    focus:ring-4
-                                    focus:ring-[#FFF3E8]
-                                    ${errorName
-                      ? "border-red-500"
-                      : "border-[#DCDCDC] focus:border-[#ff7a00]"
-                    }
-                                `}
-                />
+                setCategoryIds((prev) =>
+                  e.target.checked
+                    ? [...prev, id]
+                    : prev.filter((item) => item !== id)
+                );
+              }}
+              className="h-4 w-4 accent-orange-500"
+            />
 
-                {/* FIX HEIGHT */}
-                <div className="h-[20px] mt-1">
-                  {errorName && (
-                    <p className="text-red-500 text-sm leading-7">{errorName}</p>
-                  )}
-                </div>
-              </div>
+            <span>{category.name}</span>
+          </label>
+        ))
+      )}
+    </div>
 
-              {/* SLUG */}
-              <div className="flex flex-col">
-                <label className="text-[15px] font-semibold text-[#111827] mb-2">
-                  Slug
-                </label>
+    <p className="text-xs text-gray-500">
+      Có thể chọn nhiều nhóm cho cùng một sản phẩm.
+    </p>
+  </div>
 
-                <input
-                  disabled
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="slug tự tạo"
-                  className="
-                                    w-full h-[35px]
-                                    rounded-xl
-                                    border border-[#DCDCDC]
-                                    bg-white
-                                    px-4
-                                    outline-none
-                                    text-[15px]
-                                    transition-all
-                                    focus:border-[#ff7a00]
-                                    focus:ring-4
-                                    focus:ring-[#FFF3E8]
-                                "
-                />
+  {/* SLUG */}
+  <div className="flex flex-col gap-2">
+    <label className="text-sm font-medium">Slug</label>
 
-                {/* giữ chiều cao đồng đều */}
-                <div className="h-[20px] mt-1" />
-              </div>
-            </div>
+    <input
+      disabled
+      value={slug}
+      className="w-full rounded-lg border bg-gray-100 px-3 py-2"
+    />
+  </div>
+</div>
 
             {/* STATUS */}
             <div
