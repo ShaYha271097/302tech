@@ -55,7 +55,7 @@ export async function PUT(
       variants,
       description,
       descriptionImages,
-      shortDescription
+      categoryIds
     } = body;
 
     // 👉 validate
@@ -72,6 +72,25 @@ export async function PUT(
         { status: 400 }
       );
     }
+    if (
+      categoryIds !== undefined &&
+      (
+        !Array.isArray(categoryIds) ||
+        !categoryIds.every(
+          (id: unknown) =>
+            typeof id === "string" && ObjectId.isValid(id)
+        )
+      )
+    ) {
+      return NextResponse.json(
+        { message: "Danh mục không hợp lệ" },
+        { status: 400 }
+      );
+    }
+
+    const validCategoryIds: ObjectId[] = [
+      ...new Set<string>(categoryIds ?? []),
+    ].map((categoryId) => new ObjectId(categoryId));
 
     if (!variants || !variants.length) {
       return NextResponse.json(
@@ -84,6 +103,7 @@ export async function PUT(
     const updateData = {
       name,
       brandId: new ObjectId(brandId),
+        categoryIds: validCategoryIds,
       slug: body.slug,
 
       mainImage,
