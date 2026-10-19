@@ -30,7 +30,6 @@ export default function BannerSlider({
   slider,
   banners,
 }: Props) {
-  console.log("slider",slider)
   return (
     <div className="wrap_slider mt-3 mb-3">
       <div className="fixwidth">

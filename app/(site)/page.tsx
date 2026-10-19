@@ -1,170 +1,88 @@
-import BannerSlider from "@/components/BannerSlider/BannerSlider";
-import MultiItemCarousel from "@/components/MultiItemCarousel/MultiItemCarousel";
-import TopSellingSlider from "@/components/TopSellingSlider/TopSellingSlider";
+
 import ProductSection from "@/components/ProductSection/ProductSection";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 
-export interface Brand {
+type Category = {
   _id: ObjectId;
   name: string;
   slug: string;
-  image: string;
   isActive: boolean;
-}
-export interface BrandDTO {
-  _id: string;
-  name: string;
-  slug: string;
-  image: string;
-  isActive: boolean;
-}
+  sortOrder?: number;
+};
+
 type Variant = {
-  cpu: string
-  ram: string
-  ssd: string
-  price: number
+  cpu: string;
+  ram: string;
+  ssd: string;
+  price: number;
   screenSize: string;
   resolution: string;
   refreshRate: string;
-}
+};
+
 type Product = {
-  _id: ObjectId
-   brandId:ObjectId,
-  name: string
-  slug: string
-  mainImage: string
-  gallery: string[]
-  variants: Variant[]
-  createdAt: Date
-  isHot: boolean;
-  isNew: boolean;
-   isActive: boolean;
-}
-type ProductDTO = {
-  _id: string;
-   brandId:string,
+  _id: ObjectId;
+  brandId: ObjectId;
+  categoryIds: ObjectId[];
   name: string;
   slug: string;
   mainImage: string;
   gallery: string[];
   variants: Variant[];
-  createdAt: string;
+  createdAt: Date;
   isHot: boolean;
   isNew: boolean;
-   isActive: boolean;
+  isActive: boolean;
 };
-function toProductDTO(
-  product: Product
-): ProductDTO {
-  return {
-    ...product,
-    _id: product._id.toString(),
-     brandId: product.brandId.toString(),
-    createdAt: product.createdAt.toISOString(),
-  };
-}
-function toBrandDTO(brand: Brand): BrandDTO {
-  return {
-    _id: brand._id.toString(),
-    name: brand.name,
-    slug: brand.slug,
-    image: brand.image,
-    isActive: brand.isActive,
-  };
-}
 
 async function getHomeData() {
   const client = await clientPromise;
   const db = client.db("laptop-shop");
 
-const [bannerData, brands, hotProducts] =
-  await Promise.all([
-    db.collection("homepage_banner")
-      .findOne({ key: "main" }),
+  const categories = await db
+    .collection<Category>("categories")
+    .find({ isActive: true })
+    .sort({ sortOrder: 1, name: 1 })
+    .toArray();
 
-    db.collection<Brand>("brands")
-      .find({ isActive: false })
-      .toArray(),
+  const sections = await Promise.all(
+    categories.map(async (category) => {
+      const products = await db
+        .collection<Product>("products")
+        .find({
+          categoryIds: category._id,
+          isActive: true,
+        })
+        .sort({ createdAt: -1 })
+        .limit(4)
+        .toArray();
 
-    db.collection<Product>("products")
-      .find({ isHot: true })
-      .limit(18)
-      .toArray(),
-  ]);
+      return {
+        category,
+        products,
+      };
+    })
+  );
 
-  console.log("BANNER DATA=>>>>>>>>>>>>>>>>>>>>>>>>>:", bannerData);
-  const brandDTOs = brands.map(toBrandDTO);
-  const hotProductDTOs =hotProducts.map(toProductDTO);
-  
-  const sections = (
-    await Promise.all(
-      brands.map(async (brand) => {
-        const products = await db
-          .collection("products")
-          .find({
-            brandId: brand._id,
-            // isActive:true
-          })
-          .limit(4)
-          .toArray();
-
-        return {
-          brand,
-          products,
-        };
-      })
-    )
-  ).filter((section) => section.products.length > 0);
-  return {
-    bannerData,
-    brands:brandDTOs,
-    sections,
-    hotProducts:hotProductDTOs,
-  };
+  return sections.filter(
+    (section) => section.products.length > 0
+  );
 }
 
-
-// export const dynamic = "force-dynamic";
-
 export default async function Home() {
- const {
-  bannerData,
-  brands,
-  sections,
-  hotProducts,
-} = await getHomeData();
-  
+  const sections = await getHomeData();
+
   return (
-    <>
-      <BannerSlider
-        slider={bannerData?.slider || []}
-        banners={
-          bannerData?.banners || {
-            top: { image: "", link: "" },
-            bottom: { image: "", link: "" },
-          }
-        }
-      />
-
-      <div className="wrap-home w-clear">
-       <MultiItemCarousel brands={brands} />
-
-
-        {hotProducts.length > 0 && <TopSellingSlider
-        products={hotProducts}
-        />}
-      
-
-        {sections.map((section) => (
-          <ProductSection
-            key={section.brand._id.toString()}
-            title={section.brand.name}
-            slug={section.brand.slug}
-            products={section.products}
-          />
-        ))}
-      </div>
-    </>
+    <div className="wrap-home w-clear">
+      {sections.map((section) => (
+        <ProductSection
+          key={section.category._id.toString()}
+          title={section.category.name}
+          slug={section.category.slug}
+          products={section.products}
+        />
+      ))}
+    </div>
   );
 }

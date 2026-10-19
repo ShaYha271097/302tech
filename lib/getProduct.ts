@@ -139,6 +139,14 @@ const pipeline: any[] = [
     },
   },
   {
+  $lookup: {
+    from: "categories",
+    localField: "categoryIds",
+    foreignField: "_id",
+    as: "categories",
+  },
+},
+  {
     $unwind: {
       path: "$brand",
       preserveNullAndEmptyArrays: true,
@@ -274,15 +282,15 @@ const pipeline: any[] = [
 
   const total = totalResult[0]?.total || 0;
 
-  if (category !== "laptop") {
-    return {
-      products: [],
-      total: 0,
-      page: 1,
-      limit: 5,
-      totalPages: 0,
-    };
-  }
+  // if (category !== "laptop") {
+  //   return {
+  //     products: [],
+  //     total: 0,
+  //     page: 1,
+  //     limit: 5,
+  //     totalPages: 0,
+  //   };
+  // }
 
   return {
     products:JSON.parse(JSON.stringify(products)),

@@ -247,7 +247,6 @@ export default function AddProductDialog({
   };
 
   const removeVariant = (id: string) => {
-    console.log("id=>>>>>>>>>>>>>", id)
     setVariants((prev) => prev.filter((v) => v.id !== id));
   };
 
@@ -745,13 +744,12 @@ export default function AddProductDialog({
     try {
       const res = await fetch("/api/categories?limit=100&sort=sortOrder_asc");
       const data = await res.json();
-      console.log("data=>>>>>",data)
       if (res.ok) {
         const list = Array.isArray(data)
           ? data
           : data.categories ?? [];
         setCategories(
-          list.filter((category: Category) => category.isActive == false)
+          list.filter((category: Category) => category.isActive == true)
         );
       }
     } catch (error) {
@@ -761,7 +759,6 @@ export default function AddProductDialog({
 
   fetchCategories();
 }, []);
-    console.log("categories",categories)
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>

@@ -26,7 +26,6 @@ export async function POST(req: Request) {
       password,
       process.env.ADMIN_PASSWORD_HASH?.replace(/\\\$/g, "$")!
     );
- console.log("qua day ko=>>>>",isMatch)
     if (!isMatch) {
       return NextResponse.json(
         { error: "Sai tài khoản hoặc mật khẩu" },

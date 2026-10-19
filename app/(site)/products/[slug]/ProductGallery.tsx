@@ -12,7 +12,6 @@ export default function ProductGallery({
   mainImage,
   gallery,
 }: Props) {
-  console.log("gallery",gallery)
 const images = useMemo<( CloudinaryImage )[]>(() => {
   return [mainImage, ...gallery].filter(
     (img): img is  CloudinaryImage  => img !== null

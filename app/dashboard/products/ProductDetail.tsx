@@ -31,15 +31,18 @@ type Product = {
   gallery: CloudinaryImage[]
   createdAt: string
   variants: Variant[]
+
   brand?: {
     name: string
   }
+
+  categories?: any// Thêm dòng này
+
   isHot?: boolean
   isNew?: boolean
-  isActive: boolean;
-  description:string
+  isActive: boolean
+  description: string
 }
-
 type Props = {
   initialProducts: Product[];
   initialTotal: number;
@@ -138,7 +141,6 @@ export default function ProductDetail({
     field: "isHot" | "isNew" | "isActive",
     api: string
   ) => {
-    console.log("=>>>>",id,api,)
     const res = await fetch(`/api/products/${id}/${api}`, {
       method: "PATCH",
     });
@@ -846,90 +848,113 @@ export default function ProductDetail({
                         </td>
                       </tr>
 
-                      {/* EXPAND */}
-                      {expandedId === p._id && (
-                        <tr>
-                          <td
-                            colSpan={8}
-                            className="bg-[#FFFDFB] px-6 py-5"
-                          >
-                            <div className="flex gap-6">
+                  {/* EXPAND */}
+{expandedId === p._id && (
+  <tr>
+    <td
+      colSpan={8}
+      className="bg-[#FFFDFB] px-6 py-5"
+    >
+      <div className="flex gap-6">
 
-                              {/* IMAGE */}
-                              <div className="w-48 h-48 flex-shrink-0">
-                                <img
-                                  src={
-                                    p.mainImage.url ||
-                                    "https://via.placeholder.com/150"
-                                  }
-                                  className="
-                                                        w-full h-full
-                                                        object-cover
-                                                        rounded-xl
-                                                        border border-[#E5E7EB]
-                                                    "
-                                />
-                              </div>
+        {/* IMAGE */}
+        <div className="w-48 h-48 flex-shrink-0">
+          <img
+            src={
+              p.mainImage.url ||
+              "https://via.placeholder.com/150"
+            }
+            className="
+              w-full h-full
+              object-cover
+              rounded-xl
+              border border-[#E5E7EB]
+            "
+          />
+        </div>
 
-                              {/* INFO */}
-                              <div className="flex-1">
+        {/* INFO */}
+        <div className="flex-1">
 
-                                <h2 className="text-xl font-semibold text-[#111111] border-b border-[#F3F4F6] pb-3 mb-4">
-                                  {p.name}
-                                </h2>
+          <h2 className="text-xl font-semibold text-[#111111] border-b border-[#F3F4F6] pb-3 mb-4">
+            {p.name}
+          </h2>
 
-                                <div className="mb-4">
-                                  <span className="text-sm leading-7 text-[#6B7280]">
-                                    Thương hiệu:
-                                  </span>
+          {/* THƯƠNG HIỆU */}
+          <div className="mb-4">
+            <span className="text-sm leading-7 text-[#6B7280]">
+              Thương hiệu:
+            </span>
 
-                                  <span
-                                    className="
-                                                            ml-2
-                                                            inline-flex
-                                                            px-2 py-1
-                                                            rounded-lg
-                                                            bg-[#F9FAFB]
-                                                            text-sm leading-7
-                                                            font-medium
-                                                        "
-                                  >
-                                    {p.brand?.name || "-"}
-                                  </span>
-                                </div>
+            <span className="
+              ml-2 inline-flex px-2 py-1
+              rounded-lg bg-[#F9FAFB]
+              text-sm leading-7 font-medium
+            ">
+              {p.brand?.name || "-"}
+            </span>
+          </div>
 
-                                <p className="font-medium mb-3">
-                                  Cấu hình:
-                                </p>
+          {/* NHÓM DANH MỤC */}
+          <div className="mb-5">
+            <span className="text-sm leading-7 text-[#6B7280]">
+              Nhóm danh mục:
+            </span>
 
-                                <div className="space-y-2">
-                                  {p.variants.map((v) => (
-                                    <div
-                                      key={v.id}
-                                      className="
-                                                                flex justify-between items-center
-                                                                border border-[#F3F4F6]
-                                                                rounded-lg
-                                                                px-4 py-3
-                                                            "
-                                    >
-                                      <span>
-                                        {v.cpu} / {v.ram} / {v.ssd}
-                                      </span>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {p.categories?.length > 0 ? (
+                p.categories.map((category: any) => (
+                  <span
+                    key={category._id}
+                    className="
+                      inline-flex items-center
+                      px-3 py-1.5 rounded-lg
+                      bg-orange-50 border border-orange-100
+                      text-sm font-medium text-[#EA580C]
+                    "
+                  >
+                    {category.name}
+                  </span>
+                ))
+              ) : (
+                <span className="text-sm text-gray-400">
+                  Chưa phân nhóm
+                </span>
+              )}
+            </div>
+          </div>
 
-                                      <span className="text-[#ff7a00] font-semibold">
-                                        {v.price.toLocaleString()} đ
-                                      </span>
-                                    </div>
-                                  ))}
-                                </div>
+          {/* CẤU HÌNH */}
+          <p className="font-medium mb-3">
+            Cấu hình:
+          </p>
 
-                              </div>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
+          <div className="space-y-2">
+            {p.variants.map((v: any) => (
+              <div
+                key={v.id}
+                className="
+                  flex justify-between items-center
+                  border border-[#F3F4F6]
+                  rounded-lg px-4 py-3
+                "
+              >
+                <span>
+                  {v.cpu} / {v.ram} / {v.ssd}
+                </span>
 
+                <span className="text-[#ff7a00] font-semibold">
+                  {v.price.toLocaleString()} đ
+                </span>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </div>
+    </td>
+  </tr>
+)}
                     </React.Fragment>
                   );
                 })}

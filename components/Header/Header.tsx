@@ -3,47 +3,26 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import SearchBox from "../SearchBox/SearchBox";
-import MenuSkeleton from "../MenuSkeleton/MenuSkeleton";
 import { useAppSelector } from "@/hooks/useAppSelector";
 
 
 type Props = {
-    brands: any[];
-    //   loadingBrands: boolean;
+    categories: any[];
 };
 
-export default function Header({
-    brands,
-    //   loadingBrands,
-}: Props) {
+export default function Header({ categories }: Props) {
     const [openMenu, setOpenMenu] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
-   
 
-    const activeBrands = (brands || []).filter(
-        (b) => !b.isActive
-    );
 
-    const visibleBrands =
-        activeBrands.length > 7
-            ? activeBrands.slice(0, 7)
-            : activeBrands;
-
-    const hiddenBrands =
-        activeBrands.length > 7
-            ? activeBrands.slice(7)
-            : [];
-    const totalItems = useAppSelector(
-        (state) =>
-            state.cart.items.reduce(
-                (sum, item) => sum + item.quantity,
-                0
-            )
-    );
+    const activeCategories = categories || [];
+    console.log("activeCategories",activeCategories)
+    const visibleCategories = activeCategories.slice(0, 7);
+    const hiddenCategories = activeCategories.slice(7);
 
 
     return (
@@ -169,20 +148,20 @@ export default function Header({
                     {/* ROW 1 */}
                     <div className="
                        fixed
-    top-0
-    left-0
-    right-0
-    z-50
+                        top-0
+                        left-0
+                        right-0
+                        z-50
 
-    flex
-    items-center
-    justify-between
+                        flex
+                        items-center
+                        justify-between
 
-    px-3
-    py-2
+                        px-3
+                        py-2
 
-    border-b
-    bg-white
+                        border-b
+                        bg-white
                     ">
 
                         {/* MENU ICON */}
@@ -283,89 +262,53 @@ export default function Header({
                     <div className="clearfix fixwidth">
                         <div className="menu">
                             <ul className="menu_cap_cha d-flex justify-content-between p-0">
-                                {visibleBrands.map((brand) => {
-                                    const isLaptopMenu = brand.slug === "laptop";
-
-                                    return (
-                                        <li key={brand.slug} className="menulicha">
-                                            <Link
-                                                href={{
-                                                    pathname: "/products",
-                                                    query: isLaptopMenu
-                                                        ? { category: "laptop" }
-                                                        : { category: "laptop", brand: brand.slug },
-                                                }}
-                                            >
+                                {visibleCategories.map((category) => (
+                                    <li key={category._id} className="menulicha">
+                                        <Link
+                                            href={{
+                                                pathname: "/products",
+                                                query: { category: category.slug },
+                                            }}
+                                        >
+                                            {category.image?.url && (
                                                 <img
                                                     loading="lazy"
-                                                    src={brand.image.url}
-                                                    alt={brand.name}
-                                                    className="!w-8 !h-8 "
-                                                />{" "}
-                                                {brand.name}
-                                            </Link>
-                                        </li>
-                                    );
-                                })}
+                                                    src={category.image.url}
+                                                    alt={category.name}
+                                                    className="!w-8 !h-8 object-contain"
+                                                />
+                                            )}
+                                            {category.name}
+                                        </Link>
+                                    </li>
+                                ))}
 
-                                {hiddenBrands.length > 0 && (
+                                {hiddenCategories.length > 0 && (
                                     <li className="menulicha relative group">
-                                        <span
-                                            className="
-                                                    flex items-center gap-1
-                                                    h-[50px] px-5
-                                                    text-[14px] font-semibold uppercase
-                                                    cursor-pointer
-                                                "
-                                        >
+                                        <span className="flex items-center gap-1 h-[50px] px-5 text-[14px] font-semibold uppercase cursor-pointer">
                                             Khác
-                                            <i className="fas fa-chevron-down text-[10px] transition-transform duration-200 group-hover:rotate-180" />
+                                            <i className="fas fa-chevron-down text-[10px]" />
                                         </span>
 
-                                        <ul
-                                            className="
-                                                    absolute
-                                                    top-full
-                                                    left-0
-                                                    min-w-[200px]
-                                                    bg-white
-                                                    shadow-lg
-                                                    z-50
-
-                                                    opacity-0
-                                                    invisible
-                                                    translate-y-2
-
-                                                    transition-all
-                                                    duration-200
-
-                                                    group-hover:opacity-100
-                                                    group-hover:visible
-                                                    group-hover:translate-y-0
-                                                    "
-                                        >
-                                            {hiddenBrands.map((brand) => (
-                                                <li key={brand.slug}>
+                                        <ul className="absolute top-full left-0 min-w-[200px] bg-white shadow-lg z-50 opacity-0 invisible translate-y-2 transition-all duration-200 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+                                            {hiddenCategories.map((category) => (
+                                                <li key={category._id}>
                                                     <Link
                                                         href={{
                                                             pathname: "/products",
-                                                            query: {
-                                                                category: "laptop",
-                                                                brand: brand.slug,
-                                                            },
+                                                            query: { category: category.slug },
                                                         }}
                                                         className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
                                                     >
-                                                        <img
-                                                            loading="lazy"
-                                                            width={24}
-                                                            height={24}
-                                                            src={brand.image.url}
-                                                            alt={brand.name}
-                                                            className="w-6 h-6 object-contain"
-                                                        />
-
-                                                        <span>{brand.name}</span>
+                                                        {category.image?.url && (
+                                                            <img
+                                                                loading="lazy"
+                                                                src={category.image.url}
+                                                                alt={category.name}
+                                                                className="w-6 h-6 object-contain"
+                                                            />
+                                                        )}
+                                                        <span>{category.name}</span>
                                                     </Link>
                                                 </li>
                                             ))}
@@ -408,28 +351,26 @@ export default function Header({
 
 
 
-                    {brands.map((brand) => {
-                        const isLaptopMenu = brand.slug === "laptop";
-                        return (
-                            <Link
-                                key={brand.slug}
-                                href={{
-                                    pathname: "/products",
-                                    query: isLaptopMenu
-                                        ? { category: "laptop" }
-                                        : { category: "laptop", brand: brand.slug },
-                                }}
-                                onClick={() => setOpenMenu(false)}
-                                className="flex items-center gap-3 py-2 border-b"
-                            >
+                    {categories.map((category) => (
+                        <Link
+                            key={category._id}
+                            href={{
+                                pathname: "/products",
+                                query: { category: category.slug },
+                            }}
+                            onClick={() => setOpenMenu(false)}
+                            className="flex items-center gap-3 py-2 border-b"
+                        >
+                            {category.image?.url && (
                                 <img
-                                    src={brand.image.url}
+                                    src={category.image.url}
+                                    alt={category.name}
                                     className="w-6 h-6 object-contain"
                                 />
-                                <span>{brand.name}</span>
-                            </Link>
-                        )
-                    })}
+                            )}
+                            <span>{category.name}</span>
+                        </Link>
+                    ))}
                 </div>
 
             </div>
@@ -438,3 +379,5 @@ export default function Header({
     )
 
 }
+
+
