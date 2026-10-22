@@ -21,7 +21,7 @@ export default function ProductFilter({
             )}
 
             {/* PRICE */}
-            <div>
+            {/* <div>
                 <p className="text-sm leading-7 font-medium mb-2">Giá</p>
                 <div className="space-y-3 text-sm leading-7">
                     {[
@@ -43,15 +43,15 @@ export default function ProductFilter({
                         </label>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
-            <hr />
+            {/* <hr /> */}
 
             {/* BRAND */}
             <div>
                 <p className="text-sm leading-7 font-medium mb-2">Hãng</p>
                 <div className="grid grid-cols-2 gap-2 px-2 text-sm leading-7">
-                    {["Lenovo", "HP", "Asus", "Dell", "Acer", "Apple", "Surface","LaptopGaming"].map((b) => {
+                    {["Lenovo", "HP", "Asus", "Dell", "Acer", "Apple", "Surface"].map((b) => {
                         const slug = b.toLowerCase();
 
                         return (

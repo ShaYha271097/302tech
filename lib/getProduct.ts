@@ -7,24 +7,34 @@ export async function getProductById(id: string) {
 
   const product = await db.collection("products").aggregate([
     {
-      $match: { _id: new ObjectId(id) }
+      $match: { _id: new ObjectId(id) },
     },
     {
       $lookup: {
         from: "brands",
         localField: "brandId",
         foreignField: "_id",
-        as: "brand"
-      }
+        as: "brand",
+      },
     },
     {
-      $unwind: "$brand"
-    }
+      $unwind: {
+        path: "$brand",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryIds",
+        foreignField: "_id",
+        as: "categories",
+      },
+    },
   ]).toArray();
 
-  return product[0];
+  return product[0] ?? null;
 }
-
 type GetProductsParams = {
   page?: number;
   limit?: number;
@@ -44,47 +54,44 @@ type GetProductsParams = {
 export async function getProducts({
   page = 1,
   limit = 5,
-
-  category = "laptop",
+  category = "",
   brand = "",
   search = "",
-
   isHot = false,
-
   price,
   ram,
   ssd,
-  sort ,
+  sort,
 }: GetProductsParams) {
   const client = await clientPromise;
   const db = client.db("laptop-shop");
 
-    // SORT OPTION
-    let sortOption: any = {};
+  // SORT OPTION
+  let sortOption: any = {};
 
-    switch (sort) {
+  switch (sort) {
 
-      // NAME
-      case "name_asc":
-        sortOption = { name: 1 };
-        break;
+    // NAME
+    case "name_asc":
+      sortOption = { name: 1 };
+      break;
 
-      case "name_desc":
-        sortOption = { name: -1 };
-        break;
+    case "name_desc":
+      sortOption = { name: -1 };
+      break;
 
-      // DATE
-      case "date_desc":
-        sortOption = { createdAt: -1 };
-        break;
+    // DATE
+    case "date_desc":
+      sortOption = { createdAt: -1 };
+      break;
 
-      case "date_asc":
-        sortOption = { createdAt: 1 };
-        break;
+    case "date_asc":
+      sortOption = { createdAt: 1 };
+      break;
 
-      default:
-        sortOption = { name: 1 };
-    }
+    default:
+      sortOption = { name: 1 };
+  }
 
 
 
@@ -124,51 +131,58 @@ export async function getProducts({
   // =========================
   // PIPELINE BASE
   // =========================
-const pipeline: any[] = [
-  {
-    $match: {
-      isActive: true,
-    },
-  },
-  {
-    $lookup: {
-      from: "brands",
-      localField: "brandId",
-      foreignField: "_id",
-      as: "brand",
-    },
-  },
-  {
-  $lookup: {
-    from: "categories",
-    localField: "categoryIds",
-    foreignField: "_id",
-    as: "categories",
-  },
-},
-  {
-    $unwind: {
-      path: "$brand",
-      preserveNullAndEmptyArrays: true,
-    },
-  },
-];
-
-  // =========================
-  // FILTER: BRAND
-  // =========================
-  if (brandSlugs.length > 0) {
-    pipeline.push({
+  const pipeline: any[] = [
+    {
       $match: {
-        "brand.slug": { $in: brandSlugs },
+        isActive: true,
       },
-    });
-  }
+    },
+    {
+      $lookup: {
+        from: "brands",
+        localField: "brandId",
+        foreignField: "_id",
+        as: "brand",
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryIds",
+        foreignField: "_id",
+        as: "categories",
+      },
+    },
+    {
+      $unwind: {
+        path: "$brand",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ];
+ // FILTER: CATEGORY
+if (category) {
+  pipeline.push({
+    $match: {
+      "categories.slug": category,
+    },
+  });
+}
+
+// FILTER: BRAND
+if (brandSlugs.length > 0) {
+  pipeline.push({
+    $match: {
+      "brand.slug": { $in: brandSlugs },
+    },
+  });
+}
+
 
   // =========================
   // FILTER: SEARCH
   // =========================
-  console.log("no có nhận ko xx",search)
+  console.log("no có nhận ko xx", search)
   if (search) {
     pipeline.push({
       $match: {
@@ -267,18 +281,18 @@ const pipeline: any[] = [
   //   db.collection("products").aggregate(countPipeline).toArray(),
   // ]);
   const [products, totalResult] = await Promise.all([
-  db
-    .collection("products")
-    .aggregate(pipeline, {
-      collation: {
-        locale: "vi",
-        strength: 2,
-      },
-    })
-    .toArray(),
+    db
+      .collection("products")
+      .aggregate(pipeline, {
+        collation: {
+          locale: "vi",
+          strength: 2,
+        },
+      })
+      .toArray(),
 
-  db.collection("products").aggregate(countPipeline).toArray(),
-]);
+    db.collection("products").aggregate(countPipeline).toArray(),
+  ]);
 
   const total = totalResult[0]?.total || 0;
 
@@ -293,7 +307,7 @@ const pipeline: any[] = [
   // }
 
   return {
-    products:JSON.parse(JSON.stringify(products)),
+    products: JSON.parse(JSON.stringify(products)),
     total,
     page,
     limit,

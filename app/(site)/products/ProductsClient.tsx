@@ -5,10 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination/Pagination";
 import Breadcrumb from "./[slug]/Breadcrumb";
-import { useProducts } from "@/hooks/useProducts";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductFilter from "./ProductFilter";
-import ProductCardSkeleton from "@/components/ProductCardSkeleton/ProductCardSkeleton";
 
 
 type Props = {
