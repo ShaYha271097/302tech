@@ -108,7 +108,7 @@ a:active {
     position: relative;
 
     width: 100%;
-    max-width: 520px;
+    max-width: 400px;
 
     display: flex;
     align-items: center;
@@ -1522,4 +1522,31 @@ ins.highlight {
 
 .contact-attention-delay-3 {
   animation-delay: 2.4s;
+}
+
+
+@keyframes wiggle {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+
+    15% {
+        transform: rotate(-12deg);
+    }
+
+    30% {
+        transform: rotate(12deg);
+    }
+
+    45% {
+        transform: rotate(-8deg);
+    }
+
+    60% {
+        transform: rotate(8deg);
+    }
+
+    75% {
+        transform: rotate(0deg);
+    }
 }
