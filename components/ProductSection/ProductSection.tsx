@@ -12,12 +12,12 @@ export default function ProductSection({ title, slug, products }: any) {
         <div className="wrap_bottom wrap_list">
             <div className="fixwidth">
                 <div className="title_sp_bc">
-                    <Link href={`/products?brand=${slug}`}>
+                    <Link href={`/products?category=${slug}`}>
                         <div className="title_sp">{title}</div>
                     </Link>
                     <div className="all_xemtatca">
 
-                        <Link href={`/products?brand=${slug}`}>
+                        <Link href={`/products?category=${slug}`}>
                             Xem tất cả <i className="fas fa-angle-double-right" />
                         </Link>
                     </div>
