@@ -197,14 +197,13 @@ if (body.categoryIds !== undefined) {
 export async function GET(req: NextRequest) {
   try {
 
-
     const { searchParams } = new URL(req.url);
     const result = await getProducts({
       page: Number(searchParams.get("page") || 1),
       limit: Number(searchParams.get("limit") || 5),
 
       category:
-        searchParams.get("category") || "laptop",
+        searchParams.get("category") || "",
 
       brand:
         searchParams.get("brand") || "",

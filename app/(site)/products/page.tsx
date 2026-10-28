@@ -1,5 +1,7 @@
+import { getBrands } from "@/lib/brands";
 import ProductsClient from "./ProductsClient";
 import { getProducts } from "@/lib/getProduct";
+
 
 export async function generateMetadata({ searchParams }: any) {
   const params = await searchParams;
@@ -90,23 +92,27 @@ export default async function ProductsPage({
 
   const page = Number(params.page || 1);
 
-const result = await getProducts({
-  page,
-  category: params.category || "",
-  brand: params.brand || "",
-  price: params.price || "",
-  ram: params.ram || "",
-  ssd: params.ssd || "",
-  search: params.search || "",
-  limit: 12,
-});
+const [result, brands] = await Promise.all([
+  getProducts({
+    page,
+    category: params.category || "",
+    brand: params.brand || "",
+    price: params.price || "",
+    ram: params.ram || "",
+    ssd: params.ssd || "",
+    search: params.search || "",
+    limit: 12,
+  }),
+  (await getBrands()).brands,
+]);
 
-  const products = result.products.map(toProductDTO);
+const products = result.products.map(toProductDTO);
 
-  return (
-    <ProductsClient
-      products={products}
-      totalPages={result.totalPages}
-    />
-  );
+return (
+  <ProductsClient
+    products={products}
+    totalPages={result.totalPages}
+    brands={brands}
+  />
+);
 }

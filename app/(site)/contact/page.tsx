@@ -1,7 +1,5 @@
 "use client";
-
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
+import { Suspense } from "react";
 import Breadcrumb from "../products/[slug]/Breadcrumb";
 
 export default function ContactPage() {
@@ -10,11 +8,13 @@ export default function ContactPage() {
                 <div className="wrap-main w-clear">
                     <div className="fixwidth">
                         <div className="content-main w-clear">
-                            <div className="breadCrumbs_sanpham mb-3 mt-3">
-                                <div>
-                                    <Breadcrumb />
-                                </div>
-                            </div>
+                               <div className="breadCrumbs_sanpham mb-3 mt-3">
+                                                                <div>
+                                                                  <Suspense fallback={null}>
+                                                                    <Breadcrumb />
+                                                                  </Suspense>
+                                                                </div>
+                                                              </div>
 
 
                            {/* Content */}
@@ -221,7 +221,7 @@ export default function ContactPage() {
                 </p>
 
                 <p className="text-[#ff7a00] font-extrabold text-lg">
-                  0946932067
+                  0961625241
                 </p>
               </div>
 

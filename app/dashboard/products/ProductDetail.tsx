@@ -350,7 +350,29 @@ export default function ProductDetail({
                       <h3 className="font-semibold text-[#111111] line-clamp-2">
                         {p.name}
                       </h3>
-
+{/* CATEGORY MOBILE */}
+<div className="flex flex-wrap gap-1.5 mt-2">
+  {p.categories?.length > 0 ? (
+    p.categories.map((category: any) => (
+      <span
+        key={category._id}
+        className="
+          inline-flex items-center
+          rounded-md border border-orange-100
+          bg-orange-50 px-2 py-0.5
+          text-[11px] font-medium text-orange-700
+          max-w-full break-words
+        "
+      >
+        {category.name}
+      </span>
+    ))
+  ) : (
+    <span className="text-[11px] text-gray-400">
+      Chưa phân nhóm
+    </span>
+  )}
+</div>
                       <p className="text-[#ff7a00] font-semibold text-sm leading-7 mt-1">
                         {first?.price?.toLocaleString() || 0} đ
                       </p>
@@ -550,9 +572,9 @@ export default function ProductDetail({
           </div>
 
           {/* ================= DESKTOP TABLE ================= */}
-          <div className="hidden md:block bg-white border border-[#E5E7EB] rounded-xl overflow-hidden">
+        <div className="hidden md:block bg-white border border-[#E5E7EB] rounded-xl overflow-x-auto">
 
-            <table className="w-full text-sm leading-7 border-collapse">
+           <table className="w-full min-w-[1100px] text-sm leading-7 border-collapse">
 
               {/* HEADER */}
               <thead className="border-b border-[#E5E7EB]">
@@ -611,7 +633,9 @@ export default function ProductDetail({
                     </button>
 
                   </th>
-
+                  <th className="px-3 py-2.5 text-left font-semibold w-[180px]">
+                    Nhóm (Category)
+                  </th>
                   <th className="px-4 py-2.5 text-left font-semibold">
                     Giá
                   </th>
@@ -804,7 +828,32 @@ export default function ProductDetail({
                         >
                           {expandedId === p._id ? "▼" : "▶"} {p.name}
                         </td>
-
+{/* CATEGORY */}
+<td className="px-2 py-2.5 w-[100px]">
+  {p.categories?.length > 0 ? (
+    <div
+      className="flex items-center gap-1.5"
+      title={p.categories.map((c: any) => c.name).join(", ")}
+    >
+      <span className="
+        inline-flex items-center justify-center
+        rounded-md border border-orange-100
+        bg-orange-50 px-2 py-1
+        text-xs font-semibold text-orange-700
+        whitespace-nowrap
+      ">
+      { p.categories[0].name || p.categories[0].name}
+      </span>
+      {p.categories.length > 1 && (
+        <span className="text-xs text-gray-500 whitespace-nowrap">
+          +{p.categories.length - 1}
+        </span>
+      )}
+    </div>
+  ) : (
+    <span className="text-xs text-gray-400">—</span>
+  )}
+</td>
                         {/* PRICE */}
                         <td className="px-4 py-2.5 text-[#ff7a00] font-semibold">
                           {first?.price?.toLocaleString() || 0} đ
@@ -851,10 +900,7 @@ export default function ProductDetail({
                   {/* EXPAND */}
 {expandedId === p._id && (
   <tr>
-    <td
-      colSpan={8}
-      className="bg-[#FFFDFB] px-6 py-5"
-    >
+   <td colSpan={9} className="bg-[#FFFDFB] px-6 py-5">
       <div className="flex gap-6">
 
         {/* IMAGE */}

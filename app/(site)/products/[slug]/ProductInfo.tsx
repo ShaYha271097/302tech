@@ -412,7 +412,7 @@ const handleBuyNow = () => {
   // onClick={handleBuyNow}
    onClick={() =>
       window.open(
-        "https://zalo.me/0946932067?text=Tôi%20muốn%20mua%20sản%20phẩm%20này",
+        "https://zalo.me/0961625241?text=Tôi%20muốn%20mua%20sản%20phẩm%20này",
         "_blank"
       )
     }
@@ -434,7 +434,7 @@ const handleBuyNow = () => {
   "
 >
   <div className="font-bold text-lg">
-    Liên hệ: 0946932067
+    Liên hệ: 0961625241
   </div>
 
   <div className="text-sm opacity-90">
@@ -473,7 +473,7 @@ const handleBuyNow = () => {
 ) : (
   /* CONTACT */
   <a
-    // href="tel:0946932067"
+    // href="tel:0961625241"
     className="
       flex
       w-full

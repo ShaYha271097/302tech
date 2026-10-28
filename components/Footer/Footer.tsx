@@ -50,7 +50,7 @@ export default function Footer() {
               <p>
                 Hotline:
                 <span className="font-semibold text-[#ff7a00] ml-1">
-                  094 693 2067
+                  096 162 5241
                 </span>
               </p>
 
@@ -334,7 +334,7 @@ export default function Footer() {
             {/* PHONE */}
             <li>
               <a
-                href="tel:0946932067"
+                href="tel:0961625241"
                 className="
               contact-attention
           group
@@ -365,7 +365,7 @@ export default function Footer() {
             {/* ZALO */}
             <li>
               <a
-                href="https://zalo.me/0946932067"
+                href="https://zalo.me/0961625241"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="

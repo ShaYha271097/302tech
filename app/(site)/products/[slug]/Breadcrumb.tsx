@@ -1,21 +1,46 @@
+
+"use client";
+
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
-export default function Breadcrumb({ product, selected, brand }: any) {
+import { useSearchParams } from "next/navigation";
+export default function Breadcrumb({
+  product,
+  selected,
+}: any) {
   const pathname = usePathname();
-
+const searchParams = useSearchParams();
+const category = searchParams.get("category") || "";
   const isDetail = product && selected;
+
+  const categoryTitles: Record<string, string> = {
+    "pc-may-bo": "PC / Máy bộ",
+    "laptop-doanh-nhan": "Laptop doanh nhân",
+    "laptop-van-phong": "Laptop văn phòng",
+    "may-tram": "Máy trạm",
+    "laptop-do-hoa": "Laptop đồ họa",
+    "laptop-gaming": "Laptop Gaming",
+  };
+
   const pageTitles: Record<string, string> = {
     "/warranty": "Chính sách bảo hành",
     "/contact": "Liên hệ",
-     "/about": "Về chúng tôi",
-};
+    "/about": "Về chúng tôi",
+  };
 
-const currentPageTitle = pageTitles[pathname];
+  const currentPageTitle = pageTitles[pathname];
 
+const categorySlug = category || "";
+
+const categoryTitle = categoryTitles[categorySlug];
+
+const categoryHref = `/products?category=${encodeURIComponent(
+  categorySlug
+)}`;
+  console.log("categoryTitle",categoryTitle)
   return (
     <ol className="flex items-center flex-wrap text-sm leading-7 text-gray-500 gap-1">
-
       {/* HOME */}
       <li>
         <Link href="/" className="hover:text-[#111827]">
@@ -23,55 +48,50 @@ const currentPageTitle = pageTitles[pathname];
         </Link>
       </li>
 
-      <ChevronRight className="w-4 h-4" />
+      <ChevronRight className="w-4 h-4 shrink-0" />
 
-      {/* CATEGORY */}
-      {currentPageTitle  ? (
+      {/* STATIC PAGES */}
+      {currentPageTitle ? (
         <li className="text-[#111827] font-medium">
           {currentPageTitle}
         </li>
       ) : (
-        <li>
-          <Link href="/products?category=laptop" className="hover:text-[#111827]">
-            Laptop
-          </Link>
-        </li>
-      )}
-
-      {/* BRAND */}
-      {(brand || product?.brand) && (
         <>
-          <ChevronRight className="w-4 h-4" />
+          {/* CATEGORY */}
+          {categoryTitle && (
+            <>
+              <li>
+                {isDetail ? (
+                  <Link
+                    href={categoryHref}
+                    className="hover:text-[#111827]"
+                  >
+                    {categoryTitle}
+                  </Link>
+                ) : (
+                  <span className="text-[#111827] font-medium">
+                    {categoryTitle}
+                  </span>
+                )}
+              </li>
+            </>
+          )}
 
-          {/* 👉 nếu là trang detail → brand vẫn click */}
-          {isDetail ? (
-            <li>
-              <Link
-                href={`/products?category=laptop&brand=${product.brand.slug}`}
-                className="hover:text-[#111827]"
-              >
-{product.brand.name.charAt(0).toUpperCase() + product.brand.name.slice(1)}
-              </Link>
-            </li>
-          ) : (
-            // 👉 nếu đang ở trang brand → KHÔNG click
-            <li className="text-[#111827] font-medium">
-              {brand.charAt(0).toUpperCase() + brand.slice(1)}
-            </li>
+          {/* PRODUCT */}
+          {isDetail && (
+            <>
+              <ChevronRight className="w-4 h-4 shrink-0" />
+
+              <li className="text-[#111827] font-medium">
+                {product.name}
+                {selected.cpu && ` - ${selected.cpu}`}
+                {selected.ram && ` / ${selected.ram}`}
+                {selected.ssd && ` / ${selected.ssd}`}
+              </li>
+            </>
           )}
         </>
       )}
-
-      {/* PRODUCT (luôn là cuối → không click) */}
-      {isDetail && (
-        <>
-          <ChevronRight className="w-4 h-4" />
-          <li className="text-[#111827] font-medium">
-            {product.name} - {selected.cpu} / {selected.ram} / {selected.ssd}
-          </li>
-        </>
-      )}
-
     </ol>
   );
 }

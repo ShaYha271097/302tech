@@ -5,7 +5,7 @@ export const useProducts = () => {
   const searchParams = useSearchParams();
 
   // ✅ lấy trực tiếp từ URL
-  const category = searchParams.get("category") || "laptop";
+  const category = searchParams.get("category") || "";
   const brand = searchParams.get("brand") || "";
   const selectedPrices = searchParams.getAll("price");
   const ramSelected = searchParams.getAll("ram");

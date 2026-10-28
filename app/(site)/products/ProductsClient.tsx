@@ -7,16 +7,19 @@ import Pagination from "@/components/Pagination/Pagination";
 import Breadcrumb from "./[slug]/Breadcrumb";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductFilter from "./ProductFilter";
-
+import { SlidersHorizontal } from "lucide-react";
 
 type Props = {
   products: any[];
   totalPages: number;
+   brands: any;
 };
 export default function ProductsClient({
   products,
   totalPages,
+  brands
 }: Props) {
+
     const router = useRouter();
     const searchParams = useSearchParams();
  
@@ -26,8 +29,8 @@ export default function ProductsClient({
     searchParams.get("page") || 1
      );
 
-    const brand =
-        searchParams.get("brand") || "";
+    const category =
+        searchParams.get("category") || "";
 
     const selectedPrices =
         searchParams.getAll("price");
@@ -75,7 +78,6 @@ export default function ProductsClient({
     const togglePrice = (price: string) => {
         toggleQueryParam("price", price);
     };
-
     return (
         <div className="wrap-main w-clear">
             <div className="fixwidth">
@@ -83,24 +85,25 @@ export default function ProductsClient({
                 <div className="content-main w-clear">
                     <div className="breadCrumbs_sanpham mb-3 mt-3">
                         <div>
-                            <Breadcrumb brand={brand} />
+                            <Breadcrumb  category={category} />
                         </div>
                     </div>
-                    <div className="lg:hidden mb-3">
-                        <button
-                            onClick={() => setShowFilter(true)}
-                            className="w-full border px-4 py-3 rounded-xl bg-white shadow-sm"
-                        >
-                            Bộ lọc
-                        </button>
-                    </div>
+                                      <div className="lg:hidden mb-3">
+                    <button
+                        onClick={() => setShowFilter(true)}
+                        className="w-full border px-4 py-3 rounded-xl bg-white shadow-sm flex items-center justify-center gap-2"
+                      >
+                        <SlidersHorizontal size={18} />
+                        <span>Bộ lọc</span>
+                      </button>
+                  </div>
                     <div className="site-content mb-6">
                         <div className="row-product">
                             <div className="hidden lg:block col-product-left">
                                 <ProductFilter
                                     selectedPrices={selectedPrices}
                                     togglePrice={togglePrice}
-                                    brand={brand}
+                                    brands={brands}
                                     searchParams={searchParams}
                                     router={router}
                                     ramSelected={ramSelected}
@@ -147,7 +150,7 @@ export default function ProductsClient({
                   "
                 >
                    {/* IMAGE */}
-      <Link href={`/products/${item.slug}-${item._id}`}>
+      <Link href={`/products/${item.slug}-${item._id}?category=${category}`}>
         <div
           className="
         group/image
@@ -194,7 +197,7 @@ export default function ProductsClient({
 
                   <div className="py-3">
                     <Link
-                      href={`/products/${item.slug}-${item._id}`}
+                      href={`/products/${item.slug}-${item._id}?category=${category}`}
                     >
                       <div
                         className="
@@ -219,7 +222,7 @@ export default function ProductsClient({
 
                     <div className="mt-4">
                       <Link
-                        href={`/products/${item.slug}-${item._id}`}
+                        href={`/products/${item.slug}-${item._id}?category=${category}`}
                         className="
                           h-10
                           rounded-sm
@@ -304,7 +307,7 @@ export default function ProductsClient({
             showTitle={false}
                 selectedPrices={selectedPrices}
                 togglePrice={togglePrice}
-                brand={brand}
+                brands={brands}
                 searchParams={searchParams}
                 router={router}
                 ramSelected={ramSelected}

@@ -359,7 +359,7 @@ return ( <div className="container mx-auto max-w-7xl px-4 py-6">
   <button
     onClick={() =>
       window.open(
-        "https://zalo.me/0946932067?text=Tôi%20muốn%20mua%20sản%20phẩm%20này",
+        "https://zalo.me/0961625241?text=Tôi%20muốn%20mua%20sản%20phẩm%20này",
         "_blank"
       )
     }

@@ -1,139 +1,131 @@
+import { SlidersHorizontal } from "lucide-react";
+
+
 export default function ProductFilter({
-    showTitle = true,
-    selectedPrices,
-    togglePrice,
-    brand,
-    searchParams,
-    router,
-    ramSelected,
-    toggleRam,
-    ssdSelected,
-    toggleSSD
+  showTitle = true,
+  selectedPrices,
+  togglePrice,
+  brands = [],
+  searchParams,
+  router,
+  ramSelected,
+  toggleRam,
+  ssdSelected,
+  toggleSSD,
 }: any) {
-    return (
-        <div className="w-64 bg-white  border shadow-sm p-4 space-y-5">
+  const brand = searchParams.get("brand") || "";
 
-            {/* TITLE */}
-            {showTitle && (
-                <h2 className="font-semibold text-base border-b pb-2">
-                    Bộ lọc
-                </h2>
-            )}
+const brandList = Array.isArray(brands)
+  ? brands.filter((b: any) => b.isActive === false)
+  : [];
 
-            {/* PRICE */}
-            {/* <div>
-                <p className="text-sm leading-7 font-medium mb-2">Giá</p>
-                <div className="space-y-3 text-sm leading-7">
-                    {[
-                        { label: "Dưới 10 triệu", value: "0-10000000" },
-                        { label: "10 - 20 triệu", value: "10000000-20000000" },
-                        { label: "Trên 20 triệu", value: "20000000-999999999" },
-                    ].map((item) => (
-                        <label
-                            key={item.value}
-                            className="!flex items-center gap-3 cursor-pointer hover:text-[#ff7a00] transition"
-                        >
-                            <input
-                                type="checkbox"
-                                className="accent-[#ff7a00] w-4 h-4"
-                                checked={selectedPrices.includes(item.value)} // ✅ đọc từ URL
-                                onChange={() => togglePrice(item.value)} // 👈 đổi function
-                            />
-                            <span>{item.label}</span>
-                        </label>
-                    ))}
-                </div>
-            </div> */}
 
-            {/* <hr /> */}
+  return (
+    <div className="w-64 bg-white border shadow-sm p-4 space-y-5">
+      {/* TITLE */}
+      {showTitle && (
+      <h2 className="font-semibold text-base border-b pb-2 flex items-center gap-2">
+  <SlidersHorizontal size={18} />
+  Bộ lọc
+</h2>
+      )}
 
-            {/* BRAND */}
-            <div>
-                <p className="text-sm leading-7 font-medium mb-2">Hãng</p>
-                <div className="grid grid-cols-2 gap-2 px-2 text-sm leading-7">
-                    {["Lenovo", "HP", "Asus", "Dell", "Acer", "Apple", "Surface"].map((b) => {
-                        const slug = b.toLowerCase();
+      {/* BRAND */}
+      <div>
+        <p className="text-sm leading-7 font-medium mb-2">Hãng</p>
 
-                        return (
-                            <label
-                                key={b}
-                                className="!flex items-center gap-2 cursor-pointer hover:text-[#ff7a00] transition"
-                            >
-                                <input
-                                    type="checkbox"
-                                    className="accent-[#ff7a00]"
-                                    checked={brand === slug}
-                                    onChange={() => {
-                                        const params = new URLSearchParams(searchParams.toString());
+        <div className="grid grid-cols-2 gap-2 px-2 text-sm leading-7">
+          {brandList.map((b: any) => {
+            const slug = b.slug;
+        
+            return (
+              <label
+                key={b._id}
+                className="!flex items-center gap-2 cursor-pointer hover:text-[#ff7a00] transition"
+              >
+                <input
+                  type="checkbox"
+                  className="accent-[#ff7a00]"
+                  checked={brand === slug}
+                  onChange={() => {
+                    const params = new URLSearchParams(
+                      searchParams.toString()
+                    );
 
-                                        if (slug === brand) {
-                                            params.delete("brand"); // bỏ chọn
-                                        } else {
-                                            params.set("brand", slug); // đổi brand
-                                        }
+                    if (slug === brand) {
+                      params.delete("brand");
+                    } else {
+                      params.set("brand", slug);
+                    }
 
-                                        router.push(`/products?${params.toString()}`);
-                                    }}
-                                    readOnly                   // 👈 tránh warning React
-                                />
-                                <span className="leading-5 whitespace-nowrap text-[13px]">{b}</span>
-                            </label>
-                        );
-                    })}
-                </div>
-            </div>
+                    params.delete("page");
 
-            <hr />
+                    router.push(`/products?${params.toString()}`);
+                  }}
+                />
 
-            {/* RAM */}
-            <div>
-                <p className="text-sm leading-7 font-medium mb-2">RAM</p>
-                <div className="flex flex-wrap gap-2">
-                    {["8GB", "16GB", "32GB"].map((ram) => {
-                        const active = ramSelected.includes(ram);
-
-                        return (
-                            <button
-                                key={ram}
-                                onClick={() => toggleRam(ram)}
-                                className={`px-3 py-1 border rounded-full text-xs transition
-                                                        ${active
-                                      ? "bg-[#ff7a00] text-white border-[#ff7a00]"
-                                        : "hover:border-[#ff7a00] hover:text-[#ff7a00]"
-                                    }`}
-                            >
-                                {ram}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            <hr />
-
-            {/* SSD */}
-            <div>
-                <p className="text-sm leading-7 font-medium mb-2">SSD</p>
-                <div className="flex flex-wrap gap-2">
-                    {["256GB", "512GB", "1TB"].map((ssd) => {
-                        const active = ssdSelected.includes(ssd);
-
-                        return (
-                            <button
-                                key={ssd}
-                                onClick={() => toggleSSD(ssd)}
-                                className={`px-3 py-1 border rounded-full text-xs transition
-          ${active
-                                       ? "bg-[#ff7a00] text-white border-[#ff7a00]"
-                                        : "hover:border-[#ff7a00] hover:text-[#ff7a00]"
-                                    }`}
-                            >
-                                {ssd}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
+                <span className="leading-5 text-[13px]">
+                  {b.name}
+                </span>
+              </label>
+            );
+          })}
         </div>
-    );
+      </div>
+
+      <hr />
+
+      {/* RAM */}
+      <div>
+        <p className="text-sm leading-7 font-medium mb-2">RAM</p>
+
+        <div className="flex flex-wrap gap-2">
+          {["8GB","12GB","24GB", "16GB", "32GB","64GB"].map((ram) => {
+            const active = ramSelected.includes(ram);
+
+            return (
+              <button
+                key={ram}
+                onClick={() => toggleRam(ram)}
+                className={`px-3 py-1 border rounded-full text-xs transition ${
+                  active
+                    ? "bg-[#ff7a00] text-white border-[#ff7a00]"
+                    : "hover:border-[#ff7a00] hover:text-[#ff7a00]"
+                }`}
+              >
+                {ram}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <hr />
+
+      {/* SSD */}
+      <div>
+        <p className="text-sm leading-7 font-medium mb-2">SSD</p>
+
+        <div className="flex flex-wrap gap-2">
+          {["128GB","256GB", "512GB", "1TB","2TB",].map((ssd) => {
+            const active = ssdSelected.includes(ssd);
+
+            return (
+              <button
+                key={ssd}
+                onClick={() => toggleSSD(ssd)}
+                className={`px-3 py-1 border rounded-full text-xs transition ${
+                  active
+                    ? "bg-[#ff7a00] text-white border-[#ff7a00]"
+                    : "hover:border-[#ff7a00] hover:text-[#ff7a00]"
+                }`}
+              >
+                {ssd}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }

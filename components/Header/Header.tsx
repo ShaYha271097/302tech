@@ -78,8 +78,8 @@ export default function Header({ categories }: Props) {
                                         </div>
                                         <div className="icon-box-text last-reset">
                                             <p>Hotline Bảo hành 24/7</p>
-                                            <Link href="tel:0946932067" target="_blank" title="">
-                                                0946932067{" "}
+                                            <Link href="tel:0961625241" target="_blank" title="">
+                                                0961625241{" "}
                                             </Link>
                                         </div>
                                     </div>

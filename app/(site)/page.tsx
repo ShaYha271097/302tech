@@ -80,7 +80,7 @@ export default async function Home() {
         <div className="fixwidth py-2 md:px-0 md:py-3">
           {/* BANNER HỖ TRỢ TRẢ GÓP - DESKTOP + MOBILE */}
           <Link
-            href="tel:0946932067"
+            href="tel:0961625241"
             aria-label="Liên hệ tư vấn hỗ trợ trả góp"
             className="
                 group flex w-full items-center

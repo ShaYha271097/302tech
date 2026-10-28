@@ -1,33 +1,34 @@
 "use client";
 
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
-import Breadcrumb from "../products/[slug]/Breadcrumb";
 
+import Breadcrumb from "../products/[slug]/Breadcrumb";
+import { Suspense } from "react";
 export default function WarrantyPage() {
     return (
         <>
                 <div className="wrap-main w-clear">
                     <div className="fixwidth">
                         <div className="content-main w-clear">
-                            <div className="breadCrumbs_sanpham mb-3 mt-3">
-                                <div>
-                                    <Breadcrumb />
-                                </div>
-                            </div>
+                           <div className="breadCrumbs_sanpham mb-3 mt-3">
+                                     <div>
+                                       <Suspense fallback={null}>
+                                         <Breadcrumb />
+                                       </Suspense>
+                                     </div>
+                                   </div>
 
 
                             <div
                                 className="
-     relative
-    overflow-hidden
-    rounded-[32px]
-    border border-orange-100
-    bg-gradient-to-br from-white via-orange-50/30 to-white
-    shadow-[0_10px_40px_rgba(255,122,0,0.08)]
-    p-6 md:p-10
-      mb-10
-  "
+                                    relative
+                                    overflow-hidden
+                                    rounded-[32px]
+                                    border border-orange-100
+                                    bg-gradient-to-br from-white via-orange-50/30 to-white
+                                    shadow-[0_10px_40px_rgba(255,122,0,0.08)]
+                                    p-6 md:p-10
+                                    mb-10
+                                "
                             >
 
                                 {/* blur background */}
