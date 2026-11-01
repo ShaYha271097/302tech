@@ -18,7 +18,6 @@ export default function GlobalCartModal() {
   );
 
 
-  console.log("isCartModalOpen",isCartModalOpen)
   return (
      <CartModal
       open={isCartModalOpen}

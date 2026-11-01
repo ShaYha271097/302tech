@@ -16,11 +16,9 @@ const category = searchParams.get("category") || "";
 
   const categoryTitles: Record<string, string> = {
     "pc-may-bo": "PC / Máy bộ",
-    "laptop-doanh-nhan": "Laptop doanh nhân",
     "laptop-van-phong": "Laptop văn phòng",
-    "may-tram": "Máy trạm",
-    "laptop-do-hoa": "Laptop đồ họa",
-    "laptop-gaming": "Laptop Gaming",
+    "workstation": "Workstation",
+    "gaming-laptop": "Laptop Gaming",
   };
 
   const pageTitles: Record<string, string> = {
@@ -32,13 +30,11 @@ const category = searchParams.get("category") || "";
   const currentPageTitle = pageTitles[pathname];
 
 const categorySlug = category || "";
-
 const categoryTitle = categoryTitles[categorySlug];
 
 const categoryHref = `/products?category=${encodeURIComponent(
   categorySlug
 )}`;
-  console.log("categoryTitle",categoryTitle)
   return (
     <ol className="flex items-center flex-wrap text-sm leading-7 text-gray-500 gap-1">
       {/* HOME */}

@@ -132,7 +132,7 @@ export default function SimilarProducts({
                           hover:bg-[#e86f00]
                         "
                       >
-                        Mua ngay
+                        Xem chi tiết
                       </Link>
                     </div>
                   </div>

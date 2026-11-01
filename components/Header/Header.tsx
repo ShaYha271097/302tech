@@ -20,7 +20,6 @@ export default function Header({ categories }: Props) {
 
 
     const activeCategories = categories || [];
-    console.log("activeCategories",activeCategories)
     const visibleCategories = activeCategories.slice(0, 7);
     const hiddenCategories = activeCategories.slice(7);
 

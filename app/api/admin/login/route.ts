@@ -20,7 +20,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-   console.log("=>>>>>>>>>>>>>SSS",username,password,process.env.ADMIN_PASSWORD_HASH?.replace(/\\\$/g, "$")!)
     // ✅ check password hash
     const isMatch = await bcrypt.compare(
       password,

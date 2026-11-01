@@ -182,7 +182,6 @@ if (brandSlugs.length > 0) {
   // =========================
   // FILTER: SEARCH
   // =========================
-  console.log("no có nhận ko xx", search)
   if (search) {
     pipeline.push({
       $match: {

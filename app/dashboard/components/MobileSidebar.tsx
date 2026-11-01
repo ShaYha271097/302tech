@@ -12,7 +12,6 @@ export default function MobileSidebar ({
     openSidebar,
     setOpenSidebar
 }:Props){
-    console.log("openSidebaropenSidebar",openSidebar)
     return(
          <div
           className={`

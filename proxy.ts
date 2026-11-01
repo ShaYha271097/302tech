@@ -5,13 +5,12 @@ import jwt from "jsonwebtoken";
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-
   // BẢO TRÌ WEBSITE
   const maintenanceMode =
     process.env.MAINTENANCE_MODE === "true";
-
   if (maintenanceMode) {
     // Cho phép trang bảo trì và tài nguyên cần thiết
+  
     if (
       pathname === "/maintenance" ||
       pathname.startsWith("/_next") ||
@@ -65,7 +64,8 @@ export function proxy(req: NextRequest) {
     );
   }
 }
-
 export const config = {
-  matcher: ["/admin/login", "/dashboard/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.png).*)",
+  ],
 };
