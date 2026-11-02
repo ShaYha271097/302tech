@@ -4,6 +4,10 @@ import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import Image from "next/image";
 import Link from "next/link";
+
+
+export const dynamic = "force-dynamic";
+
 type Category = {
   _id: ObjectId;
   name: string;
