@@ -6,7 +6,6 @@ import ProductCard from "../ProductCard/ProductCard";
 
 
 export default function ProductSection({ title, slug, products }: any) {
-  
     return (
         <div className="wrap_bottom wrap_list">
             <div className="fixwidth">
@@ -26,7 +25,7 @@ export default function ProductSection({ title, slug, products }: any) {
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                         {products?.map((p: any) => {
                             return (
-                                 <ProductCard    key={p._id} product={p} />
+                                 <ProductCard    key={p._id} product={p}  slugCategory={slug}/>
                             );
                         })}
                     </div>

@@ -4,8 +4,8 @@ import Link from "next/link";
 
 export default function ProductCard({
   product,
+  slugCategory
 }: any) {
-
   const cheapest = product?.variants?.[0];
   return (
 
@@ -23,7 +23,7 @@ export default function ProductCard({
   "
     >
       {/* IMAGE */}
-      <Link href={`/products/${product.slug}-${product._id}`}>
+      <Link href={`/products/${product.slug}-${product._id}?category=${slugCategory}`}>
         <div
           className="
         group/image
@@ -72,7 +72,7 @@ export default function ProductCard({
       <div className="py-3">
 
         {/* NAME */}
-        <Link href={`/products/${product.slug}-${product._id}`}>
+        <Link href={`/products/${product.slug}-${product._id}?category=${slugCategory}`}>
           <div
             className="
           text-[15px]
@@ -80,12 +80,12 @@ export default function ProductCard({
           text-[#111827]
           leading-6
           line-clamp-2
-          min-h-[48px]
           transition-colors
           group-hover:text-[#ff7a00]
         "
           >
-            {product.name} - {getVariantText(cheapest)}
+            {product.name} 
+            {/* - {getVariantText(cheapest)} */}
           </div>
         </Link>
 
@@ -93,7 +93,7 @@ export default function ProductCard({
         <div
           className="
         mt-3
-        text-[18px]
+        text-[13px]
         font-black
         text-[#ff3b30]
       "
@@ -105,7 +105,7 @@ export default function ProductCard({
         {/* BUTTON */}
         <div className="mt-4">
           <Link
-            href={`/products/${product.slug}-${product._id}`}
+            href={`/products/${product.slug}-${product._id}?category=${slugCategory}`}
             className="
           h-10
           rounded-sm

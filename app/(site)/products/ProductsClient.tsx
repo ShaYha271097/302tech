@@ -206,16 +206,16 @@ export default function ProductsClient({
                           text-[#111827]
                           leading-6
                           line-clamp-2
-                          min-h-[48px]
                           transition-colors
                           group-hover:text-[#ff7a00]
                         "
                       >
-                        {item.name} - {getVariantText(cheapest)}
+                        {item.name} 
+                        {/* - {getVariantText(cheapest)} */}
                       </div>
                     </Link>
 
-                    <div className="mt-3 text-[18px] font-black text-[#ff3b30]">
+                    <div className="mt-3 text-[13px] font-black text-[#ff3b30]">
                          Còn hàng
                       {/* {cheapest?.price?.toLocaleString("vi-VN")}đ */}
                     </div>

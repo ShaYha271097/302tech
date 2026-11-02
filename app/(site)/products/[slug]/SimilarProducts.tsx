@@ -3,7 +3,7 @@ import {
   getCheapestVariant,
   getVariantText,
 } from "@/lib/format";
-
+import { useSearchParams } from "next/navigation";
 type Props = {
   products: any[];
 };
@@ -11,6 +11,9 @@ type Props = {
 export default function SimilarProducts({
   products,
 }: Props) {
+
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category") || "";
   return (
     <>
       <div className="title_sp_cungloai text-2xl font-semibold text-center mt-8 mb-7">
@@ -47,7 +50,7 @@ export default function SimilarProducts({
                   "
                 >
                    {/* IMAGE */}
-      <Link href={`/products/${item.slug}-${item._id}`}>
+      <Link href={`/products/${item.slug}-${item._id}?category=${category}`}>
         <div
           className="
         group/image
@@ -94,7 +97,7 @@ export default function SimilarProducts({
 
                   <div className="py-3">
                     <Link
-                      href={`/products/${item.slug}-${item._id}`}
+                      href={`/products/${item.slug}-${item._id}?category=${category}`}
                     >
                       <div
                         className="
@@ -103,23 +106,23 @@ export default function SimilarProducts({
                           text-[#111827]
                           leading-6
                           line-clamp-2
-                          min-h-[48px]
                           transition-colors
                           group-hover:text-[#ff7a00]
                         "
                       >
-                        {item.name} - {getVariantText(cheapest)}
+                        {item.name} 
+                        {/* - {getVariantText(cheapest)} */}
                       </div>
                     </Link>
 
-                    <div className="mt-3 text-[18px] font-black text-[#ff3b30]">
+                    <div className="mt-3 text-[13px] font-black text-[#ff3b30]">
                          Còn hàng
                       {/* {cheapest?.price?.toLocaleString("vi-VN")}đ */}
                     </div>
 
                     <div className="mt-4">
                       <Link
-                        href={`/products/${item.slug}-${item._id}`}
+                        href={`/products/${item.slug}-${item._id}?category=${category}`}
                         className="
                           h-10
                           rounded-sm
