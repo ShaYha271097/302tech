@@ -1490,6 +1490,7 @@ sm:h-[90vh]
                             <option value="256GB">256GB</option>
                             <option value="512GB">512GB</option>
                             <option value="1TB">1TB</option>
+                             <option value="2TB">2TB</option>
                           </select>
 
                           <SelectIcon />
@@ -1526,6 +1527,8 @@ sm:h-[90vh]
                             <option value="14">14"</option>
                             <option value="15.6">15.6"</option>
                             <option value="16">16"</option>
+                            <option value="17">17"</option>
+                             <option value="18">18"</option>
                           </select>
 
                           <SelectIcon />
@@ -1548,6 +1551,7 @@ sm:h-[90vh]
                           >
                             <option value="FHD">FHD</option>
                             <option value="2K">2K</option>
+                            <option value="3K">3K</option>
                             <option value="4K">4K</option>
                           </select>
 
@@ -1784,6 +1788,7 @@ sm:h-[90vh]
                               <option value="256GB">256GB</option>
                               <option value="512GB">512GB</option>
                               <option value="1TB">1TB</option>
+                               <option value="2TB">2TB</option>
                             </select>
 
                             <SelectIcon />
