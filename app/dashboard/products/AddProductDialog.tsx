@@ -1463,11 +1463,11 @@ sm:h-[90vh]
                             }
                           >
                             <option value="8GB">8GB</option>
-                            <option value="8GB">12GB</option>
+                            <option value="12GB">12GB</option>
                             <option value="16GB">16GB</option>
-                            <option value="16GB">24GB</option>
+                            <option value="24GB">24GB</option>
                             <option value="32GB">32GB</option>
-                            <option value="16GB">40GB</option>
+                            <option value="40GB">40GB</option>
                             <option value="64GB">64GB</option>
                           </select>
 
@@ -1754,13 +1754,13 @@ sm:h-[90vh]
                                 )
                               }
                             >
-                              <option value="8GB">8GB</option>
-                              <option value="8GB">12GB</option>
-                              <option value="16GB">16GB</option>
-                              <option value="16GB">24GB</option>
-                              <option value="32GB">32GB</option>
-                              <option value="16GB">40GB</option>
-                              <option value="64GB">64GB</option>
+                                 <option value="8GB">8GB</option>
+                            <option value="12GB">12GB</option>
+                            <option value="16GB">16GB</option>
+                            <option value="24GB">24GB</option>
+                            <option value="32GB">32GB</option>
+                            <option value="40GB">40GB</option>
+                            <option value="64GB">64GB</option>
                             </select>
 
                             <SelectIcon />
