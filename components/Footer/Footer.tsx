@@ -174,7 +174,7 @@ export default function Footer() {
                 Liên hệ
               </Link>
 
-              <Link
+              {/* <Link
                 href="/warranty"
                 className="
               hover:text-[#ff7a00]
@@ -183,7 +183,7 @@ export default function Footer() {
             "
               >
                 Chính sách bảo hành
-              </Link>
+              </Link> */}
 
             </div>
           </div>

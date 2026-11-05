@@ -1,401 +1,219 @@
+
 "use client";
+
 import { Suspense } from "react";
+import Link from "next/link";
 import Breadcrumb from "../products/[slug]/Breadcrumb";
+
+const sellingBenefits = [
+  "Laptop được kiểm tra kỹ trước khi giao",
+  "Thông tin cấu hình và tình trạng rõ ràng",
+  "Đa dạng thương hiệu, phân khúc và nhu cầu",
+  "Chính sách bảo hành minh bạch",
+];
+
+const buyingBenefits = [
+  "Thu mua laptop cũ nhiều thương hiệu",
+  "Định giá dựa trên tình trạng thực tế",
+  "Hỗ trợ kiểm tra và giao dịch nhanh chóng",
+  "Thanh toán nhanh sau khi thống nhất giá",
+];
+
+const reasons = [
+  {
+    icon: "🔍",
+    title: "Kiểm tra kỹ lưỡng",
+    desc: "Mỗi sản phẩm đều được kiểm tra tình trạng và chức năng trước khi giao dịch.",
+  },
+  {
+    icon: "💰",
+    title: "Giá cả hợp lý",
+    desc: "Thông tin giá bán và định giá thu mua rõ ràng, phù hợp với tình trạng máy.",
+  },
+  {
+    icon: "🛡️",
+    title: "Giao dịch minh bạch",
+    desc: "Tư vấn trung thực, thông tin sản phẩm rõ ràng, chính sách bảo hành cụ thể.",
+  },
+  {
+    icon: "🤝",
+    title: "Hỗ trợ tận tâm",
+    desc: "Đồng hành cùng khách hàng từ lúc tư vấn đến sau khi hoàn tất giao dịch.",
+  },
+];
+
+const process = [
+  {
+    number: "01",
+    icon: "💬",
+    title: "Tiếp nhận nhu cầu",
+    desc: "Tư vấn lựa chọn laptop hoặc tiếp nhận thông tin máy khách hàng cần bán.",
+  },
+  {
+    number: "02",
+    icon: "🔍",
+    title: "Kiểm tra & định giá",
+    desc: "Kiểm tra tình trạng thực tế, tư vấn cấu hình và mức giá phù hợp.",
+  },
+  {
+    number: "03",
+    icon: "🤝",
+    title: "Hoàn tất giao dịch",
+    desc: "Thống nhất giá, tiến hành giao nhận và hỗ trợ khách hàng chu đáo.",
+  },
+];
 
 export default function AboutPage() {
   return (
-    <>
-      <div className="wrap-main w-clear">
-        <div className="fixwidth">
+    <div className="wrap-main w-clear">
+      <div className="fixwidth">
+        <div className="content-main w-clear">
 
-          <div className="content-main w-clear">
-
-            {/* Breadcrumb */}
+          {/* BREADCRUMB */}
           <div className="breadCrumbs_sanpham mb-3 mt-3">
-          <div>
-            <Suspense fallback={null}>
-              <Breadcrumb />
-            </Suspense>
+            <div>
+              <Suspense fallback={null}>
+                <Breadcrumb />
+              </Suspense>
+            </div>
           </div>
-        </div>
 
-            {/* Content */}
-            <div
-              className="
-                relative
-                overflow-hidden
-                rounded-[32px]
-                border border-orange-100
-                bg-gradient-to-br from-white via-orange-50/30 to-white
-                shadow-[0_10px_40px_rgba(255,122,0,0.08)]
-                p-6 md:p-10
-                mb-10
-              "
-            >
-              {/* TITLE */}
-              <div className="text-center mb-14">
-                <div
-                  className="
-                  inline-flex
-                  items-center
-                  gap-2
-                  px-4 py-2
-                  rounded-full
-                  bg-[#FFF7ED]
-                  text-[#ff7a00]
-                  text-sm leading-7
-                  font-semibold
-                  border border-[#FED7AA]
-                  mb-5
-                "
-                >
-                  ✨ Giới thiệu
+          {/* MAIN CONTENT */}
+          <main className="relative mb-10 overflow-hidden rounded-[28px] border border-orange-100 bg-white shadow-[0_10px_40px_rgba(255,122,0,0.07)]">
+
+            {/* HERO */}
+            <section className="relative overflow-hidden bg-gradient-to-br from-white via-orange-50/60 to-white px-5 py-14 text-center md:px-12 md:py-20">
+
+              <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-orange-100/50 blur-3xl" />
+              <div className="absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-orange-100/40 blur-3xl" />
+
+              <div className="relative z-10">
+
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-5 py-2 text-sm font-bold text-[#ff7900] shadow-sm">
+                  💻 302 TECH
                 </div>
 
-                <h1
-                  className="
-                    text-4xl md:text-5xl
-                    font-black
-                    tracking-tight
-                    text-[#111827]
-                  "
-                >
-                  Về{" "}
-                  <span className="text-[#ff7a00]">
-                    302 Tech
-                  </span>
+                <h1 className="text-3xl font-black leading-tight tracking-tight text-[#14243b] md:text-5xl lg:text-6xl">
+                  Thu mua & Bán
+                  <span className="text-[#ff7900]"> Laptop</span>
                 </h1>
 
-                <p
-                  className="
-                      mt-4
-                      text-[#6B7280]
-                      max-w-2xl
-                      mx-auto
-                      leading-8
-                  "
-                >
-                  Đồng hành cùng khách hàng với những chiếc laptop chất lượng,
-                  dịch vụ tận tâm và mức giá hợp lý.
+                <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-gray-600 md:text-lg md:leading-8">
+                  Chuyên mua bán laptop cũ chất lượng.
+                  Thu mua nhanh chóng, định giá hợp lý,
+                  kiểm tra kỹ lưỡng và giao dịch minh bạch.
                 </p>
 
+                <div className="mx-auto mt-7 h-1 w-20 rounded-full bg-[#ff7900]" />
+
               </div>
+            </section>
 
-              {/* TOP */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
+            {/* TWO SERVICES */}
+            <section className="grid grid-cols-1 gap-6 px-5 pb-10 md:grid-cols-2 md:px-10">
 
-                {/* LEFT */}
-                <div
-                  className="
-                    rounded-[28px]
-                    border border-[#F3F4F6]
-                    p-7 md:p-9
-                    bg-white
-                  "
-                >
+              {/* SELL LAPTOP */}
+              <div className="group flex flex-col overflow-hidden rounded-[26px] border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl">
 
-                  <h2
-                    className="
-                      text-3xl
-                      font-black
-                      text-[#111827]
-                      mb-6
-                    "
-                  >
-                    302 Tech là ai?
+                <div className="relative flex min-h-[180px] items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-orange-50 md:min-h-[220px]">
+                  <div className="absolute h-44 w-44 rounded-full bg-orange-100/70 blur-2xl" />
+
+                  <div className="relative text-center">
+                    <div className="text-7xl transition-transform duration-300 group-hover:scale-110 md:text-8xl">
+                      💻
+                    </div>
+                    <p className="mt-3 text-sm font-semibold tracking-widest text-gray-500">
+                      LAPTOP CHẤT LƯỢNG
+                    </p>
+                  </div>
+
+                  <div className="absolute left-5 top-5 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#ff7900] shadow-sm">
+                    DỊCH VỤ 01
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-6 md:p-8">
+
+                  <h2 className="text-2xl font-black text-[#14243b] md:text-3xl">
+                    BÁN <span className="text-[#ff7900]">LAPTOP</span>
                   </h2>
 
-                  <div
-                    className="
-          space-y-5
-          text-[15px]
-          leading-8
-          text-[#4B5563]
-        "
-                  >
+                  <p className="mt-3 leading-7 text-gray-600">
+                    Cung cấp đa dạng các dòng laptop cũ chất lượng,
+                    từ văn phòng, doanh nhân đến đồ họa và gaming.
+                    Đáp ứng nhiều nhu cầu sử dụng với mức giá hợp lý.
+                  </p>
 
-                    <p>
-                      302 Tech chuyên cung cấp laptop cũ chất lượng cao,
-                      tập trung vào các dòng doanh nhân, gaming,
-                      đồ họa và học tập với mức giá tốt.
+                  <div className="my-6 space-y-3">
+                    {sellingBenefits.map((item) => (
+                      <div key={item} className="flex items-start gap-3 text-sm leading-6 text-gray-700">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
+                          ✓
+                        </span>
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* BUY LAPTOP */}
+              <div className="group flex flex-col overflow-hidden rounded-[26px] border border-orange-200 bg-[#FFFBF7] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+
+                <div className="relative flex min-h-[180px] items-center justify-center overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100/60 md:min-h-[220px]">
+
+                  <div className="absolute h-44 w-44 rounded-full bg-orange-200/60 blur-2xl" />
+
+                  <div className="relative text-center">
+                    <div className="text-7xl transition-transform duration-300 group-hover:scale-110 md:text-8xl">
+                      🤝
+                    </div>
+                    <p className="mt-3 text-sm font-semibold tracking-widest text-gray-500">
+                      THU MUA LAPTOP CŨ
                     </p>
-
-                    <p>
-                      Chúng tôi ưu tiên sự minh bạch,
-                      kiểm tra kỹ sản phẩm trước khi bán
-                      và luôn hỗ trợ khách hàng tận tâm.
-                    </p>
-
-                    <p>
-                      Mỗi sản phẩm đều được test kỹ,
-                      vệ sinh sạch sẽ và hỗ trợ bảo hành rõ ràng.
-                    </p>
-
                   </div>
 
-                  {/* COMMIT */}
-                  <div
-                    className="
-          mt-8
-          rounded-[24px]
-          bg-[#FFF7ED]
-          border border-[#FED7AA]
-          p-6
-        "
-                  >
-
-                    <h3
-                      className="
-            text-2xl
-            font-black
-            text-[#ff7a00]
-            mb-5
-          "
-                    >
-                      Cam kết từ 302 Tech
-                    </h3>
-
-                    <div className="space-y-4">
-
-                      {[
-                        "Laptop đúng mô tả",
-                        "Kiểm tra kỹ trước khi giao",
-                        "Hỗ trợ nhanh chóng và tận tâm",
-                        "Chính sách bảo hành minh bạch",
-                      ].map((item) => (
-                        <div
-                          key={item}
-                          className="
-                flex items-center gap-3
-                text-[#374151]
-                font-medium
-              "
-                        >
-                          <div
-                            className="
-                  w-7 h-7
-                  rounded-full
-                  bg-[#ff7a00]
-                  text-white
-                  flex items-center justify-center
-                  text-sm leading-7
-                "
-                          >
-                            ✓
-                          </div>
-
-                          {item}
-                        </div>
-                      ))}
-
-                    </div>
-
+                  <div className="absolute left-5 top-5 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#ff7900] shadow-sm">
+                    DỊCH VỤ 02
                   </div>
 
                 </div>
 
-                {/* RIGHT */}
-                <div
-                  className="
-        rounded-[28px]
-        bg-[#FFFBF8]
-        border border-[#FDE7D8]
-        p-7 md:p-9
-        flex flex-col justify-between
-      "
-                >
+                <div className="flex flex-1 flex-col p-6 md:p-8">
 
-                  <div>
+                  <h2 className="text-2xl font-black text-[#14243b] md:text-3xl">
+                    THU MUA <span className="text-[#ff7900]">LAPTOP</span>
+                  </h2>
 
-                    <h2
-                      className="
-            text-3xl
-            font-black
-            text-[#111827]
-            mb-7
-          "
-                    >
-                      Vì sao chọn 302 Tech?
-                    </h2>
+                  <p className="mt-3 leading-7 text-gray-600">
+                    Nhận thu mua laptop cũ nhiều thương hiệu,
+                    nhiều cấu hình và tình trạng khác nhau.
+                    Định giá dựa trên thực tế, hỗ trợ giao dịch nhanh chóng.
+                  </p>
 
-                    <div className="space-y-6">
-
-                      {[
-                        {
-                          icon: "💻",
-                          title: "Laptop chất lượng",
-                          desc: "Kiểm tra kỹ càng trước khi bán ra.",
-                        },
-                        {
-                          icon: "🛠️",
-                          title: "Hỗ trợ tận tâm",
-                          desc: "Hỗ trợ khách hàng nhanh chóng trong quá trình sử dụng.",
-                        },
-                        {
-                          icon: "🛡️",
-                          title: "Bảo hành rõ ràng",
-                          desc: "Chính sách minh bạch và xử lý nhanh khi phát sinh lỗi.",
-                        },
-                      ].map((item) => (
-                        <div
-                          key={item.title}
-                          className="
-                flex gap-4
-                rounded-2xl
-                bg-white
-                border border-[#F3F4F6]
-                p-5
-              "
-                        >
-
-                          <div
-                            className="
-                  w-12 h-12
-                  rounded-2xl
-                  bg-[#FFF7ED]
-                  flex items-center justify-center
-                  text-2xl
-                  shrink-0
-                "
-                          >
-                            {item.icon}
-                          </div>
-
-                          <div>
-
-                            <h3
-                              className="
-                    font-semibold
-                    text-[#111827]
-                    mb-1
-                  "
-                            >
-                              {item.title}
-                            </h3>
-
-                            <p
-                              className="
-                    text-[#6B7280]
-                    leading-7
-                  "
-                            >
-                              {item.desc}
-                            </p>
-
-                          </div>
-
-                        </div>
-                      ))}
-
-                    </div>
-
+                  <div className="my-6 space-y-3">
+                    {buyingBenefits.map((item) => (
+                      <div key={item} className="flex items-start gap-3 text-sm leading-6 text-gray-700">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
+                          ✓
+                        </span>
+                        <span>{item}</span>
+                      </div>
+                    ))}
                   </div>
-
-                  {/* BOTTOM */}
-                  <div
-                    className="
-          mt-8
-          rounded-[24px]
-          bg-[#ff7a00]
-          p-7
-          text-white
-        "
-                  >
-
-                    <h3
-                      className="
-            text-3xl
-            font-black
-            mb-3
-          "
-                    >
-                      302 Tech
-                    </h3>
-
-                    <p className="leading-8 text-white/90">
-                      Đồng hành cùng khách hàng với những chiếc laptop
-                      chất lượng và dịch vụ tận tâm.
-                    </p>
-
-                  </div>
-
                 </div>
-
               </div>
 
-              {/* STATS */}
-              <div
-                className="
-      grid
-      grid-cols-2
-      md:grid-cols-4
-      gap-5
-      mt-14
-    "
-              >
+            </section>
 
-                {[
-                  {
-                    number: "1000+",
-                    text: "Khách hàng",
-                  },
-                  {
-                    number: "500+",
-                    text: "Laptop bán ra",
-                  },
-                  {
-                    number: "2",
-                    text: "Chi nhánh",
-                  },
-                  {
-                    number: "24/7",
-                    text: "Hỗ trợ khách hàng",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.text}
-                    className="
-          rounded-[24px]
-          border border-[#F3F4F6]
-          bg-white
-          p-6
-          text-center
-          hover:-translate-y-1
-          transition-all
-        "
-                  >
+         
 
-                    <h3
-                      className="
-            text-4xl
-            font-black
-            text-[#ff7a00]
-            mb-3
-          "
-                    >
-                      {item.number}
-                    </h3>
+         
 
-                    <p
-                      className="
-            text-[#6B7280]
-            font-medium
-          "
-                    >
-                      {item.text}
-                    </p>
+          </main>
 
-                  </div>
-                ))}
-
-              </div>
-
-            </div>
-
-          </div>
         </div>
       </div>
-
-    </>
+    </div>
   );
 }
