@@ -200,7 +200,7 @@ export default function AddProductDialog({
         (product.categoryIds ?? []).map((id: any) =>
           String(typeof id === "object" ? id._id : id)
         )
-);
+      );
       // setShortDescription(product.shortDescription || "");
     } else {
       // create
@@ -266,7 +266,7 @@ export default function AddProductDialog({
   }, [brands]);
 
   const handleSubmit = async () => {
-   
+
     const err = validateForm();
 
     if (err) {
@@ -740,25 +740,25 @@ export default function AddProductDialog({
   };
 
   useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("/api/categories?limit=100&sort=sortOrder_asc");
-      const data = await res.json();
-      if (res.ok) {
-        const list = Array.isArray(data)
-          ? data
-          : data.categories ?? [];
-        setCategories(
-          list.filter((category: Category) => category.isActive == true)
-        );
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories?limit=100&sort=sortOrder_asc");
+        const data = await res.json();
+        if (res.ok) {
+          const list = Array.isArray(data)
+            ? data
+            : data.categories ?? [];
+          setCategories(
+            list.filter((category: Category) => category.isActive == true)
+          );
+        }
+      } catch (error) {
+        console.error("Lỗi tải danh mục:", error);
       }
-    } catch (error) {
-      console.error("Lỗi tải danh mục:", error);
-    }
-  };
+    };
 
-  fetchCategories();
-}, []);
+    fetchCategories();
+  }, []);
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -857,108 +857,108 @@ sm:h-[90vh]
             `}
           >
             {/* TOP */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
-  {/* TÊN SẢN PHẨM */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium">
-      Tên sản phẩm *
-    </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+              {/* TÊN SẢN PHẨM */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">
+                  Tên sản phẩm *
+                </label>
 
-    <input
-      value={name}
-      placeholder="Nhập tên sản phẩm"
-      onChange={(e) => {
-        const value = e.target.value;
-        setName(value);
-        setSlug(slugify(value));
-      }}
-      className="w-full rounded-lg border px-3 py-2"
-    />
-  </div>
+                <input
+                  value={name}
+                  placeholder="Nhập tên sản phẩm"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setName(value);
+                    setSlug(slugify(value));
+                  }}
+                  className="w-full rounded-lg border px-3 py-2"
+                />
+              </div>
 
-  {/* THƯƠNG HIỆU */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium">
-      Thương hiệu *
-    </label>
+              {/* THƯƠNG HIỆU */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">
+                  Thương hiệu *
+                </label>
 
-    <select
-      value={brandId}
-      onChange={(e) => setBrandId(e.target.value)}
-      className="w-full rounded-lg border px-3 py-2"
-    >
-      <option value="">Chọn thương hiệu</option>
+                <select
+                  value={brandId}
+                  onChange={(e) => setBrandId(e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2"
+                >
+                  <option value="">Chọn thương hiệu</option>
 
-      {brands.map((b: any) => (
-        <option key={String(b._id)} value={String(b._id)}>
-          {b.name}
-        </option>
-      ))}
-    </select>
+                  {brands.map((b: any) => (
+                    <option key={String(b._id)} value={String(b._id)}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
 
-    <button
-      type="button"
-      onClick={() => setOpenBrand(true)}
-      className="text-left text-sm text-orange-600 hover:underline"
-    >
-      + Thêm thương hiệu
-    </button>
-  </div>
+                <button
+                  type="button"
+                  onClick={() => setOpenBrand(true)}
+                  className="text-left text-sm text-orange-600 hover:underline"
+                >
+                  + Thêm thương hiệu
+                </button>
+              </div>
 
-  {/* DANH MỤC - CHỌN NHIỀU */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium">
-      Danh mục / Nhóm sản phẩm
-    </label>
+              {/* DANH MỤC - CHỌN NHIỀU */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">
+                  Danh mục / Nhóm sản phẩm
+                </label>
 
-    <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
-      {categories.length === 0 ? (
-        <p className="text-sm text-gray-500">
-          Chưa có danh mục đang hoạt động.
-        </p>
-      ) : (
-        categories.map((category) => (
-          <label
-            key={category._id}
-            className="flex cursor-pointer items-center gap-2 text-sm"
-          >
-            <input
-              type="checkbox"
-              checked={categoryIds.includes(String(category._id))}
-              onChange={(e) => {
-                const id = String(category._id);
+                <div className="max-h-48 space-y-2 overflow-y-auto rounded-lg border p-3">
+                  {categories.length === 0 ? (
+                    <p className="text-sm text-gray-500">
+                      Chưa có danh mục đang hoạt động.
+                    </p>
+                  ) : (
+                    categories.map((category) => (
+                      <label
+                        key={category._id}
+                        className="flex cursor-pointer items-center gap-2 text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={categoryIds.includes(String(category._id))}
+                          onChange={(e) => {
+                            const id = String(category._id);
 
-                setCategoryIds((prev) =>
-                  e.target.checked
-                    ? [...prev, id]
-                    : prev.filter((item) => item !== id)
-                );
-              }}
-              className="h-4 w-4 accent-orange-500"
-            />
+                            setCategoryIds((prev) =>
+                              e.target.checked
+                                ? [...prev, id]
+                                : prev.filter((item) => item !== id)
+                            );
+                          }}
+                          className="h-4 w-4 accent-orange-500"
+                        />
 
-            <span>{category.name}</span>
-          </label>
-        ))
-      )}
-    </div>
+                        <span>{category.name}</span>
+                      </label>
+                    ))
+                  )}
+                </div>
 
-    <p className="text-xs text-gray-500">
-      Có thể chọn nhiều nhóm cho cùng một sản phẩm.
-    </p>
-  </div>
+                <p className="text-xs text-gray-500">
+                  Có thể chọn nhiều nhóm cho cùng một sản phẩm.
+                </p>
+              </div>
 
-  {/* SLUG */}
-  <div className="flex flex-col gap-2">
-    <label className="text-sm font-medium">Slug</label>
+              {/* SLUG */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium">Slug</label>
 
-    <input
-      disabled
-      value={slug}
-      className="w-full rounded-lg border bg-gray-100 px-3 py-2"
-    />
-  </div>
-</div>
+                <input
+                  disabled
+                  value={slug}
+                  className="w-full rounded-lg border bg-gray-100 px-3 py-2"
+                />
+              </div>
+            </div>
 
             {/* STATUS */}
             <div
@@ -1463,8 +1463,11 @@ sm:h-[90vh]
                             }
                           >
                             <option value="8GB">8GB</option>
+                            <option value="8GB">12GB</option>
                             <option value="16GB">16GB</option>
+                            <option value="16GB">24GB</option>
                             <option value="32GB">32GB</option>
+                            <option value="16GB">40GB</option>
                             <option value="64GB">64GB</option>
                           </select>
 
@@ -1490,7 +1493,7 @@ sm:h-[90vh]
                             <option value="256GB">256GB</option>
                             <option value="512GB">512GB</option>
                             <option value="1TB">1TB</option>
-                             <option value="2TB">2TB</option>
+                            <option value="2TB">2TB</option>
                           </select>
 
                           <SelectIcon />
@@ -1528,7 +1531,7 @@ sm:h-[90vh]
                             <option value="15.6">15.6"</option>
                             <option value="16">16"</option>
                             <option value="17">17"</option>
-                             <option value="18">18"</option>
+                            <option value="18">18"</option>
                           </select>
 
                           <SelectIcon />
@@ -1672,13 +1675,13 @@ sm:h-[90vh]
                             </button>
                           )}
                         </div>
-                        
+
                       </div>
-                          
+
                       {/* ================= MOBILE + TABLET ================= */}
-                      <div className="lg:hidden space-y-3 mt-4">    
-                      {/* ================= MÔ TẢ NGẮN ================= */}
-                   
+                      <div className="lg:hidden space-y-3 mt-4">
+                        {/* ================= MÔ TẢ NGẮN ================= */}
+
 
 
                         {/* CPU */}
@@ -1752,8 +1755,11 @@ sm:h-[90vh]
                               }
                             >
                               <option value="8GB">8GB</option>
+                              <option value="8GB">12GB</option>
                               <option value="16GB">16GB</option>
+                              <option value="16GB">24GB</option>
                               <option value="32GB">32GB</option>
+                              <option value="16GB">40GB</option>
                               <option value="64GB">64GB</option>
                             </select>
 
@@ -1788,7 +1794,7 @@ sm:h-[90vh]
                               <option value="256GB">256GB</option>
                               <option value="512GB">512GB</option>
                               <option value="1TB">1TB</option>
-                               <option value="2TB">2TB</option>
+                              <option value="2TB">2TB</option>
                             </select>
 
                             <SelectIcon />
@@ -1990,18 +1996,18 @@ sm:h-[90vh]
 
                           <SelectIcon />
                         </div>
-                                <ProductShortDescriptionEditor
-                value={v.shortDescription || ""}
-                onChange={(value) => {
-                  setVariants((prev) =>
-                    prev.map((item) =>
-                      item.id === v.id
-                        ? { ...item, shortDescription: value }
-                        : item
-                    )
-                  );
-                }}
-              />
+                        <ProductShortDescriptionEditor
+                          value={v.shortDescription || ""}
+                          onChange={(value) => {
+                            setVariants((prev) =>
+                              prev.map((item) =>
+                                item.id === v.id
+                                  ? { ...item, shortDescription: value }
+                                  : item
+                              )
+                            );
+                          }}
+                        />
                         {/* DELETE */}
                         {variants.length > 0 && (
                           <button
@@ -2023,27 +2029,27 @@ sm:h-[90vh]
                         )}
                       </div>
 
-                    {/* ================= DESKTOP ================= */}
-                <div className="hidden lg:block">
-                  <ProductShortDescriptionEditor
-                    value={v.shortDescription || ""}
-                    onChange={(value) => {
-                      setVariants((prev) =>
-                        prev.map((item) =>
-                          item.id === v.id
-                            ? { ...item, shortDescription: value }
-                            : item
-                        )
-                      );
-                    }}
-                  />
-                </div>
+                      {/* ================= DESKTOP ================= */}
+                      <div className="hidden lg:block">
+                        <ProductShortDescriptionEditor
+                          value={v.shortDescription || ""}
+                          onChange={(value) => {
+                            setVariants((prev) =>
+                              prev.map((item) =>
+                                item.id === v.id
+                                  ? { ...item, shortDescription: value }
+                                  : item
+                              )
+                            );
+                          }}
+                        />
+                      </div>
 
                     </div>
                   ))}
                 </div>
               </div>
-             
+
 
               <ProductDescriptionEditor
                 value={description}
