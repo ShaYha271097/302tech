@@ -1468,6 +1468,7 @@ sm:h-[90vh]
                             <option value="24GB">24GB</option>
                             <option value="32GB">32GB</option>
                             <option value="40GB">40GB</option>
+                            <option value="48GB">48GB</option>
                             <option value="64GB">64GB</option>
                           </select>
 
@@ -1494,6 +1495,7 @@ sm:h-[90vh]
                             <option value="512GB">512GB</option>
                             <option value="1TB">1TB</option>
                             <option value="2TB">2TB</option>
+                             <option value="4TB">4TB</option>
                           </select>
 
                           <SelectIcon />
@@ -1760,6 +1762,7 @@ sm:h-[90vh]
                             <option value="24GB">24GB</option>
                             <option value="32GB">32GB</option>
                             <option value="40GB">40GB</option>
+                            <option value="48GB">48GB</option>
                             <option value="64GB">64GB</option>
                             </select>
 
@@ -1795,8 +1798,8 @@ sm:h-[90vh]
                               <option value="512GB">512GB</option>
                               <option value="1TB">1TB</option>
                               <option value="2TB">2TB</option>
+                               <option value="4TB">4TB</option>
                             </select>
-
                             <SelectIcon />
                           </div>
                         </div>

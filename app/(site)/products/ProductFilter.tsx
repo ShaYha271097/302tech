@@ -80,7 +80,7 @@ const brandList = Array.isArray(brands)
         <p className="text-sm leading-7 font-medium mb-2">RAM</p>
 
         <div className="flex flex-wrap gap-2">
-          {["8GB","12GB","24GB", "16GB", "32GB","64GB"].map((ram) => {
+          {["8GB","12GB","24GB", "16GB", "32GB","40GB","48GB","64GB"].map((ram) => {
             const active = ramSelected.includes(ram);
 
             return (
@@ -107,7 +107,7 @@ const brandList = Array.isArray(brands)
         <p className="text-sm leading-7 font-medium mb-2">SSD</p>
 
         <div className="flex flex-wrap gap-2">
-          {["128GB","256GB", "512GB", "1TB","2TB",].map((ssd) => {
+          {["128GB","256GB", "512GB", "1TB","2TB","4TB"].map((ssd) => {
             const active = ssdSelected.includes(ssd);
 
             return (
