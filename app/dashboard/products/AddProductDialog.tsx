@@ -1556,6 +1556,8 @@ sm:h-[90vh]
                           >
                             <option value="FHD">FHD</option>
                             <option value="2K">2K</option>
+                             <option value="2.5K">2.5K</option>
+                             <option value="2.8K">2.8K</option>
                             <option value="3K">3K</option>
                             <option value="4K">4K</option>
                           </select>
@@ -1610,6 +1612,8 @@ sm:h-[90vh]
                             <option value="90">90Hz</option>
                             <option value="120">120Hz</option>
                             <option value="144">144Hz</option>
+                            <option value="165">165Hz</option>
+                            <option value="240">240Hz</option>
                           </select>
 
                           <SelectIcon />
@@ -1873,6 +1877,8 @@ sm:h-[90vh]
                               <option value="90">90Hz</option>
                               <option value="120">120Hz</option>
                               <option value="144">144Hz</option>
+                              <option value="165">165Hz</option>
+                              <option value="240">240Hz</option>
                             </select>
 
                             <SelectIcon />
@@ -1908,9 +1914,12 @@ sm:h-[90vh]
                                 )
                               }
                             >
-                              <option value="FHD">FHD</option>
-                              <option value="2K">2K</option>
-                              <option value="4K">4K</option>
+                             <option value="FHD">FHD</option>
+                            <option value="2K">2K</option>
+                             <option value="2.5K">2.5K</option>
+                             <option value="2.8K">2.8K</option>
+                            <option value="3K">3K</option>
+                            <option value="4K">4K</option>
                             </select>
 
                             <SelectIcon />
