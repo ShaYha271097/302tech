@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type Category = {
   _id: ObjectId;

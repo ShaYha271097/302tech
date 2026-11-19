@@ -7,6 +7,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import Breadcrumb from "./[slug]/Breadcrumb";
 import { formatPrice, getCheapestVariant, getVariantText } from "@/lib/format";
 import ProductFilter from "./ProductFilter";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url";
 import { SlidersHorizontal } from "lucide-react";
 
 type Props = {
@@ -162,35 +163,21 @@ export default function ProductsClient({
       "
         >
           {/* Ảnh chính */}
-          <img
-            src={item.mainImage.url}
-            alt={item.name}
-            className="
-          absolute inset-0
-          w-full
-          h-full
-          object-cover
-          opacity-100
-          transition-opacity duration-500 ease-in-out
-          group-hover/image:opacity-0
-        "
-          />
+         <img
+  src={optimizeCloudinaryUrl(item.mainImage.url, 800)}
+  alt={item.name}
+  loading="lazy"
+  className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-500 ease-in-out group-hover/image:opacity-0"
+/>
 
           {/* Ảnh phụ: hiện dần khi hover */}
           {item.gallery?.[0]?.url && (
-            <img
-              src={item.gallery[0].url}
-              alt={`${item.name} - ảnh phụ`}
-              className="
-            absolute inset-0
-            w-full
-            h-full
-            object-cover
-            opacity-0
-            transition-opacity duration-500 ease-in-out
-            group-hover/image:opacity-100
-          "
-            />
+             <img
+    src={optimizeCloudinaryUrl(item.gallery[0].url, 800)}
+    alt={`${item.name} - ảnh phụ`}
+    loading="lazy"
+    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover/image:opacity-100"
+  />
           )}
         </div>
       </Link>

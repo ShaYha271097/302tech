@@ -2,7 +2,7 @@
 
 import { CloudinaryImage } from "@/types/image";
 import { useMemo, useState } from "react";
-
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url";
 type Props = {
   mainImage: CloudinaryImage;
   gallery: CloudinaryImage[];
@@ -54,7 +54,7 @@ const images = useMemo<( CloudinaryImage )[]>(() => {
           "
         >
           <img
-            src={currentImage.url}
+           src={optimizeCloudinaryUrl(currentImage.url, 800)}
             alt=""
             className="
               w-full
@@ -125,7 +125,7 @@ const images = useMemo<( CloudinaryImage )[]>(() => {
               `}
             >
               <img
-                src={img.url}
+                src={optimizeCloudinaryUrl(img.url, 250)}
                 alt=""
                 className="
                   w-full
@@ -202,7 +202,7 @@ const images = useMemo<( CloudinaryImage )[]>(() => {
 
           {/* Image */}
           <img
-            src={currentImage.url}
+            src={optimizeCloudinaryUrl(currentImage.url, 1600)}
             alt=""
             className="
               max-w-[95vw]

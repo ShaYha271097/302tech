@@ -1,3 +1,4 @@
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url";
 import { getVariantText } from "@/lib/format";
 import { CloudinaryImage } from "@/types/image";
 import Link from "next/link";
@@ -36,33 +37,21 @@ export default function ProductCard({
         >
           {/* Ảnh chính */}
           <img
-            src={product.mainImage.url}
+            src={optimizeCloudinaryUrl(product.mainImage.url)}
             alt={product.name}
-            className="
-          absolute inset-0
-          w-full
-          h-full
-          object-cover
-          opacity-100
-          transition-opacity duration-500 ease-in-out
-          group-hover/image:opacity-0
-        "
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-500 ease-in-out group-hover/image:opacity-0"
           />
 
           {/* Ảnh phụ: hiện dần khi hover */}
           {product.gallery?.[0]?.url && (
             <img
-              src={product.gallery[0].url}
+              src={optimizeCloudinaryUrl(product.gallery[0].url)}
               alt={`${product.name} - ảnh phụ`}
-              className="
-            absolute inset-0
-            w-full
-            h-full
-            object-cover
-            opacity-0
-            transition-opacity duration-500 ease-in-out
-            group-hover/image:opacity-100
-          "
+              loading="lazy"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 ease-in-out group-hover/image:opacity-100"
             />
           )}
         </div>
@@ -84,7 +73,7 @@ export default function ProductCard({
           group-hover:text-[#ff7a00]
         "
           >
-            {product.name} 
+            {product.name}
             {/* - {getVariantText(cheapest)} */}
           </div>
         </Link>
